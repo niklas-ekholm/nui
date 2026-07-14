@@ -1,0 +1,2838 @@
+
+/*
+ * NUI Theme — Obsidian theme for NipaNotes.
+ * Edit §0 (palette), §1b (typography scale), §1a (spacing).
+ */
+
+@font-face {
+	font-family: "Bookish Grades";
+	src: url("./fonts/BookishGradesVF.ttf") format("truetype");
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Bookish Italic";
+	src: url("./fonts/BookishVariable-ItalicVF.ttf") format("truetype");
+	font-weight: 100 900;
+	font-style: italic;
+	font-display: swap;
+}
+
+/* ==========================================================================
+   0. Color palette — edit hex values here only
+   ========================================================================== */
+
+.theme-light {
+	--n-surface: #fdfdfd;
+	--nui-content: #000;
+	--nui-chrome: #aaa;
+	--n-border: #aaa;
+}
+
+.theme-dark {
+	--n-surface: #000;
+	--nui-content: #aaa;
+	--nui-chrome: #445;
+	--n-border: #445;
+}
+
+/* ==========================================================================
+   1a. Spacing scale — Tailwind (--nui-0 … --nui-96)
+   ========================================================================== */
+
+body {
+	--nui-0: 0;
+	--nui-px: 0.0625rem;
+	--nui-0-5: 0.125rem;
+	--nui-1: 0.25rem;
+	--nui-1-5: 0.375rem;
+	--nui-2: 0.5rem;
+	--nui-2-5: 0.625rem;
+	--nui-3: 0.75rem;
+	--nui-3-5: 0.875rem;
+	--nui-4: 1rem;
+	--nui-5: 1.25rem;
+	--nui-6: 1.5rem;
+	--nui-7: 1.75rem;
+	--nui-8: 2rem;
+	--nui-9: 2.25rem;
+	--nui-10: 2.5rem;
+	--nui-11: 2.75rem;
+	--nui-12: 3rem;
+	--nui-14: 3.5rem;
+	--nui-16: 4rem;
+	--nui-20: 5rem;
+	--nui-24: 6rem;
+	--nui-28: 7rem;
+	--nui-32: 8rem;
+	--nui-36: 9rem;
+	--nui-40: 10rem;
+	--nui-44: 11rem;
+	--nui-48: 12rem;
+	--nui-52: 13rem;
+	--nui-56: 14rem;
+	--nui-60: 15rem;
+	--nui-64: 16rem;
+	--nui-72: 18rem;
+	--nui-80: 20rem;
+	--nui-96: 24rem;
+}
+
+/* vertical rhythm — single edit point; propagated to note views below */
+body,
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered),
+.markdown-source-view.mod-cm6 {
+	--p-spacing: var(--nui-4);
+	--heading-spacing: var(--nui-16);
+	--n-bases-embed-padding-block: var(--nui-8);
+}
+
+/* ==========================================================================
+   1b. Typography scale — edit values here only
+   Doc: index/NUIdocs/1 Foundations/Typography.md
+   ========================================================================== */
+
+html {
+	font-size: 18px;
+}
+
+
+body {
+	/* body */
+	--nui-body: 1rem;
+	--nui-leading-body: 1.4;
+	--nui-weight-body: 400;
+	--nui-tracking-body: 0;
+
+	/* code */
+	--nui-code: 0.875rem;
+	--nui-leading-code: 1.2;
+	--nui-weight-code: 500;
+	--nui-tracking-code: -0.01em;
+
+	/* h1 */
+	--nui-h1: 2rem;
+	--nui-leading-h1: 1.1;
+	--nui-weight-h1: 200;
+	--nui-tracking-h1: 0;
+
+	/* h2 */
+	--nui-h2: 1.66rem;
+	--nui-leading-h2: 1.1;
+	--nui-weight-h2: 250;
+	--nui-tracking-h2: 0.01em;
+
+	/* h3 */
+	--nui-h3: 1.33rem;
+	--nui-leading-h3: 1.15;
+	--nui-weight-h3: 300;
+	--nui-tracking-h3: 0.005em;
+
+	/* h4 */
+	--nui-h4: 1rem;
+	--nui-leading-h4: var(--nui-leading-body);
+	--nui-weight-h4: 400;
+	--nui-tracking-h4: 0.05em;
+
+	/* h5 */
+	--nui-h5: 0.66rem;
+	--nui-leading-h5: 1.2;
+	--nui-weight-h5: 550;
+	--nui-tracking-h5: 0.15em;
+
+	/* h6 */
+	--nui-h6: 0.66rem;
+	--nui-leading-h6: 1.2;
+	--nui-weight-h6: 350;
+	--nui-tracking-h6: 0.15em;
+
+	/* inline title (= h1 size; own leading / weight) */
+	--nui-inline-title: var(--nui-h1);
+	--nui-leading-inline-title: 1;
+	--nui-weight-inline-title: 220;
+	--nui-tracking-inline-title: 0;
+
+	/* bold */
+	--nui-weight-bold: 600;
+
+	/* derived roles (change target level above, not here) */
+	--nui-table-header: var(--nui-h6);
+	--nui-leading-table-header: var(--nui-leading-h6);
+	--nui-weight-table-header: var(--nui-weight-h6);
+	--nui-tracking-table-header: var(--nui-tracking-h6);
+
+	--nui-embed-title: var(--nui-h6);
+	--nui-leading-embed-title: var(--nui-leading-h6);
+	--nui-weight-embed-title: var(--nui-weight-h6);
+	--nui-tracking-embed-title: var(--nui-tracking-h6);
+
+	--nui-timeline-bar-title: var(--nui-h6);
+	--nui-leading-timeline-bar-title: var(--nui-leading-h6);
+	--nui-weight-timeline-bar-title: var(--nui-weight-h6);
+	--nui-tracking-timeline-bar-title: 0;
+
+	/* blockquote */
+	--nui-font-blockquote: "Bookish Grades", Georgia, "Times New Roman", serif;
+	--nui-font-blockquote-italic: "Bookish Italic", Georgia, "Times New Roman", serif;
+	--nui-blockquote: 6.1cqw;
+	--nui-leading-blockquote: 1.1;
+	--nui-grade-blockquote: 350;
+	--nui-tracking-blockquote: 0;
+	--nui-blockquote-link-underline-thickness: 0.5px;
+
+	/* presentation (not in Typography.md ladder) */
+	--n-inline-title-margin-bottom: 0.9em;
+	--n-code-style: normal;
+	--n-code-shift-y: -0.06em;
+
+	/* Obsidian wiring (derived) */
+	--font-text-size: var(--nui-body);
+	--inline-title-weight: var(--nui-weight-inline-title);
+	--n-code-weight: var(--nui-weight-code);
+	--n-bold-weight: var(--nui-weight-bold);
+	--n-italic-style: italic;
+
+	--blockquote-border-thickness: 0;
+	--blockquote-border-color: transparent;
+	--blockquote-background-color: transparent;
+	--blockquote-color: var(--nui-content);
+	--blockquote-font-style: normal;
+}
+
+/* ==========================================================================
+   1c. Typography — element rules (values: §1b only)
+   ========================================================================== */
+
+/* Obsidian heading vars — wired from §1b */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered),
+.markdown-source-view.mod-cm6.is-live-preview {
+	--h1-size: var(--nui-h1);
+	--h2-size: var(--nui-h2);
+	--h3-size: var(--nui-h3);
+	--h4-size: var(--nui-h4);
+	--h5-size: var(--nui-h5);
+	--h6-size: var(--nui-h6);
+	--h1-line-height: var(--nui-leading-h1);
+	--h2-line-height: var(--nui-leading-h2);
+	--h3-line-height: var(--nui-leading-h3);
+	--h4-line-height: var(--nui-leading-h4);
+	--h5-line-height: var(--nui-leading-h5);
+	--h6-line-height: var(--nui-leading-h6);
+	--h1-weight: var(--nui-weight-h1);
+	--h2-weight: var(--nui-weight-h2);
+	--h3-weight: var(--nui-weight-h3);
+	--h4-weight: var(--nui-weight-h4);
+	--h5-weight: var(--nui-weight-h5);
+	--h6-weight: var(--nui-weight-h6);
+}
+
+/* Block stack — apply §1a spacing tokens */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered)
+	:is(h1, h2, h3, h4, h5, h6) {
+	margin-block-start: var(--p-spacing);
+	margin-block-end: var(--p-spacing);
+}
+
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered)
+	div:has(> :is(p, pre, table, ul, ol, blockquote, hr, .internal-embed))
+	+ div
+	> :is(h1, h2, h3, h4, h5, h6) {
+	margin-block-start: var(--heading-spacing);
+}
+
+.markdown-source-view.mod-cm6
+	.cm-contentContainer
+	.cm-content
+	> .cm-line:is(.cm-header-1, .cm-header-2, .cm-header-3, .cm-header-4, .cm-header-5, .cm-header-6) {
+	padding-top: var(--heading-spacing);
+}
+
+/* Body text — editor typography only in Live Preview; Source mode uses Obsidian defaults */
+.markdown-reading-view,
+.markdown-preview-view,
+.markdown-rendered,
+.markdown-source-view.mod-cm6.is-live-preview .cm-content {
+	font-size: var(--nui-body);
+	line-height: var(--nui-leading-body);
+}
+
+/* Source mode — plain monospace, no syntax styling (beats Obsidian HyperMD + cm-s-obsidian) */
+.markdown-source-view.mod-cm6:not(.is-live-preview) {
+	--h1-size: 1em;
+	--h2-size: 1em;
+	--h3-size: 1em;
+	--h4-size: 1em;
+	--h5-size: 1em;
+	--h6-size: 1em;
+	--h1-line-height: inherit;
+	--h2-line-height: inherit;
+	--h3-line-height: inherit;
+	--h4-line-height: inherit;
+	--h5-line-height: inherit;
+	--h6-line-height: inherit;
+	--h1-weight: inherit;
+	--h2-weight: inherit;
+	--h3-weight: inherit;
+	--h4-weight: inherit;
+	--h5-weight: inherit;
+	--h6-weight: inherit;
+	--heading-formatting: var(--text-normal);
+	--code-normal: var(--text-normal);
+	--code-background: transparent;
+	--code-size: 1em;
+	--list-marker-color: var(--text-normal);
+	--list-marker-color-collapsed: var(--text-normal);
+	--link-color: var(--text-normal);
+	--link-color-hover: var(--text-normal);
+	--link-unresolved-color: var(--text-normal);
+	--link-external-color: var(--text-normal);
+	--link-decoration: none;
+	--link-decoration-hover: none;
+	--link-unresolved-decoration-style: none;
+	--link-external-decoration: none;
+	--link-external-decoration-hover: none;
+}
+
+.markdown-source-view.mod-cm6:not(.is-live-preview) .inline-title {
+	font-family: var(--font-monospace) !important;
+	font-size: var(--font-text-size) !important;
+	font-weight: inherit !important;
+	line-height: var(--line-height-normal) !important;
+	letter-spacing: normal !important;
+	text-transform: none !important;
+}
+
+.markdown-source-view.mod-cm6:not(.is-live-preview) .cm-scroller {
+	font-family: var(--font-monospace) !important;
+	font-size: var(--font-text-size);
+	line-height: var(--line-height-normal);
+}
+
+.markdown-source-view.mod-cm6:not(.is-live-preview) .cm-content .cm-line {
+	font-size: inherit !important;
+	font-weight: inherit !important;
+	line-height: inherit !important;
+	letter-spacing: normal !important;
+	text-transform: none !important;
+	color: var(--text-normal) !important;
+}
+
+.markdown-source-view.mod-cm6:not(.is-live-preview) .cm-content .cm-line :is(
+	.cm-header-1,
+	.cm-header-2,
+	.cm-header-3,
+	.cm-header-4,
+	.cm-header-5,
+	.cm-header-6,
+	.HyperMD-header-1,
+	.HyperMD-header-2,
+	.HyperMD-header-3,
+	.HyperMD-header-4,
+	.HyperMD-header-5,
+	.HyperMD-header-6,
+	.cm-formatting,
+	.cm-formatting-header,
+	.cm-formatting-strong,
+	.cm-formatting-em,
+	.cm-formatting-link,
+	.cm-formatting-link-string,
+	.cm-formatting-code,
+	.cm-formatting-quote,
+	.cm-formatting-list,
+	.cm-formatting-list-ul,
+	.cm-formatting-list-ol,
+	.cm-formatting-task,
+	.cm-strong,
+	.cm-em,
+	.cm-link,
+	.cm-url,
+	.cm-footref,
+	.cm-hmd-internal-link,
+	.cm-inline-code,
+	.cm-hashtag,
+	.cm-quote,
+	.cm-meta,
+	.cm-hmd-footnote,
+	.cm-hmd-codeblock,
+	.cm-def,
+	.cm-qualifier,
+	.cm-attribute,
+	.cm-property,
+	.cm-variable,
+	.cm-variable-2,
+	.cm-variable-3,
+	.cm-keyword,
+	.cm-operator,
+	.cm-string,
+	.cm-string-2,
+	.cm-number,
+	.cm-comment,
+	.cm-tag,
+	.cm-builtin,
+	.cm-type
+) {
+	color: inherit !important;
+	font-size: inherit !important;
+	font-weight: inherit !important;
+	font-style: normal !important;
+	font-family: inherit !important;
+	letter-spacing: normal !important;
+	text-transform: none !important;
+	text-decoration: none !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	border: none !important;
+	border-radius: 0 !important;
+	padding: 0 !important;
+	transform: none !important;
+	vertical-align: baseline !important;
+	box-decoration-break: initial !important;
+	-webkit-box-decoration-break: initial !important;
+}
+
+/* Inline note title — NUI ladder in reading + Live Preview only */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered)
+	.inline-title:not(.nui-bases-view-title),
+.markdown-source-view.mod-cm6.is-live-preview
+	.inline-title:not(.nui-bases-view-title) {
+	font-size: var(--nui-inline-title);
+	line-height: var(--nui-leading-inline-title);
+	font-weight: var(--nui-weight-inline-title);
+	letter-spacing: var(--nui-tracking-inline-title);
+}
+
+/* h1–h6 — size / leading / weight / tracking from §1b */
+.markdown-reading-view h1,
+.markdown-preview-view h1,
+.markdown-rendered h1,
+.markdown-source-view.mod-cm6.is-live-preview .cm-header-1,
+.markdown-source-view.mod-cm6.is-live-preview .HyperMD-header-1 {
+	font-size: var(--h1-size);
+	line-height: var(--h1-line-height);
+	font-weight: var(--h1-weight);
+	letter-spacing: var(--nui-tracking-h1);
+}
+
+.markdown-reading-view h2,
+.markdown-preview-view h2,
+.markdown-rendered h2,
+.markdown-source-view.mod-cm6.is-live-preview .cm-header-2,
+.markdown-source-view.mod-cm6.is-live-preview .HyperMD-header-2 {
+	font-size: var(--h2-size);
+	line-height: var(--h2-line-height);
+	font-weight: var(--h2-weight);
+	letter-spacing: var(--nui-tracking-h2);
+}
+
+.markdown-reading-view h3,
+.markdown-preview-view h3,
+.markdown-rendered h3,
+.markdown-source-view.mod-cm6.is-live-preview .cm-header-3,
+.markdown-source-view.mod-cm6.is-live-preview .HyperMD-header-3 {
+	font-size: var(--h3-size);
+	line-height: var(--h3-line-height);
+	font-weight: var(--h3-weight);
+	letter-spacing: var(--nui-tracking-h3);
+}
+
+.markdown-reading-view h4,
+.markdown-preview-view h4,
+.markdown-rendered h4,
+.markdown-source-view.mod-cm6.is-live-preview .cm-header-4,
+.markdown-source-view.mod-cm6.is-live-preview .HyperMD-header-4 {
+	font-size: var(--h4-size);
+	line-height: var(--h4-line-height);
+	font-weight: var(--h4-weight);
+}
+
+.markdown-reading-view h5,
+.markdown-preview-view h5,
+.markdown-rendered h5,
+.markdown-source-view.mod-cm6.is-live-preview .cm-header-5,
+.markdown-source-view.mod-cm6.is-live-preview .HyperMD-header-5 {
+	font-size: var(--h5-size);
+	line-height: var(--h5-line-height);
+	font-weight: var(--h5-weight);
+}
+
+.markdown-reading-view h6,
+.markdown-preview-view h6,
+.markdown-rendered h6,
+.markdown-source-view.mod-cm6.is-live-preview .cm-header-6,
+.markdown-source-view.mod-cm6.is-live-preview .HyperMD-header-6 {
+	font-size: var(--h6-size);
+	line-height: var(--h6-line-height);
+	font-weight: var(--h6-weight);
+}
+
+/* Inline note title — layout (size in §1 typography) */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) .inline-title,
+.markdown-source-view.mod-cm6.is-live-preview .inline-title,
+.bases-view > .inline-title.nui-bases-view-title,
+[data-type="bases"] > .inline-title.nui-bases-view-title,
+.bases-embed .inline-title.nui-bases-view-title {
+	margin-bottom: var(--n-inline-title-margin-bottom);
+}
+
+.bases-embed:has(.nui-timeline) .inline-title.nui-bases-view-title {
+	margin-inline-start: 0;
+	padding-inline-start: 0;
+}
+
+.bases-embed:has(.nui-task-list-bases-root) .inline-title.nui-bases-view-title,
+.bases-embed:has(.nui-task-list-bases-root)
+	.nui-bases-view-topbar
+	.inline-title.nui-bases-view-title {
+	margin-inline-start: 0;
+	padding-inline-start: 0;
+}
+
+.bases-embed:has(.nui-week-tracker-3) .nui-week-tracker-3-topbar .inline-title.nui-bases-view-title {
+	margin-bottom: 0;
+	line-height: 1;
+}
+
+/* h4–h6 — uppercase + tracking (values: §1b) */
+.markdown-reading-view h4,
+.markdown-preview-view h4,
+.markdown-rendered h4,
+.markdown-source-view.mod-cm6.is-live-preview .cm-header-4,
+.markdown-source-view.mod-cm6.is-live-preview .HyperMD-header-4 {
+	text-transform: uppercase;
+	letter-spacing: var(--nui-tracking-h4);
+}
+
+.markdown-reading-view h5,
+.markdown-preview-view h5,
+.markdown-rendered h5,
+.markdown-source-view.mod-cm6.is-live-preview .cm-header-5,
+.markdown-source-view.mod-cm6.is-live-preview .HyperMD-header-5 {
+	text-transform: uppercase;
+	letter-spacing: var(--nui-tracking-h5);
+}
+
+.markdown-reading-view h6,
+.markdown-preview-view h6,
+.markdown-rendered h6,
+.markdown-source-view.mod-cm6.is-live-preview .cm-header-6,
+.markdown-source-view.mod-cm6.is-live-preview .HyperMD-header-6 {
+	text-transform: uppercase;
+	letter-spacing: var(--nui-tracking-h6);
+}
+
+/* Bold */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) :is(strong, b),
+:is(.bases-embed, .bases-view) .bases-td :is(strong, b),
+.nui-text-scope :is(strong, b) {
+	font-weight: var(--bold-weight);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .cm-strong {
+	font-weight: var(--bold-weight);
+}
+
+/* Italic */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) :is(em, i),
+:is(.bases-embed, .bases-view) .bases-td :is(em, i),
+.nui-text-scope :is(em, i) {
+	font-style: var(--italic-style);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .cm-em {
+	font-style: var(--italic-style);
+}
+
+/* Prose column — cqw tracks readable line width, not pane width */
+:is(
+	.markdown-reading-view.is-readable-line-width .markdown-preview-sizer,
+	.markdown-preview-view.is-readable-line-width .markdown-preview-sizer,
+	.markdown-source-view.mod-cm6.is-live-preview.is-readable-line-width .cm-sizer,
+	.markdown-reading-view.is-readable-line-width .markdown-rendered
+) {
+	container-type: inline-size;
+	container-name: nui-prose;
+	width: min(100%, var(--file-line-width, 700px));
+	max-width: var(--file-line-width, 700px);
+	margin-inline: auto;
+	box-sizing: border-box;
+}
+
+:is(.markdown-embed, .markdown-embed-content) :is(.markdown-preview-view, .markdown-rendered) {
+	container-type: normal;
+	width: auto;
+	max-width: none;
+	margin-inline: 0;
+}
+
+/* Blockquote */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) :is(blockquote, blockquote p),
+:is(.bases-embed, .bases-view) .bases-td :is(blockquote, blockquote p),
+.popover .markdown-preview-view :is(blockquote, blockquote p),
+.nui-text-scope :is(blockquote, blockquote p),
+.markdown-source-view.mod-cm6.is-live-preview :is(blockquote, blockquote p) {
+	font-family: var(--nui-font-blockquote) !important;
+	font-size: var(--nui-blockquote) !important;
+	line-height: var(--nui-leading-blockquote) !important;
+	font-weight: normal !important;
+	font-variation-settings: "GRAD" var(--nui-grade-blockquote) !important;
+	letter-spacing: var(--nui-tracking-blockquote) !important;
+	font-style: normal;
+	font-synthesis: none;
+	color: var(--nui-content);
+}
+
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote,
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) div:has(> blockquote),
+:is(.bases-embed, .bases-view) .bases-td blockquote,
+.popover .markdown-preview-view blockquote,
+.nui-text-scope blockquote,
+.markdown-source-view.mod-cm6.is-live-preview blockquote {
+	--link-decoration-thickness: var(--nui-blockquote-link-underline-thickness);
+	--n-body-link-underline-thickness: var(--nui-blockquote-link-underline-thickness);
+	--n-body-link-underline-offset: 0.12rem;
+	border: none !important;
+	border-inline-start: none !important;
+	margin: 0 !important;
+	margin-inline: 0 !important;
+	margin-inline-start: 0 !important;
+	padding: 0 !important;
+	padding-inline: 0 !important;
+	padding-inline-start: 0 !important;
+	padding-inline-end: 0 !important;
+	background: transparent !important;
+}
+
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote :is(p, ul, ol),
+:is(.bases-embed, .bases-view) .bases-td blockquote :is(p, ul, ol),
+.popover .markdown-preview-view blockquote :is(p, ul, ol),
+.nui-text-scope blockquote :is(p, ul, ol),
+.markdown-source-view.mod-cm6.is-live-preview blockquote :is(p, ul, ol) {
+	margin: 0 !important;
+	margin-inline: 0 !important;
+	margin-inline-start: 0 !important;
+	padding: 0 !important;
+	padding-inline: 0 !important;
+	padding-inline-start: 0 !important;
+	padding-inline-end: 0 !important;
+}
+
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote :is(em, i),
+:is(.bases-embed, .bases-view) .bases-td blockquote :is(em, i),
+.popover .markdown-preview-view blockquote :is(em, i),
+.nui-text-scope blockquote :is(em, i),
+.markdown-source-view.mod-cm6.is-live-preview blockquote :is(em, i) {
+	font-family: var(--nui-font-blockquote-italic) !important;
+	font-weight: normal !important;
+	font-variation-settings: "wght" clamp(400, var(--nui-grade-blockquote), 700) !important;
+	font-style: italic !important;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(.cm-line.cm-quote, .cm-line.HyperMD-quote) {
+	font-family: var(--nui-font-blockquote) !important;
+	font-size: var(--nui-blockquote) !important;
+	line-height: var(--nui-leading-blockquote) !important;
+	font-weight: normal !important;
+	font-variation-settings: "GRAD" var(--nui-grade-blockquote) !important;
+	letter-spacing: var(--nui-tracking-blockquote) !important;
+	--link-decoration-thickness: var(--nui-blockquote-link-underline-thickness);
+	--n-body-link-underline-thickness: var(--nui-blockquote-link-underline-thickness);
+	font-synthesis: none;
+	margin-inline: 0 !important;
+	padding-inline: 0 !important;
+	padding-inline-start: 0 !important;
+}
+
+/* Inline code */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) code:not(pre code),
+:is(.bases-embed, .bases-view) .bases-td code:not(pre code),
+.popover .markdown-preview-view code:not(pre code),
+.nui-text-scope code:not(pre code) {
+	display: inline-block;
+	font-size: var(--nui-code) !important;
+	line-height: var(--nui-leading-code);
+	font-weight: var(--nui-weight-code);
+	letter-spacing: var(--nui-tracking-code);
+	font-style: var(--code-style);
+	vertical-align: baseline;
+	transform: translateY(var(--code-shift-y));
+	border: var(--code-border-width) solid var(--code-border-color);
+	border-radius: var(--code-radius);
+	padding: var(--code-padding-y) var(--code-padding-x);
+	background: transparent;
+	box-decoration-break: clone;
+	-webkit-box-decoration-break: clone;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview span.cm-inline-code:not(.cm-formatting-code) {
+	display: inline-block;
+	font-size: var(--nui-code) !important;
+	line-height: var(--nui-leading-code);
+	font-weight: var(--nui-weight-code);
+	letter-spacing: var(--nui-tracking-code);
+	font-style: var(--code-style);
+	vertical-align: baseline;
+	transform: translateY(var(--code-shift-y));
+	border: var(--code-border-width) solid var(--code-border-color);
+	border-radius: var(--code-radius);
+	padding: var(--code-padding-y) var(--code-padding-x);
+	background-color: transparent;
+}
+
+/* ==========================================================================
+   2. Token aliases — maps §0 palette to Obsidian (derived; do not edit)
+   ========================================================================== */
+
+.theme-light {
+	--color-base-00: var(--n-surface);
+	--color-base-05: var(--n-surface);
+	--color-base-10: var(--n-surface);
+	--color-base-20: var(--n-surface);
+	--background-primary: var(--n-surface);
+	--background-primary-alt: var(--n-surface);
+	--background-secondary: var(--n-surface);
+	--background-secondary-alt: var(--n-surface);
+	--background-modifier-form-field: var(--n-surface);
+	--titlebar-background: var(--n-surface);
+	--titlebar-background-focused: var(--n-surface);
+	--header-background: var(--n-surface);
+	--ribbon-background: var(--n-surface);
+	--tab-container-background: var(--n-surface);
+	--workspace-background-translucent: var(--n-surface);
+	--divider-color: transparent;
+	--tab-outline-color: transparent;
+	--text-normal: var(--nui-content);
+	--text-ui: var(--nui-chrome);
+	--n-light-ui-color: var(--nui-chrome);
+	--n-light-ui-hover-color: var(--nui-content);
+	--n-light-ui-border-color: var(--n-border);
+	--n-body-link-color: var(--nui-content);
+	--n-body-link-underline-thickness: 0.06em;
+	--n-body-link-unresolved-underline-thickness: 1px;
+	--n-body-link-underline-offset: 0.12em;
+	--nui-border-color: var(--n-border);
+	--n-accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+	--nui-on-accent: var(--text-on-accent);
+	--code-weight: var(--n-code-weight);
+	--code-style: var(--n-code-style);
+	--code-shift-y: var(--n-code-shift-y);
+	--bold-weight: var(--n-bold-weight);
+	--italic-style: var(--n-italic-style);
+}
+
+.theme-dark {
+	--color-base-00: var(--n-surface);
+	--color-base-05: var(--n-surface);
+	--color-base-10: var(--n-surface);
+	--color-base-20: var(--n-surface);
+	--background-primary: var(--n-surface);
+	--background-primary-alt: var(--n-surface);
+	--background-secondary: var(--n-surface);
+	--background-secondary-alt: var(--n-surface);
+	--background-modifier-form-field: var(--n-surface);
+	--titlebar-background: var(--n-surface);
+	--titlebar-background-focused: var(--n-surface);
+	--header-background: var(--n-surface);
+	--ribbon-background: var(--n-surface);
+	--tab-container-background: var(--n-surface);
+	--workspace-background-translucent: var(--n-surface);
+	--divider-color: transparent;
+	--tab-outline-color: transparent;
+	--text-normal: var(--nui-content);
+	--text-ui: var(--nui-chrome);
+	--n-light-ui-color: var(--nui-chrome);
+	--n-light-ui-hover-color: var(--nui-content);
+	--n-light-ui-border-color: var(--n-border);
+	--n-body-link-color: var(--nui-content);
+	--n-body-link-underline-thickness: 0.06em;
+	--n-body-link-unresolved-underline-thickness: 1px;
+	--n-body-link-underline-offset: 0.12em;
+	--nui-border-color: var(--n-border);
+	--n-accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+	--nui-on-accent: var(--text-on-accent);
+	--code-weight: var(--n-code-weight);
+	--code-style: var(--n-code-style);
+	--code-shift-y: var(--n-code-shift-y);
+	--bold-weight: var(--n-bold-weight);
+	--italic-style: var(--n-italic-style);
+}
+
+/* ==========================================================================
+   3. Workspace — flat surfaces
+   ========================================================================== */
+
+.theme-light .workspace,
+.theme-light .workspace-split,
+.theme-light .workspace-leaf,
+.theme-light .workspace-tabs,
+.theme-light .workspace-tab-header-container,
+.theme-light .workspace-tab-header,
+.theme-light .workspace-tab-header.is-active,
+.theme-light .mod-root .view-content,
+.theme-light .view-header,
+.theme-light .view-header-title-container,
+.theme-light .side-dock,
+.theme-light .side-dock-ribbon,
+.theme-light .side-dock-settings,
+.theme-light .side-dock-actions,
+.theme-light .status-bar,
+.theme-light .nav-files-container,
+.theme-light .nav-folder-title,
+.theme-light .nav-file-title,
+.theme-light .tree-item-self,
+.theme-light .search-result-container,
+.theme-light .metadata-container,
+.theme-light .markdown-preview-view,
+.theme-light .markdown-source-view,
+.theme-light .cm-scroller,
+.theme-light .cm-gutters,
+.theme-light .vertical-tab-header,
+.theme-light .vertical-tab-content,
+.theme-light .community-modal,
+.theme-light .modal-bg {
+	background-color: var(--n-surface) !important;
+	backdrop-filter: none !important;
+}
+
+.theme-light .workspace-tab-header-container,
+.theme-light .view-header,
+.theme-light .status-bar,
+.theme-light .side-dock-ribbon,
+.theme-light .workspace-split.mod-left-split,
+.theme-light .horizontal-main-container {
+	border-color: transparent !important;
+	box-shadow: none !important;
+}
+
+/* Left sidebar: no divider against the editor */
+.theme-light .workspace-split.mod-left-split > .workspace-leaf-resize-handle {
+	border-right: none !important;
+}
+
+/* Right sidebar: no divider against the editor */
+.theme-light .workspace-split.mod-right-split {
+	border-left-color: transparent !important;
+}
+
+.theme-light .workspace-split.mod-right-split > .workspace-leaf-resize-handle {
+	border-left: none !important;
+}
+
+/* Sidebar graph — rounded frame instead of split divider */
+:is(.workspace-split.mod-left-split, .workspace-split.mod-right-split)
+	.workspace-leaf:has(.graph-view)
+	.view-content {
+	padding: var(--nui-2);
+	box-sizing: border-box;
+}
+
+:is(.workspace-split.mod-left-split, .workspace-split.mod-right-split) .graph-view {
+	border: 1px solid var(--n-light-ui-border-color);
+	border-radius: var(--radius-m);
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+.theme-light .workspace-tab-header.is-active {
+	--tab-background-active: var(--n-surface);
+}
+
+.theme-light .workspace-tab-header.is-active .workspace-tab-header-inner {
+	background-color: var(--n-surface) !important;
+}
+
+.theme-light .workspace-tab-header:not(.is-active) .workspace-tab-header-inner {
+	background-color: var(--n-surface) !important;
+}
+
+.theme-light .workspace-leaf.mod-active .view-header {
+	background-color: var(--n-surface) !important;
+}
+
+.theme-light .cm-activeLine,
+.theme-light .cm-activeLineGutter {
+	background-color: transparent !important;
+}
+
+.theme-light .cm-gutters {
+	border-right-color: transparent !important;
+}
+
+.theme-dark .workspace,
+.theme-dark .workspace-split,
+.theme-dark .workspace-leaf,
+.theme-dark .workspace-tabs,
+.theme-dark .workspace-tab-header-container,
+.theme-dark .workspace-tab-header,
+.theme-dark .workspace-tab-header.is-active,
+.theme-dark .mod-root .view-content,
+.theme-dark .view-header,
+.theme-dark .view-header-title-container,
+.theme-dark .side-dock,
+.theme-dark .side-dock-ribbon,
+.theme-dark .side-dock-settings,
+.theme-dark .side-dock-actions,
+.theme-dark .status-bar,
+.theme-dark .nav-files-container,
+.theme-dark .nav-folder-title,
+.theme-dark .nav-file-title,
+.theme-dark .tree-item-self,
+.theme-dark .search-result-container,
+.theme-dark .metadata-container,
+.theme-dark .markdown-preview-view,
+.theme-dark .markdown-source-view,
+.theme-dark .cm-scroller,
+.theme-dark .cm-gutters,
+.theme-dark .vertical-tab-header,
+.theme-dark .vertical-tab-content,
+.theme-dark .community-modal,
+.theme-dark .modal-bg {
+	background-color: var(--n-surface) !important;
+	backdrop-filter: none !important;
+}
+
+.theme-dark .workspace-tab-header-container,
+.theme-dark .view-header,
+.theme-dark .status-bar,
+.theme-dark .side-dock-ribbon,
+.theme-dark .workspace-split.mod-left-split,
+.theme-dark .horizontal-main-container {
+	border-color: transparent !important;
+	box-shadow: none !important;
+}
+
+/* Left sidebar: no divider against the editor */
+.theme-dark .workspace-split.mod-left-split > .workspace-leaf-resize-handle {
+	border-right: none !important;
+}
+
+/* Right sidebar: no divider against the editor */
+.theme-dark .workspace-split.mod-right-split {
+	border-left-color: transparent !important;
+}
+
+.theme-dark .workspace-split.mod-right-split > .workspace-leaf-resize-handle {
+	border-left: none !important;
+}
+
+.theme-dark .workspace-tab-header.is-active {
+	--tab-background-active: var(--n-surface);
+}
+
+.theme-dark .workspace-tab-header.is-active .workspace-tab-header-inner {
+	background-color: var(--n-surface) !important;
+}
+
+.theme-dark .workspace-tab-header:not(.is-active) .workspace-tab-header-inner {
+	background-color: var(--n-surface) !important;
+}
+
+.theme-dark .workspace-leaf.mod-active .view-header {
+	background-color: var(--n-surface) !important;
+}
+
+.theme-dark .cm-activeLine,
+.theme-dark .cm-activeLineGutter {
+	background-color: transparent !important;
+}
+
+.theme-dark .cm-gutters {
+	border-right-color: transparent !important;
+}
+/* ==========================================================================
+   4. Workspace — muted chrome & native Bases UI
+   ========================================================================== */
+
+/* Shared chrome tokens */
+.theme-light :is(
+	.workspace-tabs,
+	.workspace-tab-header-container,
+	.view-header,
+	.status-bar,
+	.workspace-split.mod-left-split,
+	.workspace-split.mod-right-split,
+	.side-dock-ribbon,
+	.titlebar
+),
+.theme-dark :is(
+	.workspace-tabs,
+	.workspace-tab-header-container,
+	.view-header,
+	.status-bar,
+	.workspace-split.mod-left-split,
+	.workspace-split.mod-right-split,
+	.side-dock-ribbon,
+	.titlebar
+) {
+	--text-ui: var(--n-light-ui-color);
+	--text-muted: var(--n-light-ui-color);
+	--text-faint: var(--n-light-ui-color);
+	--text-accent: var(--n-light-ui-color);
+	--text-accent-hover: var(--n-light-ui-hover-color);
+	--icon-color: var(--n-light-ui-color);
+	--icon-color-hover: var(--n-light-ui-hover-color);
+	--icon-color-active: var(--n-light-ui-color);
+	--icon-color-focused: var(--n-light-ui-hover-color);
+	--nav-item-color: var(--n-light-ui-color);
+	--nav-item-color-hover: var(--n-light-ui-hover-color);
+	--nav-item-color-active: var(--n-light-ui-color);
+	--nav-item-color-selected: var(--n-light-ui-hover-color);
+	--tab-text-color: var(--n-light-ui-color);
+	--tab-text-color-active: var(--n-light-ui-color);
+	--tab-text-color-focused: var(--n-light-ui-hover-color);
+	--interactive-hover: transparent;
+	--background-modifier-hover: transparent;
+	--background-modifier-active: transparent;
+	--background-modifier-active-hover: transparent;
+	--interactive-accent: transparent;
+	--interactive-accent-hover: transparent;
+	--interactive-normal: transparent;
+	--color-accent: var(--n-light-ui-color);
+}
+
+/* Top bar — tabs */
+:is(.workspace-tab-header-container, .workspace-tabs) :is(
+	.workspace-tab-header,
+	.workspace-tab-header-inner,
+	.workspace-tab-header-inner-title,
+	.workspace-tab-header-inner-close-button,
+	.workspace-tab-header-tab-list
+) {
+	color: var(--n-light-ui-color) !important;
+}
+
+:is(.workspace-tab-header-container, .workspace-tabs) .workspace-tab-header:is(:hover, .is-active, .is-focused) :is(
+	.workspace-tab-header-inner,
+	.workspace-tab-header-inner-title
+) {
+	color: var(--n-light-ui-color) !important;
+	background-color: transparent !important;
+}
+
+@media (hover: hover) {
+	:is(.workspace-tab-header-container, .workspace-tabs) .workspace-tab-header:hover :is(
+		.workspace-tab-header-inner,
+		.workspace-tab-header-inner-title,
+		.workspace-tab-header-inner-close-button
+	) {
+		color: var(--n-light-ui-hover-color) !important;
+	}
+}
+
+/* Top bar — view header (title, breadcrumbs, actions) */
+.view-header :is(
+	.view-header-title,
+	.view-header-title-parent,
+	.view-header-breadcrumb,
+	.view-header-breadcrumb-separator,
+	.view-action,
+	.view-header-nav-buttons,
+	.clickable-icon,
+	button
+) {
+	color: var(--n-light-ui-color) !important;
+	background-color: transparent !important;
+}
+
+.view-header :is(.svg-icon, svg) {
+	color: var(--n-light-ui-color) !important;
+}
+
+@media (hover: hover) {
+	.view-header :is(.clickable-icon, button, .view-action):hover,
+	.view-header :is(.clickable-icon, button, .view-action):hover :is(.svg-icon, svg) {
+		color: var(--n-light-ui-hover-color) !important;
+		background-color: transparent !important;
+	}
+}
+
+/* Sidebars — file tree, search, backlinks, outline, tags, etc. */
+:is(.workspace-split.mod-left-split, .workspace-split.mod-right-split) :is(
+	.nav-folder-title,
+	.nav-file-title,
+	.nav-file-tag,
+	.tree-item-self,
+	.tree-item-inner,
+	.tree-item-flair,
+	.collapse-icon,
+	.search-result-file-title,
+	.search-result-collapse-indicator,
+	.outline-title,
+	.tag-pane-tag,
+	.backlink-pane,
+	.multi-select-pill
+) {
+	color: var(--n-light-ui-color) !important;
+}
+
+:is(.workspace-split.mod-left-split, .workspace-split.mod-right-split) :is(
+	.nav-folder-title,
+	.nav-file-title,
+	.tree-item-self
+) {
+	--nav-item-color: var(--n-light-ui-color);
+	--nav-item-color-hover: var(--n-light-ui-hover-color);
+	--nav-item-color-active: var(--n-light-ui-color);
+	--nav-item-color-selected: var(--n-light-ui-hover-color);
+}
+
+:is(.workspace-split.mod-left-split, .workspace-split.mod-right-split) :is(
+	.clickable-icon,
+	button,
+	.collapse-icon
+) {
+	--icon-color: var(--n-light-ui-color);
+	--icon-color-hover: var(--n-light-ui-hover-color);
+	color: var(--n-light-ui-color) !important;
+	background-color: transparent !important;
+}
+
+:is(.workspace-split.mod-left-split, .workspace-split.mod-right-split) :is(.svg-icon, svg) {
+	color: var(--n-light-ui-color) !important;
+}
+
+@media (hover: hover) {
+	:is(.workspace-split.mod-left-split, .workspace-split.mod-right-split) :is(
+		.nav-folder-title,
+		.nav-file-title,
+		.tree-item-self,
+		.search-result-file-title,
+		.outline-title,
+		.tag-pane-tag
+	):hover {
+		color: var(--n-light-ui-hover-color) !important;
+		background-color: transparent !important;
+	}
+
+	:is(.workspace-split.mod-left-split, .workspace-split.mod-right-split) :is(
+		.clickable-icon,
+		button,
+		.collapse-icon
+	):hover,
+	:is(.workspace-split.mod-left-split, .workspace-split.mod-right-split) :is(
+		.clickable-icon,
+		button,
+		.collapse-icon
+	):hover :is(.svg-icon, svg) {
+		color: var(--n-light-ui-hover-color) !important;
+		background-color: transparent !important;
+	}
+}
+
+/* Status bar */
+.status-bar :is(.status-bar-item, .status-bar-item-segment, .status-bar-item-icon) {
+	color: var(--n-light-ui-color) !important;
+}
+
+.status-bar :is(.svg-icon, svg) {
+	color: var(--n-light-ui-color) !important;
+}
+
+@media (hover: hover) {
+	.status-bar .status-bar-item:hover,
+	.status-bar .status-bar-item:hover :is(.svg-icon, svg) {
+		color: var(--n-light-ui-hover-color) !important;
+	}
+}
+
+/* Ribbon (if enabled) */
+.side-dock-ribbon :is(.side-dock-ribbon-action, .clickable-icon, button) {
+	color: var(--n-light-ui-color) !important;
+	background-color: transparent !important;
+}
+
+.side-dock-ribbon :is(.svg-icon, svg) {
+	color: var(--n-light-ui-color) !important;
+}
+
+@media (hover: hover) {
+	.side-dock-ribbon :is(.side-dock-ribbon-action, .clickable-icon, button):hover,
+	.side-dock-ribbon :is(.side-dock-ribbon-action, .clickable-icon, button):hover :is(.svg-icon, svg) {
+		color: var(--n-light-ui-hover-color) !important;
+		background-color: transparent !important;
+	}
+}
+
+/* Bases — muted toolbar, headers, borders (table/native Bases only; nui views use plugin) */
+.bases-embed:not(:has(.nui-text-scope)),
+.bases-view:not(:has(.nui-text-scope)) {
+	--bases-table-header-color: var(--n-light-ui-color);
+	--bases-table-border-color: var(--n-light-ui-border-color);
+	--bases-embed-border-color: var(--n-light-ui-border-color);
+	--bases-cards-shadow: 0 0 0 1px var(--n-light-ui-border-color);
+	--bases-cards-shadow-hover: 0 0 0 1px var(--n-light-ui-border-color);
+}
+
+.bases-embed:not(:has(.nui-text-scope)) .bases-header,
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+),
+.bases-view:not(:has(.nui-text-scope)) .bases-header,
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+) {
+	--text-accent: var(--n-light-ui-color);
+	--text-accent-hover: var(--n-light-ui-hover-color);
+	--icon-color: var(--n-light-ui-color);
+	--icon-color-hover: var(--n-light-ui-hover-color);
+	--icon-color-active: var(--n-light-ui-color);
+	--icon-color-focused: var(--n-light-ui-hover-color);
+	--text-muted: var(--n-light-ui-color);
+	--text-faint: var(--n-light-ui-color);
+	--interactive-hover: transparent;
+	--background-modifier-hover: transparent;
+	--background-modifier-active: transparent;
+	--background-modifier-active-hover: transparent;
+	--interactive-accent: transparent;
+	--interactive-accent-hover: transparent;
+	--interactive-normal: transparent;
+	--color-accent: var(--n-light-ui-color);
+}
+
+/* Active toolbar — no fill, including on hover */
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):is(.mod-active, .is-active, .mod-filtered, .mod-sorted),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):is(.mod-active, .is-active, .mod-filtered, .mod-sorted),
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):is(.mod-active, .is-active, .mod-filtered, .mod-sorted):hover,
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):is(.mod-active, .is-active, .mod-filtered, .mod-sorted):hover,
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu
+):is(.mod-active, .mod-filtered, .mod-sorted) :is(button, .clickable-icon, .text, span),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu
+):is(.mod-active, .mod-filtered, .mod-sorted) :is(button, .clickable-icon, .text, span),
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu
+):is(.mod-active, .mod-filtered, .mod-sorted):hover :is(button, .clickable-icon, .text, span),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu
+):is(.mod-active, .mod-filtered, .mod-sorted):hover :is(button, .clickable-icon, .text, span) {
+	background: none !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu
+):is(.mod-active, .mod-filtered, .mod-sorted):hover :is(.text, span, button, .clickable-icon),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu
+):is(.mod-active, .mod-filtered, .mod-sorted):hover :is(.text, span, button, .clickable-icon) {
+	color: var(--n-light-ui-hover-color) !important;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu
+):is(.mod-active, .mod-filtered, .mod-sorted):hover :is(.svg-icon, svg),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu
+):is(.mod-active, .mod-filtered, .mod-sorted):hover :is(.svg-icon, svg) {
+	color: var(--n-light-ui-hover-color) !important;
+}
+
+/* Obsidian uses .clickable-icon.is-active:hover + --background-modifier-active-hover */
+.bases-embed:not(:has(.nui-text-scope)) .bases-header :is(.clickable-icon, button):is(.is-active, .mod-active),
+.bases-view:not(:has(.nui-text-scope)) .bases-header :is(.clickable-icon, button):is(.is-active, .mod-active),
+.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-filter-menu :is(.clickable-icon, button),
+.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-sort-menu :is(.clickable-icon, button),
+.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-filter-menu :is(.clickable-icon, button),
+.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-sort-menu :is(.clickable-icon, button) {
+	--background-modifier-active-hover: transparent;
+	--background-modifier-active: transparent;
+}
+
+@media (hover: hover) {
+	.bases-embed:not(:has(.nui-text-scope)) .bases-header :is(.clickable-icon, button):is(.is-active, .mod-active):hover,
+	.bases-view:not(:has(.nui-text-scope)) .bases-header :is(.clickable-icon, button):is(.is-active, .mod-active):hover,
+	.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-filter-menu :is(.clickable-icon, button):hover,
+	.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-sort-menu :is(.clickable-icon, button):hover,
+	.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-filter-menu :is(.clickable-icon, button):hover,
+	.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-sort-menu :is(.clickable-icon, button):hover,
+	.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-filter-menu:is(.mod-active, .mod-filtered) :is(.clickable-icon, button):hover,
+	.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-sort-menu:is(.mod-active, .mod-sorted) :is(.clickable-icon, button):hover,
+	.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-filter-menu:is(.mod-active, .mod-filtered) :is(.clickable-icon, button):hover,
+	.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-sort-menu:is(.mod-active, .mod-sorted) :is(.clickable-icon, button):hover {
+		background: none !important;
+		background-color: transparent !important;
+		box-shadow: none !important;
+		color: var(--n-light-ui-hover-color) !important;
+	}
+
+	.bases-embed:not(:has(.nui-text-scope)) .bases-header :is(.clickable-icon, button):is(.is-active, .mod-active):hover :is(.svg-icon, svg),
+	.bases-view:not(:has(.nui-text-scope)) .bases-header :is(.clickable-icon, button):is(.is-active, .mod-active):hover :is(.svg-icon, svg),
+	.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-filter-menu :is(.clickable-icon, button):hover :is(.svg-icon, svg),
+	.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-sort-menu :is(.clickable-icon, button):hover :is(.svg-icon, svg),
+	.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-filter-menu :is(.clickable-icon, button):hover :is(.svg-icon, svg),
+	.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-sort-menu :is(.clickable-icon, button):hover :is(.svg-icon, svg) {
+		color: var(--n-light-ui-hover-color) !important;
+	}
+}
+
+
+/* Toolbar — default + active */
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-item .text,
+	.bases-toolbar-results,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu
+),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-item .text,
+	.bases-toolbar-results,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu
+) {
+	color: var(--n-light-ui-color) !important;
+	background-color: transparent !important;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):is(.mod-active, .is-active, .mod-filtered, .mod-sorted),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):is(.mod-active, .is-active, .mod-filtered, .mod-sorted),
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu
+).mod-active :is(.text, span, button),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu
+).mod-active :is(.text, span, button) {
+	color: var(--n-light-ui-color) !important;
+	background-color: transparent !important;
+}
+
+/* Toolbar — hover: black text, no background */
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):hover,
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):hover {
+	background: none !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):hover :is(.text, span, button),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):hover :is(.text, span, button) {
+	color: var(--n-light-ui-hover-color) !important;
+	background: none !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results,
+	.bases-table-header,
+	.bases-group-heading
+) :is(.svg-icon, svg),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results,
+	.bases-table-header,
+	.bases-group-heading
+) :is(.svg-icon, svg) {
+	color: var(--n-light-ui-color) !important;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):hover :is(.svg-icon, svg),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):hover :is(.svg-icon, svg),
+.bases-embed:not(:has(.nui-text-scope)) .bases-table-header:hover :is(.svg-icon, svg),
+.bases-view:not(:has(.nui-text-scope)) .bases-table-header:hover :is(.svg-icon, svg) {
+	color: var(--n-light-ui-hover-color) !important;
+}
+
+/* View name (current view label) */
+.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-views-menu,
+.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-views-menu {
+	--text-normal: var(--n-light-ui-color);
+	color: var(--n-light-ui-color) !important;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-views-menu :is(
+	button,
+	.text,
+	span,
+	.bases-toolbar-menu-item,
+	.mod-views
+),
+.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-views-menu :is(
+	button,
+	.text,
+	span,
+	.bases-toolbar-menu-item,
+	.mod-views
+) {
+	color: var(--n-light-ui-color) !important;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-views-menu :is(:hover, :focus) :is(
+	button,
+	.text,
+	span,
+	.bases-toolbar-menu-item
+),
+.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-views-menu :is(:hover, :focus) :is(
+	button,
+	.text,
+	span,
+	.bases-toolbar-menu-item
+) {
+	color: var(--n-light-ui-hover-color) !important;
+	background-color: transparent !important;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-views-menu :is(.mod-active, .is-active) :is(
+	button,
+	.text,
+	span,
+	.bases-toolbar-menu-item
+),
+.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-views-menu :is(.mod-active, .is-active) :is(
+	button,
+	.text,
+	span,
+	.bases-toolbar-menu-item
+) {
+	color: var(--n-light-ui-color) !important;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) .bases-toolbar-badge,
+.bases-view:not(:has(.nui-text-scope)) .bases-toolbar-badge {
+	color: var(--n-light-ui-color) !important;
+	background-color: transparent !important;
+}
+
+/* Table headers + column dividers */
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-table-header,
+	.bases-table-header-name,
+	.bases-group-heading
+) {
+	color: var(--n-light-ui-color) !important;
+	background-color: transparent !important;
+}
+
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-table-header,
+	.bases-table-header-name
+):hover {
+	color: var(--n-light-ui-hover-color) !important;
+	background-color: transparent !important;
+}
+
+.bases-view:not(:has(.nui-text-scope)) .bases-td {
+	border-inline-end-color: var(--n-light-ui-border-color) !important;
+}
+
+
+.bases-view:not(:has(.nui-text-scope)) .bases-td:not(:last-child) {
+	box-shadow: inset -1px 0 0 var(--n-light-ui-border-color) !important;
+}
+
+.bases-view:not(:has(.nui-text-scope)) .bases-tbody .bases-tr .bases-td {
+	box-shadow: inset -1px 0 0 var(--n-light-ui-border-color) !important;
+}
+
+.bases-view:not(:has(.nui-text-scope)) .bases-thead .bases-tr .bases-td {
+	box-shadow: inset -1px 0 0 var(--n-light-ui-border-color) !important;
+}
+
+/* Cards chrome — table/native card Bases only */
+.bases-view:not(:has(.nui-text-scope))[data-view-type="cards"] .bases-toolbar-item {
+	color: var(--n-light-ui-color) !important;
+}
+
+.bases-view:not(:has(.nui-text-scope))[data-view-type="cards"] .bases-cards-item {
+	box-shadow: 0 0 0 1px var(--n-light-ui-border-color) !important;
+}
+
+/* Edit block button on embedded bases (Live Preview) */
+.markdown-source-view.mod-cm6 :is(
+	.internal-embed.bases-embed,
+	.cm-embed-block.bases-embed,
+	.block-language-base.bases-embed,
+	.cm-embed-block:has(.bases-header),
+	.cm-embed-block:has(.bases-view),
+	.block-language-base:has(.bases-view)
+) > :is(.edit-block-button, .cm-edit-block-button),
+.markdown-source-view.mod-cm6 :is(
+	.internal-embed.bases-embed,
+	.cm-embed-block.bases-embed,
+	.block-language-base.bases-embed,
+	.cm-embed-block:has(.bases-header),
+	.cm-embed-block:has(.bases-view),
+	.block-language-base:has(.bases-view)
+) :is(.edit-block-button, .cm-edit-block-button),
+.mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button),
+.mod-cm6 .internal-embed.bases-embed ~ :is(.edit-block-button, .cm-edit-block-button) {
+	--icon-color: var(--n-light-ui-color) !important;
+	--icon-color-hover: var(--n-light-ui-hover-color) !important;
+	color: var(--n-light-ui-color) !important;
+	opacity: 1 !important;
+	background: none !important;
+	background-color: transparent !important;
+}
+
+.markdown-source-view.mod-cm6 :is(
+	.internal-embed.bases-embed,
+	.cm-embed-block.bases-embed,
+	.block-language-base.bases-embed,
+	.cm-embed-block:has(.bases-header),
+	.cm-embed-block:has(.bases-view),
+	.block-language-base:has(.bases-view)
+) :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path),
+.mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path) {
+	color: var(--n-light-ui-color) !important;
+	stroke: currentColor !important;
+	fill: none !important;
+}
+
+.markdown-source-view.mod-cm6 :is(
+	.internal-embed.bases-embed,
+	.cm-embed-block.bases-embed,
+	.block-language-base.bases-embed,
+	.cm-embed-block:has(.bases-header),
+	.cm-embed-block:has(.bases-view),
+	.block-language-base:has(.bases-view)
+) :is(.edit-block-button, .cm-edit-block-button):hover,
+.mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button):hover {
+	--icon-color: var(--n-light-ui-hover-color) !important;
+	color: var(--n-light-ui-hover-color) !important;
+	background: none !important;
+	background-color: transparent !important;
+}
+
+.markdown-source-view.mod-cm6 :is(
+	.internal-embed.bases-embed,
+	.cm-embed-block.bases-embed,
+	.block-language-base.bases-embed,
+	.cm-embed-block:has(.bases-header),
+	.cm-embed-block:has(.bases-view),
+	.block-language-base:has(.bases-view)
+) :is(.edit-block-button, .cm-edit-block-button):hover :is(.svg-icon, svg, path),
+.mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button):hover :is(.svg-icon, svg, path) {
+	color: var(--n-light-ui-hover-color) !important;
+	stroke: currentColor !important;
+}
+
+/* Override default embed hover making edit button black/opaque */
+.markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-header):hover > :is(.edit-block-button, .cm-edit-block-button),
+.markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-view):hover > :is(.edit-block-button, .cm-edit-block-button),
+.markdown-source-view.mod-cm6 .internal-embed.bases-embed:hover > :is(.edit-block-button, .cm-edit-block-button) {
+	--icon-color: var(--n-light-ui-color) !important;
+	color: var(--n-light-ui-color) !important;
+	background: none !important;
+	background-color: transparent !important;
+}
+
+.markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-header):hover > :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path),
+.markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-view):hover > :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path),
+	.markdown-source-view.mod-cm6 .internal-embed.bases-embed:hover > :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path) {
+	color: var(--n-light-ui-color) !important;
+	stroke: currentColor !important;
+}
+
+/* ==========================================================================
+   4b. Properties — in-document metadata
+   ========================================================================== */
+
+/* Title left / properties right — same header row */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-source-view.mod-cm6)
+	:is(.mod-header.mod-ui, .cm-sizer):has(.inline-title):has(.metadata-container) {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	align-items: start;
+	align-content: start;
+	column-gap: 0;
+	margin-bottom: var(--n-inline-title-margin-bottom);
+}
+
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-source-view.mod-cm6)
+	:is(.mod-header.mod-ui, .cm-sizer):has(.inline-title):has(.metadata-container)
+	> .inline-title {
+	grid-column: 1;
+	grid-row: 1;
+	min-width: 0;
+	max-width: 100%;
+	margin-bottom: 0;
+	overflow-wrap: break-word;
+}
+
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-source-view.mod-cm6)
+	:is(.mod-header.mod-ui, .cm-sizer):has(.inline-title):has(.metadata-container)
+	> .metadata-container {
+	grid-column: 2;
+	grid-row: 1;
+	min-width: 0;
+	max-width: 100%;
+	width: 100%;
+	margin-block-start: 0;
+	--metadata-max-width: 100%;
+}
+
+.markdown-source-view.mod-cm6
+	.cm-sizer:has(.inline-title):has(.metadata-container)
+	> :not(.inline-title):not(.metadata-container) {
+	grid-column: 1 / -1;
+	grid-row: 2;
+	align-self: start;
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container {
+	--metadata-label-text-color: var(--nui-chrome);
+	--metadata-label-text-color-hover: var(--n-light-ui-hover-color);
+	--metadata-input-text-color: var(--nui-chrome);
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container :is(
+		.metadata-property-key,
+		.metadata-property-key-input,
+		.metadata-property-value,
+		.metadata-input-longtext,
+		.metadata-link-inner,
+		.multi-select-pill-content
+	) {
+	color: var(--nui-chrome);
+}
+
+@media (hover: hover) {
+	:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+		.metadata-container :is(
+			.metadata-property-key:hover,
+			.metadata-property-key-input:hover,
+			.metadata-property-value:hover,
+			.metadata-input-longtext:hover,
+			.metadata-link-inner:hover
+		) {
+		color: var(--n-light-ui-hover-color);
+	}
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container .metadata-property-icon :is(.svg-icon, svg) {
+	color: var(--nui-chrome);
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container .metadata-properties-heading {
+	display: none;
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container .metadata-content {
+	position: relative;
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container .metadata-properties {
+	padding-inline-end: calc(var(--icon-size) + var(--size-2-2));
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container .metadata-add-button {
+	position: absolute;
+	top: 0;
+	inset-inline-end: 0;
+	margin-top: 0;
+	padding: 0;
+	height: var(--metadata-input-height);
+	align-items: center;
+	color: var(--n-light-ui-color);
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container .metadata-add-button .text-button-label {
+	display: none;
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container .metadata-add-button :is(.svg-icon, svg) {
+	color: var(--n-light-ui-color);
+}
+
+@media (hover: hover) {
+	:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+		.metadata-container .metadata-add-button:hover,
+	:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+		.metadata-container .metadata-add-button:hover :is(.svg-icon, svg) {
+		color: var(--n-light-ui-hover-color);
+	}
+}
+
+/* ==========================================================================
+   5. Links
+   ========================================================================== */
+
+/* --- Body-copy link tokens (Obsidian applies resolved vs unresolved from these) --- */
+
+:is(
+	body,
+	.markdown-reading-view,
+	.markdown-preview-view,
+	.markdown-source-view.mod-cm6,
+	.cm-editor,
+	.popover .markdown-preview-view,
+	.bases-embed .bases-td,
+	.bases-view .bases-td
+) {
+	--link-color: var(--n-body-link-color);
+	--link-color-hover: var(--n-body-link-color);
+	--link-decoration: underline;
+	--link-decoration-hover: none;
+	--link-decoration-thickness: var(--n-body-link-underline-thickness);
+	--link-underline-offset: var(--n-body-link-underline-offset);
+	--link-unresolved-color: var(--n-body-link-color);
+	--link-unresolved-opacity: 1;
+	--link-unresolved-filter: none;
+	--link-unresolved-decoration-style: dashed;
+	--link-unresolved-decoration-color: var(--n-body-link-color);
+	--link-external-color: var(--n-body-link-color);
+	--link-external-decoration: underline;
+	--link-external-decoration-hover: none;
+	--tag-color: var(--nui-chrome);
+	--tag-color-hover: var(--n-light-ui-hover-color);
+	--tag-decoration: none;
+	--tag-decoration-hover: none;
+	--tag-background: transparent;
+	--tag-background-hover: transparent;
+	--tag-border-color: var(--n-border);
+	--tag-border-color-hover: var(--n-border);
+	--tag-border-width: 1px;
+	--tag-padding-x: 0.55em;
+	--tag-padding-y: 0.12em;
+	--tag-radius: 999px;
+	--code-border-color: color-mix(in srgb, var(--n-border) 50%, transparent);
+	--code-border-width: 1px;
+	--code-padding-x: 0.28em;
+	--code-padding-y: 0.06em;
+	--code-radius: 0.2em;
+}
+
+:is(.markdown-reading-view, .markdown-preview-view) a.tag {
+	color: var(--nui-chrome) !important;
+	text-decoration: none !important;
+	background: var(--tag-background) !important;
+	border: var(--tag-border-width) solid var(--tag-border-color) !important;
+	border-radius: var(--tag-radius) !important;
+	padding: var(--tag-padding-y) var(--tag-padding-x) !important;
+	font-weight: inherit;
+	opacity: 1;
+}
+
+:is(.markdown-reading-view, .markdown-preview-view) a.tag:hover {
+	color: var(--n-light-ui-hover-color) !important;
+	text-decoration: none !important;
+	background: var(--tag-background-hover) !important;
+	border-color: var(--tag-border-color-hover) !important;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .cm-hashtag {
+	color: var(--nui-chrome) !important;
+	background-color: transparent !important;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .cm-hashtag:hover {
+	color: var(--n-light-ui-hover-color) !important;
+	background-color: transparent !important;
+}
+
+.bases-embed .bases-td a.tag,
+.bases-view .bases-td a.tag {
+	color: var(--nui-chrome) !important;
+	text-decoration: none !important;
+	background: var(--tag-background) !important;
+	border: var(--tag-border-width) solid var(--tag-border-color) !important;
+	border-radius: var(--tag-radius) !important;
+	padding: var(--tag-padding-y) var(--tag-padding-x) !important;
+	opacity: 1;
+}
+
+.bases-embed .bases-td a.tag:hover,
+.bases-view .bases-td a.tag:hover {
+	color: var(--n-light-ui-hover-color) !important;
+	text-decoration: none !important;
+	background: var(--tag-background-hover) !important;
+	border-color: var(--tag-border-color-hover) !important;
+}
+
+/* --- Resolved body-copy links (explicit; excludes unresolved) --- */
+
+:is(.markdown-reading-view, .markdown-preview-view) :is(
+	a.internal-link:not(.is-unresolved),
+	a.external-link,
+	a.footnote-link
+) {
+	color: var(--n-body-link-color) !important;
+	text-decoration-line: underline;
+	text-decoration-style: solid;
+	text-decoration-thickness: var(--n-body-link-underline-thickness);
+	text-underline-offset: var(--n-body-link-underline-offset);
+	text-decoration-color: var(--n-body-link-color);
+	font-weight: inherit;
+	opacity: 1;
+}
+
+:is(.markdown-reading-view, .markdown-preview-view) :is(
+	a.internal-link:not(.is-unresolved),
+	a.external-link,
+	a.footnote-link
+):hover {
+	color: var(--n-body-link-color) !important;
+	text-decoration: none;
+}
+
+/* Heading links — resolved */
+:is(.markdown-reading-view, .markdown-preview-view) :is(h1, h2, h3, h4, h5, h6) :is(
+	a.internal-link:not(.is-unresolved),
+	a.external-link
+) {
+	color: inherit !important;
+	font: inherit;
+	letter-spacing: inherit;
+	text-transform: inherit;
+	text-decoration-line: underline;
+	text-decoration-style: solid;
+	text-decoration-thickness: var(--n-body-link-underline-thickness);
+	text-underline-offset: var(--n-body-link-underline-offset);
+	text-decoration-color: currentColor;
+	opacity: 1;
+}
+
+/* Live Preview — external + markdown links only (wikilinks use --link-* variables above) */
+.markdown-source-view.mod-cm6.is-live-preview :is(.cm-link, .cm-url, .cm-footref) {
+	color: var(--n-body-link-color) !important;
+	text-decoration-line: underline;
+	text-decoration-style: solid;
+	text-decoration-thickness: var(--n-body-link-underline-thickness);
+	text-underline-offset: var(--n-body-link-underline-offset);
+	text-decoration-color: var(--n-body-link-color);
+	opacity: 1;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(.cm-link, .cm-url, .cm-footref):hover {
+	color: var(--n-body-link-color) !important;
+	text-decoration: none;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .cm-table-widget :is(.cm-link, .cm-url) {
+	color: var(--n-body-link-color) !important;
+	text-decoration-line: underline;
+	text-decoration-style: solid;
+	text-decoration-thickness: var(--n-body-link-underline-thickness);
+	text-underline-offset: var(--n-body-link-underline-offset);
+	text-decoration-color: var(--n-body-link-color);
+	opacity: 1;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .cm-table-widget :is(.cm-link, .cm-url):hover {
+	color: var(--n-body-link-color) !important;
+	text-decoration: none;
+}
+
+/* Bases table body cells — resolved */
+.bases-embed .bases-td :is(a.internal-link:not(.is-unresolved), a.external-link),
+.bases-view .bases-td :is(a.internal-link:not(.is-unresolved), a.external-link) {
+	color: var(--n-body-link-color) !important;
+	text-decoration-line: underline;
+	text-decoration-style: solid;
+	text-decoration-thickness: var(--n-body-link-underline-thickness);
+	text-underline-offset: var(--n-body-link-underline-offset);
+	text-decoration-color: var(--n-body-link-color);
+	opacity: 1;
+}
+
+.bases-embed .bases-td :is(a.internal-link:not(.is-unresolved), a.external-link):hover,
+.bases-view .bases-td :is(a.internal-link:not(.is-unresolved), a.external-link):hover {
+	color: var(--n-body-link-color) !important;
+	text-decoration: none;
+}
+
+/* --- Unresolved wikilinks (must win over resolved rules; 1px so dashes are visible) --- */
+
+:is(
+	.markdown-reading-view,
+	.markdown-preview-view,
+	.markdown-source-view.mod-cm6,
+	.cm-editor,
+	.popover .markdown-preview-view,
+	.bases-embed .bases-td,
+	.bases-view .bases-td
+) :is(a.internal-link.is-unresolved, a.is-unresolved, .internal-link.is-unresolved, .is-unresolved) {
+	color: var(--n-body-link-color) !important;
+	text-decoration-line: underline !important;
+	text-decoration-style: dashed !important;
+	text-decoration-thickness: var(--n-body-link-unresolved-underline-thickness) !important;
+	text-underline-offset: var(--n-body-link-underline-offset) !important;
+	text-decoration-color: var(--n-body-link-color) !important;
+	opacity: 1 !important;
+	filter: none !important;
+}
+
+:is(
+	.markdown-reading-view,
+	.markdown-preview-view,
+	.markdown-source-view.mod-cm6,
+	.cm-editor,
+	.popover .markdown-preview-view,
+	.bases-embed .bases-td,
+	.bases-view .bases-td
+) :is(a.internal-link.is-unresolved, a.is-unresolved, .internal-link.is-unresolved, .is-unresolved):hover {
+	text-decoration: none !important;
+}
+
+/* Heading unresolved — inherit typography, keep dashed */
+:is(.markdown-reading-view, .markdown-preview-view) :is(h1, h2, h3, h4, h5, h6) a.internal-link.is-unresolved {
+	color: inherit !important;
+	font: inherit;
+	letter-spacing: inherit;
+	text-transform: inherit;
+	text-decoration-color: currentColor !important;
+}
+
+/* --- UI chrome — no underline (not body copy) --- */
+
+:is(
+	.workspace-tabs,
+	.workspace-tab-header-container,
+	.view-header,
+	.status-bar,
+	.workspace-split.mod-left-split,
+	.workspace-split.mod-right-split,
+	.side-dock-ribbon,
+	.titlebar,
+	.modal,
+	.menu,
+	.suggestion-container
+) {
+	--link-decoration: none;
+	--link-decoration-hover: none;
+	--link-external-decoration: none;
+	--link-external-decoration-hover: none;
+}
+
+:is(
+	.workspace-tabs,
+	.workspace-tab-header-container,
+	.view-header,
+	.status-bar,
+	.workspace-split.mod-left-split,
+	.workspace-split.mod-right-split,
+	.side-dock-ribbon,
+	.titlebar,
+	.modal,
+	.menu,
+	.suggestion-container
+) :is(a, .internal-link, .external-link) {
+	text-decoration: none !important;
+}
+
+/* Bases toolbar + table headers (chrome, not cell content; nui uses plugin) */
+.bases-embed:not(:has(.nui-text-scope)) .bases-header,
+.bases-view:not(:has(.nui-text-scope)) .bases-header,
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+),
+.bases-view:not(:has(.nui-text-scope)) :is(.bases-table-header, .bases-table-header-name, .bases-group-heading) {
+	--link-decoration: none;
+	--link-decoration-hover: none;
+	--link-unresolved-decoration-style: none;
+}
+
+.bases-embed:not(:has(.nui-text-scope)) .bases-header :is(a, .internal-link, .external-link),
+.bases-view:not(:has(.nui-text-scope)) .bases-header :is(a, .internal-link, .external-link),
+.bases-embed:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+) :is(a, .internal-link, .external-link),
+.bases-view:not(:has(.nui-text-scope)) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+) :is(a, .internal-link, .external-link),
+.bases-view:not(:has(.nui-text-scope)) :is(.bases-table-header, .bases-table-header-name, .bases-group-heading) :is(a, .internal-link, .external-link) {
+	text-decoration: none !important;
+}
+
+/* Blockquote links — hairline underline; body-scale external icon */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote :is(
+		a,
+		a.internal-link:not(.is-unresolved),
+		a.external-link,
+		a.footnote-link,
+		.internal-link:not(.is-unresolved),
+		.external-link
+	),
+.markdown-source-view.mod-cm6.is-live-preview :is(blockquote, .cm-line.cm-quote, .cm-line.HyperMD-quote) :is(
+		a,
+		a.internal-link:not(.is-unresolved),
+		a.external-link,
+		a.footnote-link,
+		.cm-link,
+		.cm-url
+	) {
+	text-decoration-line: underline !important;
+	text-decoration-style: solid !important;
+	text-decoration-thickness: var(--nui-blockquote-link-underline-thickness) !important;
+	-webkit-text-decoration-thickness: var(--nui-blockquote-link-underline-thickness) !important;
+	text-underline-offset: 0.12rem !important;
+	text-decoration-color: var(--n-body-link-color) !important;
+}
+
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote a.external-link,
+.markdown-source-view.mod-cm6.is-live-preview :is(blockquote, .cm-line.cm-quote, .cm-line.HyperMD-quote) a.external-link {
+	background-image: none !important;
+	background-size: 0 !important;
+	padding-right: 0 !important;
+	padding-inline-end: 0 !important;
+}
+
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote a.external-link::after,
+.markdown-source-view.mod-cm6.is-live-preview :is(blockquote, .cm-line.cm-quote, .cm-line.HyperMD-quote) a.external-link::after {
+	content: "";
+	display: inline-block;
+	width: 13px;
+	height: 13px;
+	margin-left: 0.12em;
+	vertical-align: -0.08em;
+	background-color: currentColor;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	mask-position: center;
+}
+
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote a.external-link :is(svg, .link-external-icon),
+.markdown-source-view.mod-cm6.is-live-preview :is(blockquote, .cm-line.cm-quote, .cm-line.HyperMD-quote) a.external-link :is(svg, .link-external-icon) {
+	width: 13px !important;
+	height: 13px !important;
+	max-width: 13px !important;
+	max-height: 13px !important;
+	margin-inline-start: 0.12em;
+	vertical-align: -0.08em;
+}
+
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote a.external-link:has(:is(svg, .link-external-icon))::after,
+.markdown-source-view.mod-cm6.is-live-preview :is(blockquote, .cm-line.cm-quote, .cm-line.HyperMD-quote) a.external-link:has(:is(svg, .link-external-icon))::after {
+	content: none !important;
+	display: none !important;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(.cm-line.cm-quote, .cm-line.HyperMD-quote) .cm-url {
+	background-image: none !important;
+	padding-right: 0 !important;
+	padding-inline-end: 0 !important;
+}
+
+/* ==========================================================================
+   6. Tables
+   ========================================================================== */
+
+body {
+	--table-column-first-border-width: 0;
+	--table-column-last-border-width: 0;
+	--table-row-last-border-width: 0;
+	--table-header-border-width: 0;
+	--n-table-header-padding-top: 0.0em;
+	--n-table-header-padding-bottom: 0.65em;
+	--n-table-cell-padding-top: 0.25em;
+	--n-table-cell-padding-bottom: 0.40em;
+	--n-table-margin-block-start: 0;
+	--n-table-margin-block-end: 0;
+}
+
+/* Table headers — match h4 */
+.markdown-reading-view th,
+.markdown-preview-view th,
+.markdown-rendered th,
+.markdown-source-view.mod-cm6.is-live-preview .cm-table-widget th,
+.markdown-source-view.mod-cm6.is-live-preview .cm-table-widget thead .table-cell-text {
+	font-size: var(--nui-table-header);
+	line-height: var(--nui-leading-table-header);
+	font-weight: var(--nui-weight-table-header);
+	text-transform: uppercase;
+	letter-spacing: var(--nui-tracking-table-header);
+}
+
+/* Horizontal rules only, no outer frame, no side padding */
+.markdown-reading-view table,
+.markdown-preview-view table,
+.markdown-rendered table,
+.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper > table {
+	border: none;
+	border-collapse: collapse;
+	margin-block-start: var(--n-table-margin-block-start);
+	margin-block-end: var(--n-table-margin-block-end);
+}
+
+.markdown-reading-view .table-wrapper,
+.markdown-preview-view .table-wrapper,
+.markdown-rendered .table-wrapper {
+	margin-block-start: var(--n-table-margin-block-start);
+	margin-block-end: var(--n-table-margin-block-end);
+}
+
+.markdown-source-view.mod-cm6 .cm-embed-block.cm-table-widget {
+	margin-block-start: var(--n-table-margin-block-start);
+	margin-block-end: var(--n-table-margin-block-end);
+}
+
+.markdown-reading-view table :is(th, td),
+.markdown-preview-view table :is(th, td),
+.markdown-rendered table :is(th, td),
+.markdown-source-view.mod-cm6 .cm-table-widget :is(th, td) {
+	border: none !important;
+	padding-inline: 0 !important;
+}
+
+.markdown-source-view.mod-cm6 .cm-table-widget .table-cell-wrapper,
+.markdown-source-view.mod-cm6 .cm-table-widget .table-cell,
+.markdown-source-view.mod-cm6 .cm-table-widget .table-cell-text {
+	border: none !important;
+	padding-inline: 0 !important;
+}
+
+/* Header row — a little more space below */
+.markdown-reading-view table thead tr > :is(th, td),
+.markdown-preview-view table thead tr > :is(th, td),
+.markdown-rendered table thead tr > :is(th, td),
+.markdown-reading-view table:not(:has(thead)) > tr:first-child > :is(th, td),
+.markdown-preview-view table:not(:has(thead)) > tr:first-child > :is(th, td),
+.markdown-rendered table:not(:has(thead)) > tr:first-child > :is(th, td),
+.markdown-reading-view table:not(:has(thead)) > tbody > tr:first-child > :is(th, td),
+.markdown-preview-view table:not(:has(thead)) > tbody > tr:first-child > :is(th, td),
+.markdown-rendered table:not(:has(thead)) > tbody > tr:first-child > :is(th, td) {
+	padding-top: var(--n-table-header-padding-top);
+	padding-bottom: var(--n-table-header-padding-bottom);
+}
+
+.markdown-source-view.mod-cm6 .cm-table-widget thead tr :is(th, td) .table-cell-wrapper {
+	padding-top: var(--n-table-header-padding-top) !important;
+	padding-bottom: var(--n-table-header-padding-bottom) !important;
+}
+
+/* Body rows — a little less space above */
+.markdown-reading-view table tbody tr > :is(th, td),
+.markdown-preview-view table tbody tr > :is(th, td),
+.markdown-rendered table tbody tr > :is(th, td),
+.markdown-reading-view table:not(:has(thead)) > tr:not(:first-child) > :is(th, td),
+.markdown-preview-view table:not(:has(thead)) > tr:not(:first-child) > :is(th, td),
+.markdown-rendered table:not(:has(thead)) > tr:not(:first-child) > :is(th, td),
+.markdown-reading-view table:not(:has(thead)) > tbody > tr:not(:first-child) > :is(th, td),
+.markdown-preview-view table:not(:has(thead)) > tbody > tr:not(:first-child) > :is(th, td),
+.markdown-rendered table:not(:has(thead)) > tbody > tr:not(:first-child) > :is(th, td) {
+	padding-top: var(--n-table-cell-padding-top);
+	padding-bottom: var(--n-table-cell-padding-bottom);
+}
+
+.markdown-source-view.mod-cm6 .cm-table-widget tbody tr :is(th, td) .table-cell-wrapper {
+	padding-top: var(--n-table-cell-padding-top) !important;
+	padding-bottom: var(--n-table-cell-padding-bottom) !important;
+}
+
+/* Border under header row */
+.markdown-reading-view table thead tr > :is(th, td),
+.markdown-preview-view table thead tr > :is(th, td),
+.markdown-rendered table thead tr > :is(th, td),
+.markdown-source-view.mod-cm6 .cm-table-widget thead tr :is(th, td) .table-cell-wrapper {
+	border-bottom: 1px solid var(--table-border-color) !important;
+}
+
+/* Border under every body row except the last */
+.markdown-reading-view table tbody tr:not(:last-child) > :is(th, td),
+.markdown-preview-view table tbody tr:not(:last-child) > :is(th, td),
+.markdown-rendered table tbody tr:not(:last-child) > :is(th, td),
+.markdown-source-view.mod-cm6 .cm-table-widget tbody tr:not(:last-child) :is(th, td) .table-cell-wrapper {
+	border-bottom: 1px solid var(--table-border-color) !important;
+}
+
+/* Markdown tables without thead/tbody — first row is header */
+.markdown-reading-view table:not(:has(thead)) > tr:not(:last-child) > :is(th, td),
+.markdown-preview-view table:not(:has(thead)) > tr:not(:last-child) > :is(th, td),
+.markdown-rendered table:not(:has(thead)) > tr:not(:last-child) > :is(th, td),
+.markdown-reading-view table:not(:has(thead)) > tbody > tr:not(:last-child) > :is(th, td),
+.markdown-preview-view table:not(:has(thead)) > tbody > tr:not(:last-child) > :is(th, td),
+.markdown-rendered table:not(:has(thead)) > tbody > tr:not(:last-child) > :is(th, td) {
+	border-bottom: 1px solid var(--table-border-color) !important;
+}
+
+/* Keep tables within the readable text column */
+.markdown-reading-view.is-readable-line-width .table-wrapper,
+.markdown-preview-view.is-readable-line-width .table-wrapper,
+.markdown-rendered.is-readable-line-width .table-wrapper,
+.markdown-source-view.mod-cm6.is-readable-line-width .cm-embed-block.cm-table-widget,
+.markdown-source-view.mod-cm6.is-readable-line-width .cm-table-widget .table-wrapper {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+.markdown-reading-view table,
+.markdown-preview-view table,
+.markdown-rendered table,
+.markdown-source-view.mod-cm6 .cm-table-widget .table-wrapper > table {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+.markdown-reading-view table :is(th, td):first-child,
+.markdown-preview-view table :is(th, td):first-child,
+.markdown-rendered table :is(th, td):first-child,
+.markdown-source-view.mod-cm6 .cm-table-widget :is(th, td):first-child,
+.markdown-source-view.mod-cm6 .cm-table-widget .table-row :is(.table-cell-wrapper, .table-cell):first-child,
+.markdown-source-view.mod-cm6 .cm-table-widget .table-row :is(.table-cell-wrapper, .table-cell):first-child .table-cell-text {
+	padding-inline-start: 0 !important;
+}
+
+.markdown-reading-view table :is(th, td):last-child,
+.markdown-preview-view table :is(th, td):last-child,
+.markdown-rendered table :is(th, td):last-child,
+.markdown-source-view.mod-cm6 .cm-table-widget :is(th, td):last-child,
+.markdown-source-view.mod-cm6 .cm-table-widget .table-row :is(.table-cell-wrapper, .table-cell):last-child,
+.markdown-source-view.mod-cm6 .cm-table-widget .table-row :is(.table-cell-wrapper, .table-cell):last-child .table-cell-text {
+	padding-inline-end: 0 !important;
+}
+/* ==========================================================================
+   7. Embeds — images and note transclusion
+   ========================================================================== */
+
+/* Image embeds — respect Obsidian |width sizing; cap oversized images at column width */
+.image-embed img,
+.internal-embed.image-embed img,
+.internal-embed.media-embed.image-embed img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin-inline: auto;
+	border: none;
+}
+
+/* Note transclusion — flush layout, no title */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered)
+	:is(.internal-embed.markdown-embed, .inline-embed),
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) .markdown-embed,
+.markdown-source-view.mod-cm6 :is(.internal-embed.markdown-embed, .inline-embed),
+.markdown-source-view.mod-cm6 .markdown-embed,
+.markdown-source-view.mod-cm6
+	.cm-embed-block:has(> :is(.internal-embed.markdown-embed, .inline-embed, .markdown-embed)) {
+	--embed-border-start: 0;
+	--embed-border-left: 0;
+	--embed-padding: 0;
+	border: none;
+	border-inline-start: none;
+	border-left: none;
+	padding: 0;
+	padding-inline: 0;
+	margin: 0;
+}
+
+:is(.internal-embed.markdown-embed, .inline-embed) .markdown-embed-title,
+.markdown-embed .markdown-embed-title {
+	display: none;
+}
+
+.nui-bases-view-title.inline-title {
+	font-size: var(--nui-embed-title);
+	line-height: var(--nui-leading-embed-title);
+	font-weight: var(--nui-weight-embed-title);
+	text-transform: uppercase;
+	letter-spacing: var(--nui-tracking-embed-title);
+	color: var(--text-normal);
+	margin: 0 0 0.8em;
+	padding: 0;
+	border: none;
+}
+
+:is(.internal-embed.markdown-embed, .inline-embed, .markdown-embed) > .markdown-embed-link {
+	display: none;
+}
+
+:is(.internal-embed.markdown-embed, .inline-embed, .markdown-embed) .markdown-embed-content {
+	padding: 0;
+	margin: 0;
+	max-height: none;
+}
+
+:is(.internal-embed.markdown-embed, .inline-embed, .markdown-embed) .markdown-embed-content > :first-child {
+	margin-top: 0;
+}
+
+:is(.internal-embed.markdown-embed, .inline-embed, .markdown-embed) .markdown-embed-content > :last-child {
+	margin-bottom: 0;
+}
+
+/* ==========================================================================
+   8. Bases — table layout
+   ========================================================================== */
+
+/* Embedded bases — inset vertical rhythm inside the embed block */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered)
+	:is(.internal-embed.bases-embed, .block-language-base.bases-embed),
+.markdown-source-view.mod-cm6
+	:is(
+		.internal-embed.bases-embed,
+		.block-language-base.bases-embed,
+		.cm-embed-block:has(:is(.bases-embed, .bases-view, .bases-header))
+	) {
+	padding-block: var(--n-bases-embed-padding-block);
+	box-sizing: border-box;
+}
+
+.bases-view[data-view-type="table"] {
+	--bases-embed-border-width: 0;
+	--bases-table-container-border-width: 0;
+	--bases-table-container-border-radius: 0;
+	--bases-header-border-width: 0;
+
+	--bases-table-column-border-width: 1px;
+	--bases-table-row-border-width: 0;
+	--bases-table-header-background-hover: transparent;
+	--bases-table-row-background-hover: transparent;
+}
+/* ==========================================================================
+   9. Backlinks — simple list
+   ========================================================================== */
+
+.workspace-leaf-content[data-type="backlink"] .backlink-pane {
+	/* Hide "Linked mentions" and "Unlinked mentions" section headers */
+	> .tree-item-self.is-clickable {
+		display: none !important;
+	}
+
+	/* Keep both result lists visible even when sections were collapsed */
+	> .search-result-container {
+		display: block !important;
+	}
+
+	/* Hide empty unlinked mentions section ("No unlinked mentions found") */
+	> .search-result-container:last-of-type:has(.search-empty-state) {
+		display: none !important;
+	}
+
+	/* Hide twirl-down mention context */
+	.search-result-file-matches,
+	.search-result-file-match,
+	.search-result-hover-button {
+		display: none !important;
+	}
+
+	/* Hide chevrons and count badges on file rows */
+	.search-result-file-title .collapse-icon,
+	.search-result-file-title .tree-item-flair-outer {
+		display: none !important;
+	}
+
+	/* Simple clickable file rows */
+	.tree-item.search-result > .tree-item-self.search-result-file-title {
+		padding-left: var(--nui-3);
+	}
+}
+
+/* ==========================================================================
+   10. NUI Plugin views (requires NUI Plugin)
+   ========================================================================== */
+
+/* Token propagation inside custom Bases views */
+.nui-text-scope,
+.nui-text-scope :is(*, ::before, ::after) {
+	--text-normal: var(--nui-content);
+	--text-ui: var(--nui-chrome);
+	--text-muted: var(--nui-chrome);
+	--text-faint: var(--nui-chrome);
+	--text-accent: var(--nui-chrome);
+	--link-color: var(--nui-content);
+	--link-color-hover: var(--nui-content);
+	--link-unresolved-color: var(--nui-content);
+	--link-decoration: none;
+	--link-decoration-hover: none;
+	--link-external-decoration: none;
+	--link-external-decoration-hover: none;
+	--link-unresolved-decoration-style: none;
+	--tag-color: var(--nui-chrome);
+	--tag-color-hover: var(--nui-content);
+	--tag-decoration: none;
+	--tag-decoration-hover: none;
+	--tag-background: transparent;
+	--tag-background-hover: transparent;
+	--tag-border-color: var(--nui-border-color);
+	--tag-border-color-hover: var(--nui-border-color);
+	--tag-border-width: 1px;
+	--tag-padding-x: 0.55em;
+	--tag-padding-y: 0.12em;
+	--tag-radius: 999px;
+	--code-border-color: color-mix(in srgb, var(--nui-border-color) 20%, transparent);
+	--code-border-width: 1px;
+	--code-padding-x: 0.28em;
+	--code-padding-y: 0.06em;
+	--code-radius: 0.2em;
+}
+
+.nui-text-scope :is(a, .internal-link, .external-link) {
+	text-decoration: none;
+}
+
+/* Two-token default: muted UI; content selectors below */
+.nui-text-scope,
+.nui-text-scope :is(*, ::before, ::after) {
+	color: var(--nui-chrome) !important;
+}
+
+.nui-text-scope :is(
+	.nui-tracker-day-label,
+	.nui-week-tracker-3-tag-link,
+	.nui-week-tracker-3-tag-link:hover,
+	.nui-bases-view-title,
+	.nui-timeline-bar-title,
+	.nui-cards-title,
+	.nui-cards-title:hover,
+	.nui-cards-title-text,
+	.nui-cards-title-symbol,
+	.nui-cards-title-symbol:hover,
+	.nui-timeline-range-label:hover,
+	.nui-timeline-range-label.is-scrubbing,
+	.nui-timeline-row-gap-label:hover,
+	.nui-timeline-row-gap-label.is-scrubbing,
+	.nui-timeline-today-btn:hover,
+	.nui-timeline-today-btn.is-visible:hover,
+	.nui-timeline-range-restore:hover
+) {
+	color: var(--nui-content) !important;
+}
+
+.nui-text-scope .nui-cards-title-arrow {
+	color: var(--nui-chrome) !important;
+}
+
+.nui-text-scope :is(
+	.nui-timeline-bar.is-selected .nui-timeline-bar-line,
+	.nui-timeline-bar.is-selected .nui-timeline-bar-line::before,
+	.nui-timeline-bar.is-selected .nui-timeline-bar-line::after
+) {
+	background: var(--nui-timeline-selection-color, var(--n-accent)) !important;
+}
+
+.nui-text-scope .nui-timeline-marquee {
+	background: var(--nui-timeline-marquee-fill, color-mix(in srgb, var(--n-accent) 12%, transparent)) !important;
+	border: 1px solid var(--nui-timeline-marquee-border, var(--n-accent)) !important;
+}
+
+.nui-text-scope :is(
+	.nui-year-tracker-month-name,
+	.nui-tracker-day-label.is-today:not(.is-done)
+) {
+	color: var(--n-accent) !important;
+}
+
+.nui-text-scope .nui-tracker-day-label.is-done {
+	color: var(--nui-on-accent) !important;
+}
+
+.nui-text-scope .nui-week-tracker-3-tag-link:hover {
+	text-decoration: underline;
+}
+
+.nui-text-scope :is(
+	.nui-timeline-timespan-select,
+	.nui-timeline-today-btn,
+	.nui-timeline-range-restore
+) {
+	border: none !important;
+	outline: none !important;
+	box-shadow: none !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	background-image: none !important;
+	filter: none !important;
+	text-shadow: none !important;
+}
+
+.nui-text-scope :is(
+	.nui-timeline-timespan-select,
+	.nui-timeline-today-btn,
+	.nui-timeline-range-restore
+):is(:hover, :focus, :focus-visible, :active) {
+	border: none !important;
+	outline: none !important;
+	box-shadow: none !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	background-image: none !important;
+	filter: none !important;
+	text-shadow: none !important;
+}
+
+.nui-text-scope .nui-timeline-search {
+	border: none !important;
+	border-bottom: 1px solid var(--nui-border-color) !important;
+	border-radius: 0 !important;
+	width: var(--nui-24) !important;
+	min-width: var(--nui-24) !important;
+	max-width: var(--nui-24) !important;
+	height: 1em !important;
+}
+
+.nui-text-scope .nui-timeline-search-icon {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	color: var(--nui-border-color) !important;
+	line-height: 1 !important;
+}
+
+.nui-text-scope .nui-timeline-search-icon svg {
+	width: 0.85em !important;
+	height: 0.85em !important;
+}
+
+.nui-text-scope .nui-timeline-search-input,
+.nui-text-scope .nui-timeline-search-input:is(:hover, :focus, :focus-visible, :active) {
+	border: none !important;
+	border-radius: 0 !important;
+	outline: none !important;
+	box-shadow: none !important;
+	background: transparent !important;
+	background-image: none !important;
+	font-family: inherit !important;
+	font-size: var(--font-ui-smaller) !important;
+	font-weight: inherit !important;
+	line-height: 1 !important;
+	height: 1em !important;
+	width: auto !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	padding: 0 !important;
+}
+
+.nui-text-scope .nui-timeline-search-clear,
+.nui-text-scope .nui-timeline-search-clear:is(:hover, :focus, :focus-visible, :active) {
+	border: none !important;
+	border-radius: 0 !important;
+	outline: none !important;
+	box-shadow: none !important;
+	background: transparent !important;
+	background-image: none !important;
+	font-family: inherit !important;
+	font-size: var(--font-ui-smaller) !important;
+	font-weight: inherit !important;
+	line-height: 1 !important;
+	height: 1em !important;
+	padding: 0 !important;
+	color: inherit !important;
+}
+
+/* Bases embed chrome when an nui view is present */
+:is(.bases-embed, .bases-view):has(.nui-text-scope) {
+	--bases-table-header-color: var(--nui-chrome);
+	--bases-table-border-color: var(--nui-border-color);
+	--bases-embed-border-color: var(--nui-border-color);
+	--bases-cards-shadow: 0 0 0 1px var(--nui-border-color);
+	--bases-cards-shadow-hover: 0 0 0 1px var(--nui-border-color);
+}
+
+.nui-text-scope .nui-cards:not(.nui-cards--none):not(.nui-cards--list-files):not(.nui-cards--list-folders) .nui-cards-item {
+	box-shadow: 0 0 0 1px var(--nui-border-color);
+}
+
+:is(.bases-embed, .bases-view):has(.nui-text-scope) :is(
+	.bases-header,
+	.bases-search-row,
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results,
+	.bases-table-header,
+	.bases-table-header-name,
+	.bases-group-heading,
+	.bases-toolbar-badge,
+	.bases-toolbar *
+) {
+	--text-normal: var(--nui-chrome);
+	--text-muted: var(--nui-chrome);
+	--text-faint: var(--nui-chrome);
+	--text-accent: var(--nui-chrome);
+	--icon-color: var(--nui-chrome);
+	--icon-color-hover: var(--nui-content);
+	--icon-color-active: var(--nui-chrome);
+	--icon-color-focused: var(--nui-content);
+	--link-decoration: none;
+	--link-decoration-hover: none;
+	--link-unresolved-decoration-style: none;
+	--interactive-hover: transparent;
+	--background-modifier-hover: transparent;
+	--background-modifier-active: transparent;
+	--background-modifier-active-hover: transparent;
+	--interactive-accent: transparent;
+	--interactive-accent-hover: transparent;
+	--interactive-normal: transparent;
+	color: var(--nui-chrome);
+}
+
+:is(.bases-embed, .bases-view):has(.nui-text-scope) :is(
+	.bases-header,
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results,
+	.bases-table-header,
+	.bases-table-header-name,
+	.bases-group-heading
+) :is(a, .internal-link, .external-link) {
+	text-decoration: none;
+}
+
+:is(.bases-embed, .bases-view):has(.nui-text-scope) :is(
+	.bases-header,
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results,
+	.bases-table-header,
+	.bases-table-header-name,
+	.bases-group-heading
+):hover,
+:is(.bases-embed, .bases-view):has(.nui-text-scope) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):hover :is(.text, span, button, .clickable-icon, .bases-toolbar-menu-item, .mod-views) {
+	color: var(--nui-content);
+}
+
+:is(.bases-embed, .bases-view):has(.nui-text-scope) :is(
+	.bases-header,
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results,
+	.bases-table-header,
+	.bases-group-heading
+) :is(.svg-icon, svg) {
+	color: var(--nui-chrome);
+}
+
+:is(.bases-embed, .bases-view):has(.nui-text-scope) :is(
+	.bases-header,
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results,
+	.bases-table-header,
+	.bases-group-heading
+):hover :is(.svg-icon, svg) {
+	color: var(--nui-content);
+}
+
+:is(.bases-embed, .bases-view):has(.nui-text-scope) :is(
+	.bases-toolbar-item,
+	.bases-toolbar-views-menu,
+	.bases-toolbar-sort-menu,
+	.bases-toolbar-filter-menu,
+	.bases-toolbar-properties-menu,
+	.bases-toolbar-search-menu,
+	.bases-toolbar-results
+):is(.mod-active, .is-active, .mod-filtered, .mod-sorted):hover {
+	background: none;
+	background-color: transparent;
+	box-shadow: none;
+}
+

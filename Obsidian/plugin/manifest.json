@@ -1,0 +1,10 @@
+{
+	"id": "nui",
+	"name": "NUI Plugin",
+	"version": "0.1.0",
+	"minAppVersion": "1.10.0",
+	"description": "NUI layouts and behaviour for Obsidian.",
+	"author": "Niklas Ekholm",
+	"isDesktopOnly": false,
+	"css": "styles.css"
+}

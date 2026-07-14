@@ -1,0 +1,26 @@
+filters:
+  and:
+    - file.path != this.file.path
+    - note.start
+    - note.end
+views:
+  - type: nui-timeline
+    name: Full
+    filters:
+      and:
+        - file.inFolder(this.file.folder)
+    order:
+      - file.name
+    layout: full
+    startField: note.start
+    endField: note.end
+  - type: nui-timeline
+    name: Small
+    filters:
+      and:
+        - file.inFolder(this.file.folder)
+    order:
+      - file.name
+    layout: compact
+    startField: note.start
+    endField: note.end

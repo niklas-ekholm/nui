@@ -1,0 +1,24 @@
+
+filters:
+  and:
+    - file.inFolder(this.file.folder)
+views:
+  - type: nui-task-list
+    name: Open
+    order:
+      - file.folder
+      - file.name
+    showCompleted: false
+  - type: nui-task-list
+    name: Ongoing
+    order:
+      - file.folder
+      - file.name
+    showCompleted: false
+    projectScope: ongoing
+  - type: nui-task-list
+    name: All
+    order:
+      - file.folder
+      - file.name
+    showCompleted: true

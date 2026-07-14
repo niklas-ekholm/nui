@@ -1,0 +1,22 @@
+{
+	"name": "nui-plugin-obsidian",
+	"version": "0.1.0",
+	"description": "NUI Plugin for Obsidian — build tooling",
+	"private": true,
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"sync": "bash ../scripts/sync-from-vault.sh",
+		"release": "bash ../scripts/package-release.sh",
+		"package": "npm run build && npm run sync && npm run release"
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^16.11.6",
+		"builtin-modules": "3.3.0",
+		"esbuild": "0.25.0",
+		"obsidian": "latest",
+		"tslib": "2.4.0",
+		"typescript": "5.7.3"
+	}
+}

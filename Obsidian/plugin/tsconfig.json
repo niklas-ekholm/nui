@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"obsidian": ["./node_modules/obsidian"],
+			"tslib": ["./node_modules/tslib"]
+		},
+		"inlineSourceMap": true,
+		"inlineSources": true,
+		"module": "ESNext",
+		"target": "ES6",
+		"allowJs": true,
+		"noImplicitAny": true,
+		"moduleResolution": "node",
+		"importHelpers": true,
+		"isolatedModules": true,
+		"strictNullChecks": true,
+		"lib": ["DOM", "ES6"]
+	},
+	"include": [
+		"../../../../Library/Mobile Documents/iCloud~md~obsidian/Documents/NipaNotes/.obsidian/plugins/nui/src/**/*.ts"
+	]
+}
