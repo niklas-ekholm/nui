@@ -1,6 +1,6 @@
 # NUI
 
-NUI design system for Obsidian — plugin, theme, starter vault, and build tooling.
+Niklas User Interface. This is my personal setup. No guarantees of production quality or distribution. NUI design system for Obsidian includes plugin, theme, starter vault, and build tooling.
 
 Repo: [github.com/niklas-ekholm/nui](https://github.com/niklas-ekholm/nui)
 
