@@ -2,3 +2,14 @@
 node_modules/
 data.json
 dist/
+
+# Publish mirrors — live in NipaNotes; only on release branches
+plugin/src/
+plugin/main.js
+plugin/manifest.json
+plugin/styles.css
+theme/
+starter-vault/
+scripts/sync-from-vault.sh
+scripts/build-starter-vault.sh
+scripts/package-release.sh

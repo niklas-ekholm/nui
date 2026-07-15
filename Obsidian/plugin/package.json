@@ -1,14 +1,12 @@
 {
 	"name": "nui-plugin-obsidian",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "NUI Plugin for Obsidian — build tooling",
 	"private": true,
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"sync": "bash ../scripts/sync-from-vault.sh",
-		"release": "bash ../scripts/package-release.sh",
-		"package": "npm run build && npm run sync && npm run release"
+		"test": "node --experimental-strip-types --test \"../../../../Library/Mobile Documents/iCloud~md~obsidian/Documents/NipaNotes/.obsidian/plugins/nui/src/embed/*.test.ts\""
 	},
 	"license": "MIT",
 	"devDependencies": {

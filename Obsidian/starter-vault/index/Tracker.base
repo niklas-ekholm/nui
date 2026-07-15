@@ -1,8 +1,0 @@
-filters:
-  and:
-    - file.inFolder(this.file.folder)
-    - file.path != this.file.path
-views:
-  - type: nui-week-tracker-3
-    name: Week
-    dateField: note.date

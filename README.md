@@ -1,20 +1,22 @@
 # NUI
 
-Niklas User Interface. This is my personal setup. No guarantees of production quality or distribution. NUI design system for Obsidian includes plugin, theme, starter vault, and build tooling.
+Niklas User Interface. Personal setup — no guarantees of production quality or distribution.
+
+Build tooling for the NUI Obsidian plugin. Source lives in the NipaNotes iCloud vault.
 
 Repo: [github.com/niklas-ekholm/nui](https://github.com/niklas-ekholm/nui)
 
-## Quick start (recipients)
-
-Download `nui-starter-vault-<version>.zip` from [Releases](https://github.com/niklas-ekholm/nui/releases), unzip, and open the folder as a vault in Obsidian.
-
 ## Development
-
-Day-to-day source lives in the NipaNotes iCloud vault. Build and sync tooling is in `Obsidian/plugin/`. See [Obsidian/README.md](Obsidian/README.md).
 
 ```bash
 git clone git@github.com:niklas-ekholm/nui.git
 cd nui/Obsidian/plugin
 npm install
-npm run build && npm run sync && npm run release
+npm run dev    # or npm run build
 ```
+
+Edit plugin source in `NipaNotes/.obsidian/plugins/nui/src/`. See [Obsidian/README.md](Obsidian/README.md).
+
+## Releases
+
+Published zips are on [GitHub Releases](https://github.com/niklas-ekholm/nui/releases). Publishing uses a separate release branch — see [Obsidian/RELEASE.md](Obsidian/RELEASE.md).

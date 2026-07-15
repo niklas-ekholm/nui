@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
 		"paths": {
 			"obsidian": ["./node_modules/obsidian"],
 			"tslib": ["./node_modules/tslib"]
@@ -11,7 +10,7 @@
 		"target": "ES6",
 		"allowJs": true,
 		"noImplicitAny": true,
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"importHelpers": true,
 		"isolatedModules": true,
 		"strictNullChecks": true,
@@ -19,5 +18,8 @@
 	},
 	"include": [
 		"../../../../Library/Mobile Documents/iCloud~md~obsidian/Documents/NipaNotes/.obsidian/plugins/nui/src/**/*.ts"
+	],
+	"exclude": [
+		"../../../../Library/Mobile Documents/iCloud~md~obsidian/Documents/NipaNotes/.obsidian/plugins/nui/src/**/*.test.ts"
 	]
 }

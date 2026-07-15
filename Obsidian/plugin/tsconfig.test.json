@@ -1,0 +1,11 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext"
+	},
+	"include": [
+		"../../../../Library/Mobile Documents/iCloud~md~obsidian/Documents/NipaNotes/.obsidian/plugins/nui/src/**/*.test.ts"
+	]
+}
