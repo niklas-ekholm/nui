@@ -17,7 +17,7 @@ import {
 	resolveParentFolderPathFromFilePath,
 	shouldHideNavFilePath,
 } from "./folder-index-path";
-import { DEFAULT_FOLDER_INDEX_SETTINGS, FolderIndexSettings } from "./types";
+import type { FolderIndexSettings } from "../settings/nui-settings";
 import {
 	beginBreadcrumbFolderRename,
 	isBreadcrumbFolderEditing,
@@ -503,7 +503,11 @@ export class FolderIndexManager {
 			el.classList.remove(HIDDEN_INDEX_CLASS);
 		}
 
-		const hideIndexInExplorer = this.getSettings().hideIndexInExplorer;
+		const settings = this.getSettings();
+		const hiding = {
+			hideIndexInExplorer: settings.hideIndexInExplorer,
+			hideAgentStubs: settings.hideAgentStubs,
+		};
 
 		for (const el of Array.from(
 			document.querySelectorAll(".nav-file-title[data-path]"),
@@ -513,10 +517,7 @@ export class FolderIndexManager {
 			}
 
 			const filePath = el.getAttribute("data-path");
-			if (
-				!filePath ||
-				!shouldHideNavFilePath(filePath, hideIndexInExplorer)
-			) {
+			if (!filePath || !shouldHideNavFilePath(filePath, hiding)) {
 				continue;
 			}
 
@@ -665,15 +666,6 @@ export function resolveBreadcrumbFolderPath(
 	}
 
 	return folderParts.slice(0, index + 1).join("/");
-}
-
-export function mergeFolderIndexSettings(
-	loaded: Partial<FolderIndexSettings> | null,
-): FolderIndexSettings {
-	return {
-		...DEFAULT_FOLDER_INDEX_SETTINGS,
-		...loaded,
-	};
 }
 
 export function getParentFolderPath(file: TAbstractFile): string | null {

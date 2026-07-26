@@ -3,7 +3,6 @@ import {
 	BasesView,
 	Notice,
 	Platform,
-	Plugin,
 	QueryController,
 	TFolder,
 	TFile,
@@ -44,11 +43,12 @@ import {
 } from "../habits/tracker-registry";
 import { WEEK_TRACKER_3_BASES_VIEW_TYPE } from "../layouts/types";
 import {
-	FolderIndexManager,
 	findHostFileForElement,
 	getFolderIndexPath,
 	openFileInWorkspace,
-} from "../navigation/folder-index";
+	type FolderIndexOpener,
+	type TrackerHostPlugin,
+} from "../shared/host";
 import { withFolderIndexCreateSuppressed } from "../navigation/folder-index-suppress";
 
 export class WeekTracker3BasesView extends BasesView {
@@ -59,7 +59,7 @@ export class WeekTracker3BasesView extends BasesView {
 	constructor(
 		controller: QueryController,
 		parentEl: HTMLElement,
-		private plugin: Plugin,
+		private plugin: TrackerHostPlugin,
 	) {
 		super(controller);
 		this.containerEl = createNuiBasesContainer(
@@ -248,10 +248,8 @@ export class WeekTracker3BasesView extends BasesView {
 		return hostFile?.parent?.path ?? "";
 	}
 
-	private getFolderIndexManager(): FolderIndexManager | null {
-		const manager = (this.plugin as { folderIndexManager?: FolderIndexManager | null })
-			.folderIndexManager;
-		return manager ?? null;
+	private getFolderIndexManager(): FolderIndexOpener | null {
+		return this.plugin.folderIndexManager;
 	}
 
 	private async openTagFolder(

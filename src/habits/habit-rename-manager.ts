@@ -1,9 +1,6 @@
 
 import { Plugin, TFolder } from "obsidian";
-import {
-	DEFAULT_CALENDAR_FOLDER,
-	isHabitBundleRename,
-} from "./habit-bundle";
+import { DEFAULT_CALENDAR_FOLDER, isHabitBundleRename } from "./habit-bundle";
 import { showHabitRenameError, syncHabitRename } from "./rename-habit";
 import { refreshAllTrackerViews } from "./tracker-registry";
 
@@ -16,7 +13,10 @@ export function isHabitRenameSyncing(): boolean {
 export class HabitRenameManager {
 	private syncing = false;
 
-	constructor(private plugin: Plugin) {}
+	constructor(
+		private plugin: Plugin,
+		private getHabitsRoot: () => string = () => DEFAULT_CALENDAR_FOLDER,
+	) {}
 
 	onload(): void {
 		// Module-level singleton so isHabitRenameSyncing() can be called from
@@ -57,11 +57,7 @@ export class HabitRenameManager {
 		oldPath: string,
 	): Promise<void> {
 		if (
-			!isHabitBundleRename(
-				this.plugin.app.vault,
-				folder,
-				DEFAULT_CALENDAR_FOLDER,
-			)
+			!isHabitBundleRename(this.plugin.app.vault, folder, this.getHabitsRoot())
 		) {
 			return;
 		}

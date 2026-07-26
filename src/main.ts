@@ -1,14 +1,11 @@
 
 import { Notice, Platform, Plugin, TFile } from "obsidian";
 import {
-	applyPanelEdgesSetting,
-	AppearanceSettings,
-	DEFAULT_APPEARANCE_SETTINGS,
-	mergeAppearanceSettings,
+	applyBodyClasses,
+	clearBodyClasses,
 } from "./appearance/appearance-settings";
 import { toggleChromeHidden } from "./appearance/hide-chrome";
 import { turnIntoProjectFolder } from "./core/mutate/turn-into-project-folder";
-import { formatIsoDate } from "./core/parse/dates";
 import {
 	addCursorOnAdjacentLine,
 	addNextMatchToSelections,
@@ -26,25 +23,17 @@ import {
 } from "./editor/register-text-color-menu";
 import { registerPropertyColorSwatch } from "./editor/register-property-color-swatch";
 import { registerHtmlLpField } from "./editor/register-html-lp-field";
+import { NuiSettingTab } from "./settings/settings-tab";
 import {
-	DEFAULT_HTML_LIVE_PREVIEW_SETTINGS,
-	HtmlLivePreviewSettings,
-	mergeHtmlLivePreviewSettings,
-} from "./editor/html-live-preview-settings";
-import { DEFAULT_CALENDAR_FOLDER } from "./habits/habit-bundle";
-import { FolderIndexSettingTab } from "./navigation/folder-index-settings";
+	DEFAULT_SETTINGS,
+	mergeSettings,
+	NuiSettings,
+} from "./settings/nui-settings";
+import { setFolderIndexFilename } from "./navigation/folder-index-path";
 import { FolderIndexManager } from "./navigation/folder-index";
 import { HabitRenameManager } from "./habits/habit-rename-manager";
 import { SidebarGraphNavigation } from "./navigation/sidebar-graph-navigation";
-import {
-	DEFAULT_FOLDER_INDEX_SETTINGS,
-	FolderIndexSettings,
-} from "./navigation/types";
-import {
-	isFolderIndexFile,
-	mergeFolderIndexSettings,
-	openFileInWorkspace,
-} from "./navigation/folder-index";
+import { isFolderIndexFile, openFileInWorkspace } from "./navigation/folder-index";
 import { YearTrackerBasesView } from "./views/year-tracker-bases-view";
 import { MonthTrackerBasesView } from "./views/month-tracker-bases-view";
 import { WeekTracker3BasesView } from "./views/week-tracker-3-bases-view";
@@ -79,44 +68,165 @@ import {
 	MONTH_TRACKER_BASES_VIEW_TYPE,
 	SCORE_CHART_BASES_VIEW_TYPE,
 } from "./layouts/types";
-import {
-	DEFAULT_TIMELINE_ROW_SIZE,
-	DEFAULT_TIMELINE_TIMESPAN,
-	mergeTimelineRowSize,
-	mergeTimelineTimespan,
-	parseTimelineRange,
-	TimelineTimespan,
-} from "./timeline/types";
+import { TimelineTimespan } from "./timeline/types";
 import { registerEmbedPipeSync } from "./embed/register-embed-pipe-sync";
 import { registerEmbedChromeStickLine } from "./embed/embed-chrome-stick-line";
 
 export default class NuiPlugin extends Plugin {
-	folderIndexSettings: FolderIndexSettings = DEFAULT_FOLDER_INDEX_SETTINGS;
-	htmlLivePreviewSettings: HtmlLivePreviewSettings =
-		DEFAULT_HTML_LIVE_PREVIEW_SETTINGS;
-	appearanceSettings: AppearanceSettings = DEFAULT_APPEARANCE_SETTINGS;
-	timelineRowSize: number = DEFAULT_TIMELINE_ROW_SIZE;
-	timelineTimespan: TimelineTimespan = DEFAULT_TIMELINE_TIMESPAN;
-	timelineRangeStart?: string;
-	timelineRangeEnd?: string;
+	settings: NuiSettings = DEFAULT_SETTINGS;
 	folderIndexManager: FolderIndexManager | null = null;
 	habitRenameManager: HabitRenameManager | null = null;
 	sidebarGraphNavigation: SidebarGraphNavigation | null = null;
 	mobileSourceToggle: MobileSourceToggle | null = null;
+
+	/**
+	 * Every opinionated feature is gated here, and anything that overrides
+	 * built-in Obsidian behaviour is off by default. With every toggle off this
+	 * registers the fourteen Bases views and nothing else — and a Bases view is
+	 * inert until a user adds it to a base.
+	 */
 	async onload() {
 		await this.loadSettings();
-		applyPanelEdgesSetting(this.appearanceSettings);
-		this.folderIndexManager = new FolderIndexManager(
+		const { editor, appearance, folderIndex, workspace } = this.settings;
+
+		this.applyAppearance();
+		this.registerBasesViews();
+
+		if (folderIndex.enabled) {
+			this.folderIndexManager = new FolderIndexManager(
+				this,
+				() => this.settings.folderIndex,
+			);
+			this.folderIndexManager.onload();
+			this.registerFolderIndexCommands();
+			if (Platform.isDesktopApp) {
+				this.registerFileExplorerMenuItems();
+			}
+		}
+
+		// Inert unless the vault has a habits folder with habit bundles in it.
+		this.habitRenameManager = new HabitRenameManager(
 			this,
-			() => this.folderIndexSettings,
+			() => this.settings.habits.root,
 		);
-		this.folderIndexManager.onload();
-		this.habitRenameManager = new HabitRenameManager(this);
 		this.habitRenameManager.onload();
-		this.sidebarGraphNavigation = new SidebarGraphNavigation(this);
-		this.sidebarGraphNavigation.onload();
-		this.mobileSourceToggle = new MobileSourceToggle(this);
-		this.mobileSourceToggle.onload();
+
+		if (workspace.sidebarGraphNavigation) {
+			this.sidebarGraphNavigation = new SidebarGraphNavigation(this);
+			this.sidebarGraphNavigation.onload();
+		}
+
+		if (workspace.mobileSourceToggle) {
+			this.mobileSourceToggle = new MobileSourceToggle(this);
+			this.mobileSourceToggle.onload();
+		}
+
+		if (editor.embedPipes) {
+			registerEmbedPipeSync(this);
+			registerEmbedChromeStickLine(this);
+		}
+		if (editor.textColor) {
+			registerNoteTextColorSync(this);
+			registerTextColorMenu(this);
+			registerPropertyColorSwatch(this);
+			registerNoteTextColorCommand(this);
+		}
+		if (editor.collapsibleProperties) registerCollapsibleProperties(this);
+		if (editor.tableColumnLayout) registerTableColumnLayout(this);
+		if (editor.htmlLivePreview) {
+			registerHtmlLpField(this, () => ({
+				alwaysRenderHtmlInLivePreview:
+					this.settings.editor.alwaysRenderHtmlInLivePreview,
+			}));
+		}
+		if (editor.multiCursorCommands && Platform.isDesktopApp) {
+			this.registerEditorCommands();
+		}
+
+		if (appearance.noteCoverImage) registerNoteCoverImageSync(this);
+		if (appearance.noteWide) registerNoteWideSync(this);
+		this.registerHideChromeCommand();
+
+		this.addSettingTab(new NuiSettingTab(this.app, this));
+		this.showFirstRunNotice();
+	}
+
+	onunload() {
+		this.folderIndexManager?.onunload();
+		this.habitRenameManager?.onunload();
+		clearBodyClasses();
+	}
+
+	/** Timeline view state, persisted alongside the rest of the settings. */
+	get timelineRowSize(): number {
+		return this.settings.timeline.rowSize;
+	}
+	set timelineRowSize(value: number) {
+		this.settings.timeline.rowSize = value;
+	}
+	get timelineTimespan(): TimelineTimespan {
+		return this.settings.timeline.timespan;
+	}
+	set timelineTimespan(value: TimelineTimespan) {
+		this.settings.timeline.timespan = value;
+	}
+	get timelineRangeStart(): string | undefined {
+		return this.settings.timeline.rangeStart;
+	}
+	set timelineRangeStart(value: string | undefined) {
+		this.settings.timeline.rangeStart = value;
+	}
+	get timelineRangeEnd(): string | undefined {
+		return this.settings.timeline.rangeEnd;
+	}
+	set timelineRangeEnd(value: string | undefined) {
+		this.settings.timeline.rangeEnd = value;
+	}
+
+	/** The one habits root, shared by all four trackers. */
+	get habitsRoot(): string {
+		return this.settings.habits.root;
+	}
+
+	async loadSettings() {
+		this.settings = mergeSettings(await this.loadData());
+		setFolderIndexFilename(this.settings.folderIndex.indexFilename);
+	}
+
+	async saveSettings() {
+		setFolderIndexFilename(this.settings.folderIndex.indexFilename);
+		await this.saveData(this.settings);
+		this.folderIndexManager?.onSettingsChanged();
+		this.applyAppearance();
+	}
+
+	async saveTimelineSettings(): Promise<void> {
+		await this.saveSettings();
+	}
+
+	applyAppearance(): void {
+		applyBodyClasses(this.settings.appearance, this.settings.workspace);
+	}
+
+	refreshHtmlLivePreview(): void {
+		this.registerHtmlLpRefresh?.();
+	}
+
+	/**
+	 * The folder-index model is the one feature a user is likely to be looking
+	 * for and not find, because it is off until asked for.
+	 */
+	private showFirstRunNotice(): void {
+		if (this.settings.firstRunNoticeShown) return;
+		this.settings.firstRunNoticeShown = true;
+		void this.saveSettings();
+		new Notice(
+			"NUI is installed. Its Bases views are ready to use; folder-index navigation and the other opinionated features are off until you turn them on in Settings → NUI.",
+			10000,
+		);
+	}
+
+	private registerBasesViews(): void {
 		this.registerTimelineBasesView();
 		this.registerYearTrackerBasesView();
 		this.registerMonthTrackerBasesView();
@@ -124,115 +234,6 @@ export default class NuiPlugin extends Plugin {
 		this.registerScoreChartBasesView();
 		this.registerCardAndListBasesViews();
 		this.registerTaskListBasesView();
-		registerEmbedPipeSync(this);
-		registerEmbedChromeStickLine(this);
-		registerNoteTextColorSync(this);
-		registerNoteCoverImageSync(this);
-		registerNoteWideSync(this);
-		registerCollapsibleProperties(this);
-		registerTableColumnLayout(this);
-		registerTextColorMenu(this);
-		registerPropertyColorSwatch(this);
-		registerHtmlLpField(this, () => this.htmlLivePreviewSettings);
-		registerNoteTextColorCommand(this);
-		if (Platform.isDesktopApp) {
-			this.registerEditorCommands();
-			this.registerFileExplorerMenuItems();
-		}
-		this.registerFolderIndexCommands();
-		this.registerHideChromeCommand();
-		this.addSettingTab(
-			new FolderIndexSettingTab(
-				this.app,
-				this,
-				() => this.folderIndexSettings,
-				(partial) => {
-					this.folderIndexSettings = {
-						...this.folderIndexSettings,
-						...partial,
-					};
-					void this.saveSettings();
-					this.folderIndexManager?.onSettingsChanged();
-				},
-				() => this.htmlLivePreviewSettings,
-				(partial) => {
-					this.htmlLivePreviewSettings = {
-						...this.htmlLivePreviewSettings,
-						...partial,
-					};
-					void this.saveSettings();
-					this.registerHtmlLpRefresh?.();
-				},
-				() => this.appearanceSettings,
-				(partial) => {
-					this.appearanceSettings = {
-						...this.appearanceSettings,
-						...partial,
-					};
-					void this.saveSettings();
-					applyPanelEdgesSetting(this.appearanceSettings);
-				},
-			),
-		);
-	}
-
-	onunload() {
-		this.folderIndexManager?.onunload();
-		this.habitRenameManager?.onunload();
-	}
-
-	async loadSettings() {
-		const loaded = await this.loadData();
-		this.folderIndexSettings = mergeFolderIndexSettings(
-			loaded?.folderIndex ?? null,
-		);
-		this.htmlLivePreviewSettings = mergeHtmlLivePreviewSettings(
-			loaded?.htmlLivePreview ?? null,
-		);
-		this.appearanceSettings = mergeAppearanceSettings(
-			loaded?.appearance ?? null,
-		);
-		this.timelineRowSize = mergeTimelineRowSize(
-			loaded?.timeline?.rowSize,
-			loaded?.timeline?.rowGap,
-			loaded?.timeline?.rowHeight,
-		);
-		this.timelineTimespan = mergeTimelineTimespan(loaded?.timeline?.timespan);
-		const storedRange = parseTimelineRange(
-			loaded?.timeline?.rangeStart,
-			loaded?.timeline?.rangeEnd,
-		);
-		if (storedRange) {
-			this.timelineRangeStart = formatIsoDate(storedRange.start);
-			this.timelineRangeEnd = formatIsoDate(storedRange.end);
-		} else {
-			this.timelineRangeStart = undefined;
-			this.timelineRangeEnd = undefined;
-		}
-	}
-
-	async saveSettings() {
-		const existing = (await this.loadData()) ?? {};
-		// Folder export/import was removed; drop the orphaned keys rather than
-		// carrying them forward on every save.
-		delete existing.export;
-		delete existing.import;
-		await this.saveData({
-			...existing,
-			folderIndex: this.folderIndexSettings,
-			htmlLivePreview: this.htmlLivePreviewSettings,
-			appearance: this.appearanceSettings,
-			timeline: {
-				rowSize: this.timelineRowSize,
-				timespan: this.timelineTimespan,
-				rangeStart: this.timelineRangeStart,
-				rangeEnd: this.timelineRangeEnd,
-			},
-		});
-	}
-
-	async saveTimelineSettings(): Promise<void> {
-		await this.saveSettings();
 	}
 
 	private registerCardAndListBasesViews() {
@@ -426,14 +427,7 @@ export default class NuiPlugin extends Plugin {
 					key: "tag",
 					displayName: "Tag",
 					default: "",
-					placeholder: "lenkki",
-				},
-				{
-					type: "text",
-					key: "calendarFolder",
-					displayName: "Habits folder",
-					default: DEFAULT_CALENDAR_FOLDER,
-					placeholder: DEFAULT_CALENDAR_FOLDER,
+					placeholder: "Habit name",
 				},
 			],
 		});
@@ -686,7 +680,8 @@ export default class NuiPlugin extends Plugin {
 		this.addCommand({
 			id: "go-to-parent-folder",
 			name: "Go to parent folder",
-			...(Platform.isDesktopApp
+			// Mod+Escape is a common binding, so it is opt-in.
+			...(Platform.isDesktopApp && this.settings.folderIndex.goToParentHotkey
 				? { hotkeys: [{ modifiers: ["Mod"], key: "Escape" }] }
 				: {}),
 			checkCallback: (checking) => {
@@ -708,8 +703,8 @@ export default class NuiPlugin extends Plugin {
 	private registerHideChromeCommand() {
 		this.addCommand({
 			id: "toggle-hide-chrome",
-			name: "Show/hide chrome",
-			...(Platform.isDesktopApp
+			name: "Show or hide chrome",
+			...(Platform.isDesktopApp && this.settings.appearance.hideChromeHotkey
 				? { hotkeys: [{ modifiers: ["Mod"], key: "§" }] }
 				: {}),
 			callback: () => toggleChromeHidden(),

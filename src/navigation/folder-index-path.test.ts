@@ -10,6 +10,7 @@ import {
 	getFolderIndexPath,
 	isFolderIndexPath,
 	isHiddenNavFilePath,
+	normalizeFolderIndexFilename,
 	resolveFolderPath,
 	resolveParentFolderPathFromFilePath,
 	shouldHideNavFilePath,
@@ -22,10 +23,49 @@ test("isHiddenNavFilePath hides agent stub files at vault root", () => {
 	assert.equal(isHiddenNavFilePath("NUI/CLAUDE.md"), false);
 });
 
-test("shouldHideNavFilePath always hides agent stubs", () => {
-	assert.equal(shouldHideNavFilePath("CLAUDE.md", false), true);
-	assert.equal(shouldHideNavFilePath("NUI/index.md", false), false);
-	assert.equal(shouldHideNavFilePath("NUI/index.md", true), true);
+test("shouldHideNavFilePath hides nothing until asked", () => {
+	const off = { hideIndexInExplorer: false, hideAgentStubs: false };
+	assert.equal(shouldHideNavFilePath("CLAUDE.md", off), false);
+	assert.equal(shouldHideNavFilePath("NUI/index.md", off), false);
+});
+
+test("shouldHideNavFilePath honours each toggle independently", () => {
+	assert.equal(
+		shouldHideNavFilePath("CLAUDE.md", {
+			hideIndexInExplorer: false,
+			hideAgentStubs: true,
+		}),
+		true,
+	);
+	assert.equal(
+		shouldHideNavFilePath("NUI/index.md", {
+			hideIndexInExplorer: true,
+			hideAgentStubs: false,
+		}),
+		true,
+	);
+	assert.equal(
+		shouldHideNavFilePath("NUI/index.md", {
+			hideIndexInExplorer: false,
+			hideAgentStubs: true,
+		}),
+		false,
+	);
+});
+
+test("the index filename is configurable", () => {
+	assert.equal(getFolderIndexPath({ path: "NUI" }, "_index.md"), "NUI/_index.md");
+	assert.equal(isFolderIndexPath("NUI/_index.md", "_index.md"), true);
+	assert.equal(isFolderIndexPath("NUI/index.md", "_index.md"), false);
+	assert.equal(getFolderIndexFolderName("NUI/Docs/_index.md", "_index.md"), "Docs");
+});
+
+test("normalizeFolderIndexFilename rejects anything but a bare filename", () => {
+	assert.equal(normalizeFolderIndexFilename("home"), "home.md");
+	assert.equal(normalizeFolderIndexFilename("  home.md  "), "home.md");
+	assert.equal(normalizeFolderIndexFilename("a/b.md"), "index.md");
+	assert.equal(normalizeFolderIndexFilename(""), "index.md");
+	assert.equal(normalizeFolderIndexFilename("   "), "index.md");
 });
 
 test("resolveParentFolderPathFromFilePath walks up to the vault root index", () => {

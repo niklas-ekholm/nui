@@ -1,3 +1,33 @@
+/**
+ * The pure folder-index path contract.
+ *
+ * The index filename is configurable, but the helpers below are called from
+ * deep inside rendering code with no handle on the plugin. The plugin sets the
+ * active name once on load and on every settings change; every helper still
+ * takes an explicit name, so they stay directly testable.
+ */
+
+export const DEFAULT_FOLDER_INDEX_FILENAME = "index.md";
+
+let configuredFilename = DEFAULT_FOLDER_INDEX_FILENAME;
+
+/** Reject anything that is not a bare markdown filename. */
+export function normalizeFolderIndexFilename(value: string): string {
+	const trimmed = value.trim();
+	if (!trimmed || trimmed.includes("/")) {
+		return DEFAULT_FOLDER_INDEX_FILENAME;
+	}
+	return trimmed.toLowerCase().endsWith(".md") ? trimmed : `${trimmed}.md`;
+}
+
+export function setFolderIndexFilename(value: string): void {
+	configuredFilename = normalizeFolderIndexFilename(value);
+}
+
+export function folderIndexFilename(): string {
+	return configuredFilename;
+}
+
 export interface FolderPathLike {
 	path: string;
 }
@@ -14,21 +44,33 @@ export function resolveFolderPath(
 	return getFolder(folderPath);
 }
 
-export function getFolderIndexPath(folder: FolderPathLike): string {
-	return folder.path ? `${folder.path}/index.md` : "index.md";
+export function getFolderIndexPath(
+	folder: FolderPathLike,
+	filename: string = folderIndexFilename(),
+): string {
+	return folder.path ? `${folder.path}/${filename}` : filename;
 }
 
-export function getFolderIndexPathFromFolderPath(folderPath: string): string {
-	return getFolderIndexPath({ path: folderPath });
+export function getFolderIndexPathFromFolderPath(
+	folderPath: string,
+	filename: string = folderIndexFilename(),
+): string {
+	return getFolderIndexPath({ path: folderPath }, filename);
 }
 
-export function isFolderIndexPath(filePath: string): boolean {
-	return filePath === "index.md" || filePath.endsWith("/index.md");
+export function isFolderIndexPath(
+	filePath: string,
+	filename: string = folderIndexFilename(),
+): boolean {
+	return filePath === filename || filePath.endsWith(`/${filename}`);
 }
 
 /** Return the containing folder's name for a non-root folder index. */
-export function getFolderIndexFolderName(filePath: string): string | null {
-	if (!isFolderIndexPath(filePath) || filePath === "index.md") {
+export function getFolderIndexFolderName(
+	filePath: string,
+	filename: string = folderIndexFilename(),
+): string | null {
+	if (!isFolderIndexPath(filePath, filename) || filePath === filename) {
 		return null;
 	}
 
@@ -45,20 +87,25 @@ export function displayBasenameForNotePath(filePath: string): string {
 	return base.replace(/\.md$/i, "");
 }
 
-/** Root-level agent stub files — hidden from the file explorer but kept on disk. */
+/** Root-level agent stub files, hidden from the file explorer but kept on disk. */
 export const HIDDEN_NAV_FILE_PATHS = new Set(["AGENTS.md", "CLAUDE.md"]);
 
 export function isHiddenNavFilePath(filePath: string): boolean {
 	return HIDDEN_NAV_FILE_PATHS.has(filePath);
 }
 
+export interface NavHidingOptions {
+	hideIndexInExplorer: boolean;
+	hideAgentStubs: boolean;
+}
+
 export function shouldHideNavFilePath(
 	filePath: string,
-	hideIndexInExplorer: boolean,
+	options: NavHidingOptions,
 ): boolean {
 	return (
-		isHiddenNavFilePath(filePath) ||
-		(hideIndexInExplorer && isFolderIndexPath(filePath))
+		(options.hideAgentStubs && isHiddenNavFilePath(filePath)) ||
+		(options.hideIndexInExplorer && isFolderIndexPath(filePath))
 	);
 }
 

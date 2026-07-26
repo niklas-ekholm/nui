@@ -2523,18 +2523,22 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	justify-content: center;
 }
 
-/* --- Bases UI: hidden until hover over base --- */
+/* --- Bases UI: hidden until hover over base (opt-in; applies to every
+       base, including views this plugin did not add) --- */
 
-:is(.bases-embed, .block-language-base.bases-embed, [data-type="bases"]) {
+body.nui-fade-bases-chrome
+	:is(.bases-embed, .block-language-base.bases-embed, [data-type="bases"]) {
 	--nui-bases-ui-opacity: 0;
 }
 
 @media (hover: hover) {
-	:is(.bases-embed, .block-language-base.bases-embed, [data-type="bases"]):hover {
+	body.nui-fade-bases-chrome
+		:is(.bases-embed, .block-language-base.bases-embed, [data-type="bases"]):hover {
 		--nui-bases-ui-opacity: 1;
 	}
 
-	:is(.bases-embed, .block-language-base.bases-embed, [data-type="bases"])
+	body.nui-fade-bases-chrome
+		:is(.bases-embed, .block-language-base.bases-embed, [data-type="bases"])
 		:is(
 			.bases-header,
 			.nui-bases-toolbar,
@@ -2554,7 +2558,8 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 		transition: opacity 1800ms ease-in-out;
 	}
 
-	:is(.bases-embed, .block-language-base.bases-embed, [data-type="bases"]):not(:hover)
+	body.nui-fade-bases-chrome
+		:is(.bases-embed, .block-language-base.bases-embed, [data-type="bases"]):not(:hover)
 		:is(
 			.bases-header,
 			.nui-bases-toolbar,
@@ -2672,7 +2677,11 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 
 /* --- Mobile / touch --- */
 
-body.is-mobile .view-actions > .view-action[aria-label^="Current view"] {
+/* The NUI source toggle repurposes this button, so it is only hidden when
+   that feature is on. */
+body.nui-mobile-source-toggle.is-mobile
+	.view-actions
+	> .view-action[aria-label^="Current view"] {
 	display: none;
 }
 
@@ -2777,12 +2786,13 @@ body.is-mobile .view-actions > .view-action[aria-label^="Current view"] {
 	-webkit-tap-highlight-color: transparent;
 }
 
-/* Hide "Edit this block" on all embeds. */
-.mod-cm6 .cm-embed-block > :is(.edit-block-button, .cm-edit-block-button),
-.mod-cm6 .internal-embed > :is(.edit-block-button, .cm-edit-block-button),
-.mod-cm6 .cm-embed-block :is(.edit-block-button, .cm-edit-block-button),
-.mod-cm6 .internal-embed ~ :is(.edit-block-button, .cm-edit-block-button),
-.mod-cm6 .block-language-base ~ :is(.edit-block-button, .cm-edit-block-button) {
+/* Hide "Edit this block" on all embeds. Opt-in: it removes a built-in
+   affordance from every embed, not only this plugin's views. */
+body.nui-hide-embed-edit-buttons .mod-cm6 .cm-embed-block > :is(.edit-block-button, .cm-edit-block-button),
+body.nui-hide-embed-edit-buttons .mod-cm6 .internal-embed > :is(.edit-block-button, .cm-edit-block-button),
+body.nui-hide-embed-edit-buttons .mod-cm6 .cm-embed-block :is(.edit-block-button, .cm-edit-block-button),
+body.nui-hide-embed-edit-buttons .mod-cm6 .internal-embed ~ :is(.edit-block-button, .cm-edit-block-button),
+body.nui-hide-embed-edit-buttons .mod-cm6 .block-language-base ~ :is(.edit-block-button, .cm-edit-block-button) {
 	display: none !important;
 	pointer-events: none !important;
 }

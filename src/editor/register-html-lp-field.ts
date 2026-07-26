@@ -1,6 +1,6 @@
 import { Compartment, type Extension } from "@codemirror/state";
 import type { Plugin } from "obsidian";
-import type { HtmlLivePreviewSettings } from "./html-live-preview-settings";
+import type { HtmlLivePreviewSettings } from "../settings/nui-settings";
 import {
 	createHtmlLpExtension,
 	dispatchHtmlLpRefresh,
