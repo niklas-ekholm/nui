@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
 	displayBasenameForNotePath,
 	getFolderIndexFolderName,
@@ -7,7 +10,6 @@ import {
 	getFolderIndexPath,
 	isFolderIndexPath,
 	isHiddenNavFilePath,
-	isSameNamedFolderNote,
 	resolveFolderPath,
 	resolveParentFolderPathFromFilePath,
 	shouldHideNavFilePath,
@@ -97,9 +99,36 @@ test("getFolderIndexFolderName resolves timeline titles for folder indexes", () 
 	assert.equal(getFolderIndexFolderName("NUI/project.md"), null);
 });
 
-test("same-named notes remain a distinct habit-only convention", () => {
-	assert.equal(isSameNamedFolderNote("Habits/Walking/Walking.md"), true);
-	assert.equal(isSameNamedFolderNote("Habits/Walking/index.md"), false);
-	assert.equal(isSameNamedFolderNote("NUI/NUI.md"), true);
-	assert.equal(isSameNamedFolderNote("NUI/index.md"), false);
+/**
+ * Architecture guard for the retired hub-note convention.
+ *
+ * Before the index.md model, a folder's hub note was named after the folder
+ * (`Walking/Walking.md`), and habits were renamed by renaming that note. Both
+ * conventions were deleted; a same-named note is now an ordinary note. These
+ * tests fail if the check comes back.
+ */
+test("a note named after its folder is not a folder index", () => {
+	assert.equal(isFolderIndexPath("Habits/Walking/Walking.md"), false);
+	assert.equal(isFolderIndexPath("NUI/NUI.md"), false);
+	assert.equal(isFolderIndexPath("Habits/Walking/index.md"), true);
+});
+
+test("the same-named hub-note check has not returned", () => {
+	const srcDir = dirname(dirname(fileURLToPath(import.meta.url)));
+
+	const walk = (dir: string): string[] =>
+		readdirSync(dir).flatMap((name) => {
+			const full = join(dir, name);
+			if (statSync(full).isDirectory()) return walk(full);
+			return name.endsWith(".ts") && !name.endsWith(".test.ts") ? [full] : [];
+		});
+
+	for (const file of walk(srcDir)) {
+		const text = readFileSync(file, "utf8");
+		assert.equal(
+			text.includes("isSameNamedFolderNote"),
+			false,
+			`${file} references isSameNamedFolderNote; the hub-note convention was removed`,
+		);
+	}
 });

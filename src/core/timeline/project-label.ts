@@ -1,5 +1,6 @@
 
 import { App, TFile } from "obsidian";
+import { getFolderIndexPathFromFolderPath } from "../../navigation/folder-index-path";
 import { TimelineItem } from "../models/timeline-item";
 
 export function parentFolderPathFromItemPath(filePath: string): string {
@@ -7,12 +8,9 @@ export function parentFolderPathFromItemPath(filePath: string): string {
 	return slash <= 0 ? "" : filePath.slice(0, slash);
 }
 
+/** Empty for the vault root: an item there has no ancestor folder to inherit from. */
 function folderIndexPath(folderPath: string): string {
-	if (!folderPath) {
-		return "";
-	}
-	const folderName = folderPath.slice(folderPath.lastIndexOf("/") + 1);
-	return `${folderPath}/${folderName}.md`;
+	return folderPath ? getFolderIndexPathFromFolderPath(folderPath) : "";
 }
 
 function readProjectLabelFromIndexPath(

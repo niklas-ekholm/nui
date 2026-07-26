@@ -1,9 +1,6 @@
 
 import { TFile, TFolder, Vault } from "obsidian";
-import {
-	getFolderIndexPath,
-	isSameNamedFolderNote,
-} from "../navigation/folder-index-path";
+import { getFolderIndexPath } from "../navigation/folder-index-path";
 import { isPathInsideHabitsRoot } from "./habit-path";
 
 /**
@@ -21,13 +18,9 @@ export function habitFolderPath(calendarFolder: string, name: string): string {
 	return base ? `${base}/${name}` : name;
 }
 
-/** v1 habit hub — always `index.md` in the habit folder. */
-export function habitIndexPath(folderPath: string, _name?: string): string {
+/** A habit's hub note — always `index.md` in the habit folder. */
+export function habitIndexPath(folderPath: string): string {
 	return getFolderIndexPath({ path: folderPath });
-}
-
-export function legacyHabitIndexPath(folderPath: string, name: string): string {
-	return `${folderPath}/${name}.md`;
 }
 
 export function habitTagFromName(name: string): string {
@@ -137,24 +130,14 @@ export function listOwnFilesInHabitFolder(vault: Vault, folder: TFolder): TFile[
 }
 
 export function isHabitHubIndexPath(filePath: string, folderPath: string): boolean {
-	const indexPath = getFolderIndexPath({ path: folderPath });
-	if (filePath === indexPath) {
-		return true;
-	}
-	return isSameNamedFolderNote(filePath);
+	return filePath === getFolderIndexPath({ path: folderPath });
 }
 
+/** A folder is a habit when it has a hub note; that is the whole contract. */
 export function isHabitBundleFolder(vault: Vault, folder: TFolder): boolean {
-	const indexPath = habitIndexPath(folder.path);
-	if (vault.getAbstractFileByPath(indexPath) instanceof TFile) {
-		return true;
-	}
-
-	const legacyPath = legacyHabitIndexPath(folder.path, folder.name);
-	if (!isSameNamedFolderNote(legacyPath)) {
-		return false;
-	}
-	return vault.getAbstractFileByPath(legacyPath) instanceof TFile;
+	return (
+		vault.getAbstractFileByPath(habitIndexPath(folder.path)) instanceof TFile
+	);
 }
 
 function isDirectDayNoteFile(file: TFile, folder: TFolder): boolean {

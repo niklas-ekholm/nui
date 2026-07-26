@@ -35,7 +35,7 @@ export async function createHabit(
 			const name = resolveUniqueHabitName(app.vault, calendarFolder);
 			const tag = habitTagFromName(name);
 			const folderPath = habitFolderPath(calendarFolder, name);
-			const indexPath = habitIndexPath(folderPath, name);
+			const indexPath = habitIndexPath(folderPath);
 
 			await app.vault.createFolder(folderPath);
 

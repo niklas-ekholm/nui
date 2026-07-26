@@ -26,7 +26,6 @@ import {
 export {
 	getFolderIndexPath,
 	isFolderIndexPath,
-	isSameNamedFolderNote,
 } from "./folder-index-path";
 
 const FOLDER_TITLE_SELECTOR = ".nav-folder-title";

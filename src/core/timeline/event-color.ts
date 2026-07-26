@@ -1,13 +1,11 @@
 import { App, TFile } from "obsidian";
 import { normalizeHexColor } from "../../editor/text-color-utils";
+import { getFolderIndexPathFromFolderPath } from "../../navigation/folder-index-path";
 import { parentFolderPathFromItemPath } from "./project-label";
 
+/** Empty for the vault root: an item there has no ancestor folder to inherit from. */
 function folderIndexPath(folderPath: string): string {
-	if (!folderPath) {
-		return "";
-	}
-	const folderName = folderPath.slice(folderPath.lastIndexOf("/") + 1);
-	return `${folderPath}/${folderName}.md`;
+	return folderPath ? getFolderIndexPathFromFolderPath(folderPath) : "";
 }
 
 function readColorFromIndexPath(app: App, indexPath: string): string | undefined {

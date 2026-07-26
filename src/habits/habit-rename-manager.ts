@@ -1,14 +1,10 @@
 
-import { Plugin, TFile, TFolder } from "obsidian";
+import { Plugin, TFolder } from "obsidian";
 import {
 	DEFAULT_CALENDAR_FOLDER,
 	isHabitBundleRename,
 } from "./habit-bundle";
-import {
-	isHabitHubIndexRename,
-	showHabitRenameError,
-	syncHabitRename,
-} from "./rename-habit";
+import { showHabitRenameError, syncHabitRename } from "./rename-habit";
 import { refreshAllTrackerViews } from "./tracker-registry";
 
 let activeManager: HabitRenameManager | null = null;
@@ -47,10 +43,10 @@ export class HabitRenameManager {
 					return;
 				}
 
+				// Only a folder rename renames a habit. The hub note is always
+				// `index.md`, so renaming it carries no name to propagate.
 				if (file instanceof TFolder) {
 					void this.handleFolderRename(file, oldPath);
-				} else if (file instanceof TFile) {
-					void this.handleIndexRename(file, oldPath);
 				}
 			}),
 		);
@@ -76,39 +72,7 @@ export class HabitRenameManager {
 			return;
 		}
 
-		await this.runSync({
-			oldName,
-			newName,
-			folder,
-			trigger: "folder",
-		});
-	}
-
-	private async handleIndexRename(
-		file: TFile,
-		oldPath: string,
-	): Promise<void> {
-		if (!isHabitHubIndexRename(file, oldPath, DEFAULT_CALENDAR_FOLDER)) {
-			return;
-		}
-
-		const parent = file.parent;
-		if (!(parent instanceof TFolder)) {
-			return;
-		}
-
-		const oldName = oldPath.split("/").pop()?.replace(/\.md$/, "");
-		const newName = file.basename;
-		if (!oldName || !newName || oldName === newName) {
-			return;
-		}
-
-		await this.runSync({
-			oldName,
-			newName,
-			folder: parent,
-			trigger: "index",
-		});
+		await this.runSync({ oldName, newName, folder });
 	}
 
 	private async runSync(

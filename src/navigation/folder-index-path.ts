@@ -73,20 +73,3 @@ export function resolveParentFolderPathFromFilePath(filePath: string): string | 
 	const parentSlash = containingFolderPath.lastIndexOf("/");
 	return parentSlash >= 0 ? containingFolderPath.slice(0, parentSlash) : "";
 }
-
-/**
- * True when a note is named after its own parent folder (Foo/Foo.md).
- * This is a separate convention retained only for habit bundles.
- */
-export function isSameNamedFolderNote(filePath: string): boolean {
-	const parts = filePath.split("/");
-	const fileName = parts.pop();
-	if (!fileName?.endsWith(".md")) {
-		return false;
-	}
-	const folderName = parts[parts.length - 1];
-	if (!folderName) {
-		return false;
-	}
-	return fileName === `${folderName}.md`;
-}
