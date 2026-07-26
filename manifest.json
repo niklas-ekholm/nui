@@ -1,0 +1,11 @@
+{
+	"id": "nui",
+	"name": "NUI",
+	"version": "0.1.0",
+	"minAppVersion": "1.10.0",
+	"description": "Adds timeline, tracker, card, and list views to Bases, plus optional folder-index navigation and editor tools.",
+	"author": "Niklas Ekholm",
+	"authorUrl": "https://github.com/niklas-ekholm",
+	"isDesktopOnly": false,
+	"css": "styles.css"
+}

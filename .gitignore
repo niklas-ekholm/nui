@@ -1,0 +1,11 @@
+node_modules/
+main.js
+main.js.map
+*.tgz
+
+.DS_Store
+.idea/
+.vscode/
+
+# Vault-local plugin state; never belongs in the repository.
+data.json
