@@ -41,6 +41,7 @@ jobs:
           npm run lint
           npm test
           node scripts/check-no-personal-paths.mjs
+          node scripts/check-css-variables.mjs
 
       - name: Build
         run: node esbuild.config.mjs production
