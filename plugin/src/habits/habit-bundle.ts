@@ -2,6 +2,13 @@
 import { TFile, TFolder, Vault } from "obsidian";
 import { getFolderIndexPath } from "../navigation/folder-index-path";
 import { isPathInsideHabitsRoot } from "./habit-path";
+import {
+	resolveHabitRows,
+	type HabitRow,
+	type HabitRowHost,
+} from "./habit-rows";
+
+export type { HabitRow } from "./habit-rows";
 
 /**
  * Habits are resolved from the folder tree, not from a tag registry: the Week x3
@@ -167,40 +174,31 @@ function hasDirectDayNotes(vault: Vault, folder: TFolder): boolean {
 	return false;
 }
 
-function shouldIncludeHostAsHabitRow(vault: Vault, host: TFolder): boolean {
-	if (!isHabitBundleFolder(vault, host)) {
-		return false;
-	}
-	if (listHabitRowsInFolder(vault, host).length === 0) {
-		return true;
-	}
-	return hasDirectDayNotes(vault, host);
+/** Adapt an Obsidian folder into the pure row model. */
+function toHabitRowHost(vault: Vault, host: TFolder): HabitRowHost {
+	return {
+		name: host.name,
+		path: host.path,
+		isHabitBundle: isHabitBundleFolder(vault, host),
+		hasDirectDayNotes: hasDirectDayNotes(vault, host),
+		childFolders: host.children
+			.filter((child): child is TFolder => child instanceof TFolder)
+			.map((folder) => ({
+				name: folder.name,
+				path: folder.path,
+				isHabitBundle: isHabitBundleFolder(vault, folder),
+			})),
+	};
 }
 
-function listHabitRowsInFolder(vault: Vault, parent: TFolder): string[] {
-	return parent.children
-		.filter((child): child is TFolder => child instanceof TFolder)
-		.filter((folder) => isHabitBundleFolder(vault, folder))
-		.map((folder) => folder.name)
-		.sort((a, b) => a.localeCompare(b));
-}
-
-export function listHabitRowsInHostFolder(vault: Vault, hostFolder: string): string[] {
+/** The habit rows a tracker embedded in `hostFolder` should show. */
+export function listHabitRowsInHostFolder(vault: Vault, hostFolder: string): HabitRow[] {
 	const host = vault.getAbstractFileByPath(hostFolder);
 	if (!(host instanceof TFolder)) {
 		return [];
 	}
 
-	const rows = listHabitRowsInFolder(vault, host);
-	if (shouldIncludeHostAsHabitRow(vault, host)) {
-		const name = host.name;
-		if (!rows.includes(name)) {
-			rows.push(name);
-			rows.sort((a, b) => a.localeCompare(b));
-		}
-	}
-
-	return rows;
+	return resolveHabitRows(toHabitRowHost(vault, host));
 }
 
 export function habitFolderPathInHost(hostFolder: string, habitName: string): string {

@@ -34,8 +34,8 @@ import { createNuiBasesContainer, mountBasesTitle } from "../bases/bases-view-ti
 import { createHabit } from "../habits/create-habit";
 import {
 	habitFolderPathInHost,
-	listFilesInHabitFolder,
 	listHabitRowsInHostFolder,
+	listOwnFilesInHabitFolder,
 } from "../habits/habit-bundle";
 import {
 	registerWeekTrackerView,
@@ -82,15 +82,18 @@ export class WeekTracker3BasesView extends BasesView {
 
 		const weekBlocks = this.resolveWeekBlocks();
 		const allowedDateKeys = this.resolveAllowedDateKeys();
-		const rows = habitRows.map((habitName) => {
-			const folder = this.app.vault.getAbstractFileByPath(
-				habitFolderPathInHost(hostFolder, habitName),
-			);
+		const folderPathByTag = new Map(habitRows.map((row) => [row.name, row.path]));
+		const rows = habitRows.map((habitRow) => {
+			const folder = this.app.vault.getAbstractFileByPath(habitRow.path);
+			// Own files only: a host row must not absorb the day notes of habit
+			// folders nested inside it, which are named after those habits.
 			const files =
-				folder instanceof TFolder ? listFilesInHabitFolder(this.app.vault, folder) : [];
+				folder instanceof TFolder
+					? listOwnFilesInHabitFolder(this.app.vault, folder)
+					: [];
 
 			return {
-				tag: habitName,
+				tag: habitRow.name,
 				entriesByDate: filesToHabitDaysForHabitFolder(
 					this.app,
 					files,
@@ -99,7 +102,7 @@ export class WeekTracker3BasesView extends BasesView {
 				),
 			};
 		});
-		const signature = `${hostFolder}\n${habitRows.join(",")}\n${this.entriesSignature(rows, weekBlocks)}`;
+		const signature = `${hostFolder}\n${habitRows.map((row) => row.path).join(",")}\n${this.entriesSignature(rows, weekBlocks)}`;
 
 		mountBasesTitle(this.app, this.containerEl, { viewName: this.config.name });
 		syncEmbeddedBasesChrome(this, this.containerEl, []);
@@ -122,7 +125,8 @@ export class WeekTracker3BasesView extends BasesView {
 			},
 			tagHost: {
 				createTag: (parent, tag) => {
-					const folderPath = habitFolderPathInHost(hostFolder, tag);
+					const folderPath =
+						folderPathByTag.get(tag) ?? habitFolderPathInHost(hostFolder, tag);
 					const link = parent.createEl("a", {
 						cls: "nui-week-tracker-3-tag-link",
 						text: tag,
@@ -301,15 +305,19 @@ export class WeekTracker3BasesView extends BasesView {
 		if (!date) return;
 
 		const habitRows = listHabitRowsInHostFolder(this.app.vault, hostFolder);
-		if (!habitRows.includes(habitName)) {
+		const habitRow = habitRows.find((row) => row.name === habitName);
+		if (!habitRow) {
 			this.refreshAfterHabitChange();
 			new Notice(`Week Tracker: habit folder not found for "${habitName}".`);
 			return;
 		}
 
-		const folderPath = habitFolderPathInHost(hostFolder, habitName);
+		const folderPath = habitRow.path;
 		const folder = this.app.vault.getAbstractFileByPath(folderPath);
-		const files = folder instanceof TFolder ? listFilesInHabitFolder(this.app.vault, folder) : [];
+		const files =
+			folder instanceof TFolder
+				? listOwnFilesInHabitFolder(this.app.vault, folder)
+				: [];
 		const allowedDateKeys = this.resolveAllowedDateKeys();
 		const dateFieldKey = resolveDateFieldKey(this.config);
 		const existing = filesToHabitDaysForHabitFolder(
