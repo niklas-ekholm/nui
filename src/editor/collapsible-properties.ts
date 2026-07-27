@@ -1,7 +1,8 @@
-import { MarkdownView, setIcon, type Plugin } from "obsidian";
+import { MarkdownView, type Plugin } from "obsidian";
 
-const TOGGLE_CLASS = "nui-properties-toggle";
 const COLLAPSED_CLASS = "nui-properties-collapsed";
+const ADD_CLASS = "nui-properties-add";
+const ROW_HEIGHT_VAR = "--nui-properties-row-height";
 
 interface PropertiesState {
 	filePath: string | null;
@@ -14,40 +15,59 @@ interface AppCommands {
 	};
 }
 
-function isMainPropertiesContainer(
-	view: MarkdownView,
-	el: HTMLElement,
-): boolean {
+/** The view's own elements, never one belonging to an embedded note. */
+function isOwnElement(view: MarkdownView, el: Element): boolean {
 	return view.containerEl.contains(el) && !el.closest(".internal-embed");
 }
 
-function applyPropertiesState(
-	view: MarkdownView,
-	state: PropertiesState,
-): void {
-	for (const metadataEl of Array.from(
-		view.containerEl.querySelectorAll<HTMLElement>(".metadata-container"),
-	)) {
-		if (!isMainPropertiesContainer(view, metadataEl)) {
-			continue;
-		}
+function mainMetadataContainer(view: MarkdownView): HTMLElement | null {
+	return (
+		Array.from(
+			view.containerEl.querySelectorAll<HTMLElement>(".metadata-container"),
+		).find((el) => isOwnElement(view, el)) ?? null
+	);
+}
 
-		metadataEl.classList.toggle(COLLAPSED_CLASS, !state.expanded);
-		const toggle = metadataEl.previousElementSibling;
-		if (toggle instanceof HTMLButtonElement && toggle.classList.contains(TOGGLE_CLASS)) {
-			toggle.setAttribute("aria-expanded", String(state.expanded));
-			toggle.setAttribute(
-				"aria-label",
-				state.expanded ? "Hide properties" : "Show properties",
-			);
-		}
+/** Live-preview and reading-view content wrappers — the shared parent of
+ * `.inline-title` and `.metadata-container` in each mode. */
+function contentSizers(view: MarkdownView): HTMLElement[] {
+	return Array.from(
+		view.containerEl.querySelectorAll<HTMLElement>(
+			".cm-sizer, .markdown-preview-sizer",
+		),
+	).filter((el) => isOwnElement(view, el));
+}
+
+/** Publish each sizer's inline-title height so the collapsed icon can be
+ * exactly as tall as the title and centre its glyph against it. CSS has no
+ * way to reference a sibling's box, and centring in the grid row instead
+ * would drop the icon by half the title's bottom margin. */
+function publishTitleHeight(sizer: HTMLElement): void {
+	const title = sizer.querySelector<HTMLElement>(":scope > .inline-title");
+	const height = title?.getBoundingClientRect().height ?? 0;
+	if (height > 0) {
+		sizer.style.setProperty(ROW_HEIGHT_VAR, `${height}px`);
+	} else {
+		sizer.style.removeProperty(ROW_HEIGHT_VAR);
 	}
+}
+
+function ownAddButtons(view: MarkdownView): HTMLElement[] {
+	return Array.from(
+		view.containerEl.querySelectorAll<HTMLElement>(`.${ADD_CLASS}`),
+	).filter((el) => isOwnElement(view, el));
+}
+
+/** Strict Source mode (not live preview) shows frontmatter as plain text —
+ * there is no properties widget to collapse, and nothing to hide. */
+function isRawSourceView(view: MarkdownView): boolean {
+	const state = view.getState() as { mode?: string; source?: boolean };
+	return state.mode === "source" && state.source === true;
 }
 
 export function registerCollapsibleProperties(plugin: Plugin): void {
 	const states = new WeakMap<MarkdownView, PropertiesState>();
 	const expandedViews = new Set<MarkdownView>();
-	let toggleId = 0;
 	let syncTimer: number | null = null;
 
 	const getState = (view: MarkdownView): PropertiesState => {
@@ -57,33 +77,11 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 			return existing;
 		}
 
+		// A new file starts collapsed.
 		const state = { filePath, expanded: false };
 		states.set(view, state);
 		expandedViews.delete(view);
 		return state;
-	};
-
-	const setExpanded = (view: MarkdownView, expanded: boolean): void => {
-		const state = getState(view);
-		state.expanded = expanded;
-		if (expanded) {
-			expandedViews.add(view);
-		} else {
-			expandedViews.delete(view);
-		}
-		applyPropertiesState(view, state);
-	};
-
-	const findViewForElement = (element: Element): MarkdownView | null => {
-		for (const leaf of plugin.app.workspace.getLeavesOfType("markdown")) {
-			if (
-				leaf.view instanceof MarkdownView &&
-				leaf.view.containerEl.contains(element)
-			) {
-				return leaf.view;
-			}
-		}
-		return null;
 	};
 
 	const hasFileProperties = (view: MarkdownView): boolean => {
@@ -92,110 +90,98 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 		}
 		const frontmatter =
 			plugin.app.metadataCache.getFileCache(view.file)?.frontmatter;
-		return !!frontmatter &&
-			Object.keys(frontmatter).some((key) => key !== "position");
-	};
-
-	const createToggle = (view: MarkdownView): HTMLButtonElement => {
-		const toggle = document.createElement("button");
-		toggle.type = "button";
-		toggle.className = `${TOGGLE_CLASS} clickable-icon metadata-property-icon`;
-		toggle.id = `nui-properties-toggle-${++toggleId}`;
-
-		const activate = (): void => {
-			if (!hasFileProperties(view)) {
-				setExpanded(view, true);
-				(plugin.app as unknown as AppCommands).commands.executeCommandById(
-					"markdown:add-metadata-property",
-				);
-				scheduleSync();
-				return;
-			}
-			setExpanded(view, !getState(view).expanded);
-		};
-
-		toggle.addEventListener("pointerdown", (evt) => {
-			evt.preventDefault();
-			evt.stopPropagation();
-			activate();
-		});
-		toggle.addEventListener("keydown", (evt) => {
-			if (evt.key !== "Enter" && evt.key !== " ") {
-				return;
-			}
-			evt.preventDefault();
-			evt.stopPropagation();
-			activate();
-		});
-		return toggle;
-	};
-
-	const findToggleMount = (view: MarkdownView): HTMLElement | null =>
-		view.containerEl.querySelector<HTMLElement>(
-			".markdown-source-view.mod-cm6 .cm-sizer, .markdown-preview-view .markdown-preview-sizer, .markdown-reading-view .markdown-preview-sizer",
+		return (
+			!!frontmatter &&
+			Object.keys(frontmatter).some((key) => key !== "position")
 		);
+	};
+
+	const clearAddButtons = (view: MarkdownView): void => {
+		for (const button of ownAddButtons(view)) {
+			button.remove();
+		}
+	};
+
+	/** With no frontmatter there is no `.metadata-container` to collapse, so
+	 * the "add a property" affordance is our own button in the same slot. */
+	const syncAddButtons = (view: MarkdownView): void => {
+		for (const sizer of contentSizers(view)) {
+			const existing = Array.from(
+				sizer.querySelectorAll<HTMLElement>(`:scope > .${ADD_CLASS}`),
+			);
+			for (const duplicate of existing.slice(1)) {
+				duplicate.remove();
+			}
+			if (existing.length > 0) {
+				continue;
+			}
+
+			const button = document.createElement("button");
+			button.type = "button";
+			button.className = ADD_CLASS;
+			button.setAttribute("aria-label", "Add file property");
+
+			const title = sizer.querySelector<HTMLElement>(":scope > .inline-title");
+			if (title) {
+				title.after(button);
+			} else {
+				sizer.prepend(button);
+			}
+		}
+	};
 
 	const syncView = (view: MarkdownView): void => {
-		const state = getState(view);
-		const existingToggles = Array.from(
-			view.containerEl.querySelectorAll<HTMLElement>(`.${TOGGLE_CLASS}`),
-		).filter((toggle) => !toggle.closest(".internal-embed"));
-		const metadataEl = Array.from(
-			view.containerEl.querySelectorAll<HTMLElement>(".metadata-container"),
-		).find((el) => isMainPropertiesContainer(view, el));
-		const hasProperties = hasFileProperties(view);
+		const container = mainMetadataContainer(view);
 
-		// When Obsidian exposes the raw YAML under the text cursor, the metadata
-		// widget is absent and the frontmatter is already visible.
-		if (!metadataEl && hasProperties) {
-			for (const toggle of existingToggles) {
-				toggle.remove();
-			}
+		if (isRawSourceView(view)) {
+			container?.classList.remove(COLLAPSED_CLASS);
+			clearAddButtons(view);
 			return;
 		}
 
-		let toggle = existingToggles[0];
-		if (!(toggle instanceof HTMLButtonElement)) {
-			toggle = createToggle(view);
-		}
-		for (const duplicate of existingToggles.slice(1)) {
-			duplicate.remove();
-		}
+		const state = getState(view);
+		const sizers = contentSizers(view);
 
-		if (metadataEl) {
-			if (toggle.nextElementSibling !== metadataEl) {
-				metadataEl.before(toggle);
-			}
-			metadataEl.setAttribute("aria-labelledby", toggle.id);
+		if (container) {
+			container.classList.toggle(COLLAPSED_CLASS, !state.expanded);
+			container.setAttribute("aria-expanded", String(state.expanded));
+			container.setAttribute(
+				"aria-label",
+				state.expanded ? "Hide properties" : "Show properties",
+			);
+			clearAddButtons(view);
+		} else if (hasFileProperties(view)) {
+			// Obsidian is showing raw YAML under the cursor — leave it alone.
+			clearAddButtons(view);
 		} else {
-			const mount = findToggleMount(view);
-			if (!mount) {
-				toggle.remove();
-				return;
-			}
-			if (toggle.parentElement !== mount) {
-				mount.prepend(toggle);
-			}
+			// No properties yet: offer to add one.
+			syncAddButtons(view);
 		}
 
-		const mode = hasProperties ? "properties" : "add";
-		if (toggle.dataset.nuiPropertiesMode !== mode) {
-			toggle.dataset.nuiPropertiesMode = mode;
-			setIcon(toggle, hasProperties ? "text" : "plus");
+		for (const sizer of sizers) {
+			publishTitleHeight(sizer);
+			observeTitle(sizer);
 		}
-		toggle.setAttribute(
-			"aria-label",
-			hasProperties
-				? state.expanded
-					? "Hide properties"
-					: "Show properties"
-				: "Add file property",
-		);
-		toggle.setAttribute(
-			"aria-expanded",
-			hasProperties ? String(state.expanded) : "false",
-		);
-		applyPropertiesState(view, state);
+	};
+
+	// The title's height changes when it wraps (pane resize, longer name), so
+	// track the element itself rather than re-measuring on a timer.
+	const observedTitles = new WeakSet<HTMLElement>();
+	const titleResizeObserver = new ResizeObserver((entries) => {
+		for (const entry of entries) {
+			const sizer = entry.target.parentElement;
+			if (sizer) {
+				publishTitleHeight(sizer);
+			}
+		}
+	});
+
+	const observeTitle = (sizer: HTMLElement): void => {
+		const title = sizer.querySelector<HTMLElement>(":scope > .inline-title");
+		if (title && !observedTitles.has(title)) {
+			observedTitles.add(title);
+			titleResizeObserver.observe(title);
+		}
 	};
 
 	const syncAll = (): void => {
@@ -216,21 +202,47 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 		}, 0);
 	};
 
-	plugin.registerEvent(plugin.app.workspace.on("active-leaf-change", scheduleSync));
+	const setExpanded = (view: MarkdownView, expanded: boolean): void => {
+		const state = getState(view);
+		state.expanded = expanded;
+		if (expanded) {
+			expandedViews.add(view);
+		} else {
+			expandedViews.delete(view);
+		}
+		syncView(view);
+	};
+
+	const findViewForElement = (element: Element): MarkdownView | null => {
+		for (const leaf of plugin.app.workspace.getLeavesOfType("markdown")) {
+			if (
+				leaf.view instanceof MarkdownView &&
+				leaf.view.containerEl.contains(element)
+			) {
+				return leaf.view;
+			}
+		}
+		return null;
+	};
+
+	plugin.registerEvent(
+		plugin.app.workspace.on("active-leaf-change", scheduleSync),
+	);
 	plugin.registerEvent(plugin.app.workspace.on("layout-change", scheduleSync));
 	plugin.registerEvent(plugin.app.workspace.on("file-open", scheduleSync));
 	plugin.registerEvent(plugin.app.metadataCache.on("changed", scheduleSync));
 
+	// Tabbing or clicking into a property expands, so the fields are reachable.
 	plugin.registerDomEvent(document, "focusin", (evt) => {
 		const target = evt.target;
 		if (!(target instanceof Element)) {
 			return;
 		}
-		const metadataEl = target.closest<HTMLElement>(".metadata-container");
-		if (!metadataEl) {
+		const container = target.closest<HTMLElement>(".metadata-container");
+		if (!container) {
 			return;
 		}
-		const view = findViewForElement(metadataEl);
+		const view = findViewForElement(container);
 		if (view) {
 			setExpanded(view, true);
 		}
@@ -244,9 +256,36 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 			if (!(target instanceof Element)) {
 				return;
 			}
+
+			const addButton = target.closest(`.${ADD_CLASS}`);
+			if (addButton) {
+				evt.preventDefault();
+				evt.stopPropagation();
+				const view = findViewForElement(addButton);
+				if (view) {
+					setExpanded(view, true);
+					(plugin.app as unknown as AppCommands).commands.executeCommandById(
+						"markdown:add-metadata-property",
+					);
+					scheduleSync();
+				}
+				return;
+			}
+
+			const collapsed = target.closest(`.metadata-container.${COLLAPSED_CLASS}`);
+			if (collapsed) {
+				evt.preventDefault();
+				evt.stopPropagation();
+				const view = findViewForElement(collapsed);
+				if (view) {
+					setExpanded(view, true);
+				}
+				return;
+			}
+
 			if (
 				target.closest(
-					`.${TOGGLE_CLASS}, .metadata-container, .suggestion-container, .menu, .popover, .modal-container`,
+					".metadata-container, .suggestion-container, .menu, .popover, .modal-container",
 				)
 			) {
 				return;
@@ -261,21 +300,29 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 
 	const observer = new MutationObserver(scheduleSync);
 	observer.observe(document.body, { childList: true, subtree: true });
+
 	plugin.register(() => {
 		observer.disconnect();
+		titleResizeObserver.disconnect();
 		if (syncTimer !== null) {
 			window.clearTimeout(syncTimer);
 		}
-		for (const toggle of Array.from(
-			document.querySelectorAll<HTMLElement>(`.${TOGGLE_CLASS}`),
+		for (const sizer of Array.from(
+			document.querySelectorAll<HTMLElement>(".cm-sizer, .markdown-preview-sizer"),
 		)) {
-			toggle.remove();
+			sizer.style.removeProperty(ROW_HEIGHT_VAR);
 		}
-		for (const metadataEl of Array.from(
+		for (const button of Array.from(
+			document.querySelectorAll<HTMLElement>(`.${ADD_CLASS}`),
+		)) {
+			button.remove();
+		}
+		for (const container of Array.from(
 			document.querySelectorAll<HTMLElement>(".metadata-container"),
 		)) {
-			metadataEl.classList.remove(COLLAPSED_CLASS);
-			metadataEl.removeAttribute("aria-labelledby");
+			container.classList.remove(COLLAPSED_CLASS);
+			container.removeAttribute("aria-expanded");
+			container.removeAttribute("aria-label");
 		}
 	});
 
