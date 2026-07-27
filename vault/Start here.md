@@ -1,17 +1,11 @@
 ---
 date: 2026-07-27
 ---
-# NUI — example vault
 
-This vault exists to show what the NUI plugin and theme do. Every note in it is
-invented. Poke at anything.
+This vault exists to show what the NUI plugin and theme do. Every note in it is invented. Poke at anything.
 
-> [!warning] This vault is opinionated on purpose
-> The settings here are not NUI's defaults. Folder-index navigation is **on**,
-> which changes what clicking a folder in the sidebar does: it opens that
-> folder's own note instead of expanding it. Habits, dates, and cover images
-> follow specific conventions, described below. If you install NUI into a vault
-> of your own, everything starts off until you turn it on.
+> [!warning] This vault is opinionated
+> The settings here are not NUI's defaults. Folder-index navigation is **on**, which changes what clicking a folder in the sidebar does: it opens that folder's own note instead of expanding it. Habits, dates, and cover images follow specific conventions, described below. If you install NUI into a vault of your own, everything starts off until you turn it on.
 
 ## Where to look first
 
@@ -123,17 +117,7 @@ The rest:
 | `Mod+=` / `Mod+-` | Zoom in / out |
 | `Mod+Shift+N` | New window |
 
-Four defaults are deliberately cleared rather than rebound: open link in new
-pane, go forward, new file in new pane, and add metadata property.
-
-> [!note] One collision away from macOS
-> NUI's cursor commands take `Mod+Alt+↑`/`↓` and fold-all takes `Ctrl+Alt+↑`/`↓`.
-> On macOS those are distinct, because `Mod` is Cmd. On Windows and Linux `Mod`
-> *is* Ctrl, so the two pairs collide and Obsidian will flag them. These
-> bindings were built on a Mac.
-
+Four defaults are deliberately cleared rather than rebound: open link in new pane, go forward, new file in new pane, and add metadata property.
 ## What is missing on purpose
 
-There is no `workspace.json`, so Obsidian opens with its own default layout
-rather than one saved on someone else's monitor. Set the panes up however you
-like — the vault will remember it from then on, and git ignores it.
+There is no `workspace.json`, so Obsidian opens with its own default layout rather than one saved on someone else's monitor. Set the panes up however you like — the vault will remember it from then on, and git ignores it.

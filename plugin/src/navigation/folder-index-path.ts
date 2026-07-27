@@ -38,16 +38,29 @@ export interface FolderPathLike {
 	name: string;
 }
 
-/** Resolve a vault folder path; empty string is the vault root (not getAbstractFileByPath). */
+/**
+ * Obsidian's root folder reports `path: "/"`, while every other folder's path
+ * has no leading slash and the rest of this module treats `""` as the root.
+ * Left unnormalised, the root's hub resolves to `"//{VaultName}.md"`, which
+ * `getAbstractFileByPath` never matches — so the hub is never found, and
+ * `vault.create` quietly normalises the same string and reports the file as
+ * already existing. Mirrors `bases/navigation-entry-path.ts`.
+ */
+function normalizeFolderPath(folderPath: string): string {
+	return folderPath.replace(/^\/+|\/+$/g, "");
+}
+
+/** Resolve a vault folder path; empty string or "/" is the vault root (not getAbstractFileByPath). */
 export function resolveFolderPath<T extends { path: string }>(
 	folderPath: string,
 	getRoot: () => T,
 	getFolder: (path: string) => T | null,
 ): T | null {
-	if (folderPath === "") {
+	const normalized = normalizeFolderPath(folderPath);
+	if (normalized === "") {
 		return getRoot();
 	}
-	return getFolder(folderPath);
+	return getFolder(normalized);
 }
 
 function hubFilenameForFolderName(folderName: string): string {
@@ -55,14 +68,16 @@ function hubFilenameForFolderName(folderName: string): string {
 }
 
 export function getFolderIndexPath(folder: FolderPathLike): string {
-	return folder.path
-		? `${folder.path}/${hubFilenameForFolderName(folder.name)}`
+	const path = normalizeFolderPath(folder.path);
+	return path
+		? `${path}/${hubFilenameForFolderName(folder.name)}`
 		: rootHubFilename();
 }
 
 export function getFolderIndexPathFromFolderPath(folderPath: string): string {
-	const name = folderPath.split("/").pop() ?? "";
-	return getFolderIndexPath({ path: folderPath, name });
+	const path = normalizeFolderPath(folderPath);
+	const name = path.split("/").pop() ?? "";
+	return getFolderIndexPath({ path, name });
 }
 
 /** True when `filePath` is a folder's own hub note: `{folderName}.md`, or the root `{VaultName}.md`. */

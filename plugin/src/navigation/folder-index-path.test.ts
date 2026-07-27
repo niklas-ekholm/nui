@@ -86,6 +86,32 @@ test("resolveFolderPath treats empty path as vault root", () => {
 	);
 });
 
+test("the vault root is the root whether its path is \"\" or \"/\"", () => {
+	// Obsidian's real root TFolder reports path "/" and an empty name. Mocking
+	// it as "" is what let the root hub break in a real vault while every unit
+	// test passed: the hub resolved to "//{VaultName}.md", which
+	// getAbstractFileByPath never matches, so Cmd+Escape and the vault
+	// breadcrumb both dead-ended one level below the root.
+	const root = { path: "/" };
+	const folders = new Map([["NUI", { path: "NUI" }]]);
+	const resolve = (path: string) =>
+		resolveFolderPath(path, () => root, (p) => folders.get(p) ?? null);
+
+	assert.deepEqual(resolve("/"), root);
+	assert.deepEqual(resolve(""), root);
+	assert.deepEqual(resolve("NUI"), { path: "NUI" });
+
+	try {
+		setVaultRootName("My Vault");
+		assert.equal(getFolderIndexPath({ path: "/", name: "" }), "My Vault.md");
+		assert.equal(getFolderIndexPathFromFolderPath("/"), "My Vault.md");
+		// A trailing slash is the same folder, not a child of it.
+		assert.equal(getFolderIndexPath({ path: "NUI/", name: "NUI" }), "NUI/NUI.md");
+	} finally {
+		setVaultRootName("index");
+	}
+});
+
 test("getFolderIndexPath names a folder's hub note after the folder", () => {
 	assert.equal(getFolderIndexPath({ path: "", name: "" }), "index.md");
 	assert.equal(getFolderIndexPath({ path: "NUI", name: "NUI" }), "NUI/NUI.md");
