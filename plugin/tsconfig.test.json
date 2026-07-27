@@ -1,0 +1,14 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true,
+		// Tests run under `node --experimental-strip-types`, which requires
+		// explicit .ts specifiers and resolves as ESM.
+		"allowImportingTsExtensions": true,
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"types": ["node"]
+	},
+	"include": ["src/**/*.test.ts"],
+	"exclude": []
+}

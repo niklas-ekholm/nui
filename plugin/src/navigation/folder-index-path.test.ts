@@ -1,0 +1,156 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {
+	displayBasenameForNotePath,
+	getFolderIndexFolderName,
+	getFolderIndexPathFromFolderPath,
+	getFolderIndexPath,
+	isFolderIndexPath,
+	isHiddenNavFilePath,
+	isOkfSidecarPath,
+	resolveFolderPath,
+	resolveParentFolderPathFromFilePath,
+	setVaultRootName,
+	shouldHideNavFilePath,
+} from "./folder-index-path.ts";
+
+test("isHiddenNavFilePath hides agent stub files at vault root", () => {
+	assert.equal(isHiddenNavFilePath("CLAUDE.md"), true);
+	assert.equal(isHiddenNavFilePath("AGENTS.md"), true);
+	assert.equal(isHiddenNavFilePath("ai/ai.md"), false);
+	assert.equal(isHiddenNavFilePath("NUI/CLAUDE.md"), false);
+});
+
+test("shouldHideNavFilePath hides nothing until asked", () => {
+	const off = { hideIndexInExplorer: false, hideAgentStubs: false };
+	assert.equal(shouldHideNavFilePath("CLAUDE.md", off), false);
+	assert.equal(shouldHideNavFilePath("NUI/NUI.md", off), false);
+});
+
+test("shouldHideNavFilePath honours each toggle independently", () => {
+	assert.equal(
+		shouldHideNavFilePath("CLAUDE.md", {
+			hideIndexInExplorer: false,
+			hideAgentStubs: true,
+		}),
+		true,
+	);
+	assert.equal(
+		shouldHideNavFilePath("NUI/NUI.md", {
+			hideIndexInExplorer: true,
+			hideAgentStubs: false,
+		}),
+		true,
+	);
+	assert.equal(
+		shouldHideNavFilePath("NUI/NUI.md", {
+			hideIndexInExplorer: false,
+			hideAgentStubs: true,
+		}),
+		false,
+	);
+});
+
+test("resolveParentFolderPathFromFilePath walks up to the vault root hub", () => {
+	assert.equal(resolveParentFolderPathFromFilePath("index.md"), null);
+	assert.equal(resolveParentFolderPathFromFilePath("NUI/NUI.md"), "");
+	assert.equal(
+		resolveParentFolderPathFromFilePath("NUI/NUIdocs/NUIdocs.md"),
+		"NUI",
+	);
+	assert.equal(
+		resolveParentFolderPathFromFilePath("NUI/NUIdocs/concepts/foo.md"),
+		"NUI/NUIdocs",
+	);
+	assert.equal(getFolderIndexPathFromFolderPath(""), "index.md");
+});
+
+test("resolveFolderPath treats empty path as vault root", () => {
+	const root = { path: "" };
+	const folders = new Map([
+		["NUI", { path: "NUI" }],
+		["NUI/NUIdocs", { path: "NUI/NUIdocs" }],
+	]);
+
+	assert.deepEqual(
+		resolveFolderPath("", () => root, (path) => folders.get(path) ?? null),
+		root,
+	);
+	assert.deepEqual(
+		resolveFolderPath("NUI", () => root, (path) => folders.get(path) ?? null),
+		{ path: "NUI" },
+	);
+	assert.equal(
+		resolveFolderPath("missing", () => root, (path) => folders.get(path) ?? null),
+		null,
+	);
+});
+
+test("getFolderIndexPath names a folder's hub note after the folder", () => {
+	assert.equal(getFolderIndexPath({ path: "", name: "" }), "index.md");
+	assert.equal(getFolderIndexPath({ path: "NUI", name: "NUI" }), "NUI/NUI.md");
+	assert.equal(
+		getFolderIndexPath({ path: "NUI/NUIdocs", name: "NUIdocs" }),
+		"NUI/NUIdocs/NUIdocs.md",
+	);
+});
+
+test("getFolderIndexPathFromFolderPath derives the folder name from the path", () => {
+	assert.equal(getFolderIndexPathFromFolderPath(""), "index.md");
+	assert.equal(getFolderIndexPathFromFolderPath("NUI"), "NUI/NUI.md");
+	assert.equal(
+		getFolderIndexPathFromFolderPath("NUI/NUIdocs"),
+		"NUI/NUIdocs/NUIdocs.md",
+	);
+});
+
+test("isFolderIndexPath accepts a folder's own hub note, or the root hub", () => {
+	assert.equal(isFolderIndexPath("index.md"), true);
+	assert.equal(isFolderIndexPath("NUI/NUI.md"), true);
+	assert.equal(isFolderIndexPath("NUI/NUIdocs/NUIdocs.md"), true);
+	assert.equal(isFolderIndexPath("NUI/NUIdocs/NUI.md"), false);
+	assert.equal(isFolderIndexPath("NUI/index.md"), false);
+	assert.equal(isFolderIndexPath("Untitled.md"), false);
+});
+
+test("isOkfSidecarPath accepts the fixed index.md filename in any folder", () => {
+	assert.equal(isOkfSidecarPath("index.md"), true);
+	assert.equal(isOkfSidecarPath("NUI/index.md"), true);
+	assert.equal(isOkfSidecarPath("NUI/NUIdocs/index.md"), true);
+	assert.equal(isOkfSidecarPath("NUI/NUI.md"), false);
+	assert.equal(isOkfSidecarPath("NUI/my-index.md"), false);
+});
+
+test("displayBasenameForNotePath uses parent folder name for a hub note", () => {
+	assert.equal(displayBasenameForNotePath("NUI/NUIdocs/NUIdocs.md"), "NUIdocs");
+	assert.equal(displayBasenameForNotePath("NUI/project.md"), "project");
+	assert.equal(displayBasenameForNotePath("index.md"), "index");
+});
+
+test("getFolderIndexFolderName resolves timeline titles for a folder's hub note", () => {
+	assert.equal(getFolderIndexFolderName("NUI/NUI.md"), "NUI");
+	assert.equal(
+		getFolderIndexFolderName("NUI/NUI Projects/Superproject/Superproject.md"),
+		"Superproject",
+	);
+	assert.equal(getFolderIndexFolderName("index.md"), null);
+	assert.equal(getFolderIndexFolderName("NUI/project.md"), null);
+});
+
+test("setVaultRootName names the root hub after the vault, like any other folder", () => {
+	try {
+		setVaultRootName("My Vault");
+		assert.equal(getFolderIndexPath({ path: "", name: "" }), "My Vault.md");
+		assert.equal(getFolderIndexPathFromFolderPath(""), "My Vault.md");
+		assert.equal(isFolderIndexPath("My Vault.md"), true);
+		assert.equal(isFolderIndexPath("index.md"), false);
+		// the root's OKF sidecar, if the root is ever marked OKF, is a
+		// distinct file from its hub once the hub isn't named "index.md".
+		assert.equal(isOkfSidecarPath("index.md"), true);
+
+		setVaultRootName("  ");
+		assert.equal(getFolderIndexPathFromFolderPath(""), "index.md");
+	} finally {
+		setVaultRootName("index");
+	}
+});
