@@ -1,0 +1,39 @@
+filters:
+  and:
+    - file.inFolder("Projects")
+    - note.start
+    - note.end
+views:
+  - type: nui-timeline
+    name: Timeline
+    order:
+      - file.name
+    sort:
+      - property: note.start
+        direction: ASC
+    layout: full
+    startField: note.start
+    endField: note.end
+    projectField: note.project
+  - type: nui-timeline
+    name: With tasks
+    order:
+      - file.name
+    sort:
+      - property: note.start
+        direction: ASC
+    layout: full-tasks
+    startField: note.start
+    endField: note.end
+    projectField: note.project
+  - type: nui-timeline
+    name: Compact
+    order:
+      - file.name
+    sort:
+      - property: note.start
+        direction: ASC
+    layout: compact
+    startField: note.start
+    endField: note.end
+    projectField: note.project

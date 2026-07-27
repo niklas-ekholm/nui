@@ -1,0 +1,20 @@
+filters:
+  and:
+    - file.inFolder("Projects")
+views:
+  - type: nui-task-list
+    name: Open
+    order:
+      - file.name
+    sort:
+      - property: file.name
+        direction: ASC
+    showCompleted: false
+  - type: nui-task-list
+    name: All
+    order:
+      - file.name
+    sort:
+      - property: file.name
+        direction: ASC
+    showCompleted: true

@@ -1,0 +1,16 @@
+{
+  "types": {
+    "aliases": "aliases",
+    "cssclasses": "multitext",
+    "tags": "tags",
+    "date": "date",
+    "start": "date",
+    "end": "date",
+    "finished": "date",
+    "rating": "number",
+    "score": "number",
+    "author": "text",
+    "project": "text",
+    "status": "text"
+  }
+}

@@ -1,0 +1,16 @@
+filters:
+  and:
+    - file.inFolder(this.file.folder)
+    - file.path != this.file.path
+views:
+  - type: nui-week-tracker-3
+    name: Three weeks
+    dateField: note.date
+  - type: nui-year-tracker
+    name: Year
+    dateField: note.date
+    year: "2026"
+  - type: nui-month-tracker
+    name: Month
+    dateField: note.date
+    year: "2026"

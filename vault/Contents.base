@@ -1,0 +1,52 @@
+filters:
+  and:
+    - file.path != this.file.path
+views:
+  - type: nui-navigation
+    name: Navigation
+    order:
+      - file.name
+    sort:
+      - property: file.name
+        direction: ASC
+    cardSize: 180
+  - type: nui-list-folders
+    name: Folders
+    filters:
+      and:
+        - '!file.folder.contains("/")'
+        - file.folder != ""
+    order:
+      - file.name
+    sort:
+      - property: file.folder
+        direction: ASC
+    cardSize: 180
+  - type: nui-list-files
+    name: Recent
+    order:
+      - file.name
+      - file.folder
+    sort:
+      - property: file.mtime
+        direction: DESC
+    limit: 40
+    columnSize:
+      file.folder: 350
+    cardSize: 120
+  - type: nui-list-files-by-date
+    name: Daily notes by date
+    filters:
+      and:
+        - file.inFolder("Daily")
+    order:
+      - file.name
+    sort:
+      - property: date
+        direction: DESC
+    dateField: note.date
+    cardSize: 120
+  - type: nui-daily-note-link
+    name: Today
+    linkFolder: Daily
+    cardSize: 180

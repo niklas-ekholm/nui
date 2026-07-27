@@ -1,0 +1,21 @@
+filters:
+  and:
+    - file.inFolder("Habits/Running")
+    - note.score
+views:
+  - type: nui-score-chart
+    name: Line
+    order:
+      - file.name
+    sort:
+      - property: note.date
+        direction: ASC
+    dateField: note.date
+  - type: nui-score-chart
+    name: Bars
+    order:
+      - file.name
+    sort:
+      - property: note.date
+        direction: ASC
+    dateField: note.date

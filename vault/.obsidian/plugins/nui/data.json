@@ -1,0 +1,37 @@
+{
+  "folderIndex": {
+    "enabled": true,
+    "hideIndexInExplorer": true,
+    "hideAgentStubs": false,
+    "goToParentHotkey": true
+  },
+  "habits": {
+    "root": "Habits"
+  },
+  "timeline": {
+    "rowSize": 1,
+    "timespan": "1y"
+  },
+  "editor": {
+    "multiCursorCommands": true,
+    "textColor": true,
+    "tableColumnLayout": true,
+    "htmlLivePreview": true,
+    "alwaysRenderHtmlInLivePreview": true,
+    "collapsibleProperties": true,
+    "embedPipes": true
+  },
+  "appearance": {
+    "showPanelEdges": false,
+    "noteWide": true,
+    "noteCoverImage": true,
+    "hideEmbedEditButtons": true,
+    "fadeBasesChrome": false,
+    "hideChromeHotkey": false
+  },
+  "workspace": {
+    "sidebarGraphNavigation": false,
+    "mobileSourceToggle": false
+  },
+  "firstRunNoticeShown": true
+}
