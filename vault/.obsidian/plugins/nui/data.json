@@ -1,7 +1,7 @@
 {
   "folderIndex": {
     "enabled": true,
-    "hideIndexInExplorer": true,
+    "hideIndexInExplorer": false,
     "hideAgentStubs": false,
     "goToParentHotkey": true
   },
