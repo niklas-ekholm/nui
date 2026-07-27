@@ -1,6 +1,6 @@
 filters:
   and:
-    - file.inFolder(this.file.folder)
+    - file.inFolder("Habits")
 views:
   - type: nui-week-tracker-3
     name: Three weeks

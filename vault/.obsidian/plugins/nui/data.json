@@ -11,8 +11,8 @@
   "timeline": {
     "rowSize": 1,
     "timespan": "3w",
-    "rangeStart": "2026-06-19",
-    "rangeEnd": "2026-09-28"
+    "rangeStart": "2026-06-14",
+    "rangeEnd": "2026-09-23"
   },
   "editor": {
     "multiCursorCommands": true,
