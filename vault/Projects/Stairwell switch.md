@@ -1,6 +1,6 @@
 ---
-start: 2026-08-17
-end: 2026-10-09
+start: 2026-07-17
+end: 2026-09-08
 project: Meridian
 status: planned
 ---

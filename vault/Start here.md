@@ -1,7 +1,6 @@
 ---
 date: 2026-07-27
 ---
-
 # NUI — example vault
 
 This vault exists to show what the NUI plugin and theme do. Every note in it is
@@ -16,17 +15,28 @@ invented. Poke at anything.
 
 ## Where to look first
 
+Open the **note**, not the base. Every base in [[Bases]] filters on
+`file.inFolder(this.file.folder)` — the folder of the note it is embedded in,
+and everything below. So the same `Timeline.base` shows all your projects from
+one note and a single project from another. Opened on its own from `Bases`, it
+scopes to `Bases`, which holds nothing, and comes up empty.
+
 | Open this | To see |
 | --- | --- |
-| [[Contents.base]] | Navigation, folder and file lists, and today's daily note — five views |
-| [[Tracker.base\|Habits/Tracker.base]] | The three habit trackers: three-week, year, and month |
-| [[Timeline.base\|Bases/Timeline.base]] | Projects as bars on a date axis, in three layouts |
-| [[Gallery.base\|Bases/Gallery.base]] | The picture gallery and both card sizes |
-| [[Tasks.base\|Bases/Tasks.base]] | Checkbox tasks pulled out of the project notes |
-| [[Scores.base\|Bases/Scores.base]] | A numeric property charted over time, as a line and as bars |
+| [[Projects]] | Every project as a bar on a date axis, three layouts, plus the task lists |
+| [[Kettle shelf]] | The same timeline embed, one folder down: that project's three phases and nothing else |
+| [[Habits]] | Three-week, year, and month trackers across Reading, Running and Writing |
+| [[Running]] | One habit's distances as a line chart and as bars, and the trackers narrowed to it |
+| [[Library]] | The picture gallery and both card sizes |
+| [[Daily]] | Files grouped by date, and the link to today's daily note |
 
-Between them those cover all fourteen views the plugin adds. Each base has a
-view picker in its top-right corner — most of them hold more than one view.
+Between them those cover all fourteen views the plugin adds. Each embed has a
+view picker in its top-right corner — most hold more than one view.
+
+Because folder-index is on, clicking any of those folders in the sidebar opens
+the note above. The whole vault at once looks like this:
+
+![[Contents.base]]
 
 ## The conventions this vault uses
 
@@ -38,13 +48,17 @@ different property, and falls back to an ISO date at the start of the filename.
 
 **Habits are folders.** `Habits/` holds one folder per habit — Reading, Running,
 Writing — and each dated note inside a habit folder is one completion. A
-`rating` from 1 to 5 shades the cell. The three-week tracker reads the habit
-folders sitting beside the base file, which is why `Tracker.base` lives in
-`Habits/` rather than in `Bases/`.
+`rating` from 1 to 5 shades the cell. Three of the fourteen views ignore the
+query and read the host folder directly: **Week Tracker: 3** takes its rows from
+the subfolders of wherever it is embedded, which is why the same `Tracker.base`
+shows three habits from [[Habits]] and one from [[Running]]. **List: Navigation**
+and **List: Folders** walk out from the host folder the same way.
 
 **Projects** carry `start`, `end`, and `project`. The timeline groups bars by
 `project`, so `Meridian` gathers four notes under one heading and `Kettle`
-gathers two. Checkbox lines in the note body feed the task views.
+gathers two. The phases under [[Kettle shelf]] carry no `project` at all, which
+is what an ungrouped bar looks like. Checkbox lines in the note body feed the
+task views.
 
 **Cover images** go in a `coverimage` property as a link — `"[[quiet-machines.png]]"`.
 The same property drives the card grids and the image at the top of the note

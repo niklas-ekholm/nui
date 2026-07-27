@@ -10,7 +10,9 @@
   },
   "timeline": {
     "rowSize": 1,
-    "timespan": "1y"
+    "timespan": "3w",
+    "rangeStart": "2026-06-19",
+    "rangeEnd": "2026-09-28"
   },
   "editor": {
     "multiCursorCommands": true,
@@ -22,12 +24,12 @@
     "embedPipes": true
   },
   "appearance": {
-    "showPanelEdges": false,
+    "showPanelEdges": true,
     "noteWide": true,
     "noteCoverImage": true,
     "hideEmbedEditButtons": true,
     "fadeBasesChrome": false,
-    "hideChromeHotkey": false
+    "hideChromeHotkey": true
   },
   "workspace": {
     "sidebarGraphNavigation": false,

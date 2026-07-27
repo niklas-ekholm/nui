@@ -1,6 +1,7 @@
 filters:
   and:
-    - file.inFolder("Projects")
+    - file.inFolder(this.file.folder)
+    - file.path != this.file.path
 views:
   - type: nui-task-list
     name: Open

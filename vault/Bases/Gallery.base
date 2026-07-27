@@ -1,6 +1,7 @@
 filters:
   and:
-    - file.inFolder("Library")
+    - file.inFolder(this.file.folder)
+    - file.path != this.file.path
     - note.coverimage
 views:
   - type: nui-picture-gallery

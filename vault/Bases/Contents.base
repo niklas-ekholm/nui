@@ -1,5 +1,6 @@
 filters:
   and:
+    - file.inFolder(this.file.folder)
     - file.path != this.file.path
 views:
   - type: nui-navigation
@@ -12,10 +13,6 @@ views:
     cardSize: 180
   - type: nui-list-folders
     name: Folders
-    filters:
-      and:
-        - '!file.folder.contains("/")'
-        - file.folder != ""
     order:
       - file.name
     sort:
@@ -35,10 +32,7 @@ views:
       file.folder: 350
     cardSize: 120
   - type: nui-list-files-by-date
-    name: Daily notes by date
-    filters:
-      and:
-        - file.inFolder("Daily")
+    name: By date
     order:
       - file.name
     sort:

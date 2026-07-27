@@ -1,4 +1,5 @@
 {
   "cssTheme": "NUI",
-  "accentColor": "#c36c32"
+  "accentColor": "#c36c32",
+  "showRibbon": true
 }

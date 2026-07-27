@@ -1,6 +1,7 @@
 filters:
   and:
-    - file.inFolder("Habits/Running")
+    - file.inFolder(this.file.folder)
+    - file.path != this.file.path
     - note.score
 views:
   - type: nui-score-chart
