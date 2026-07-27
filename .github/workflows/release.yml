@@ -1,0 +1,144 @@
+name: Release
+
+# Development happens on main. Releasing is:
+#
+#   git checkout prod && git merge main && git push
+#
+# Every check runs here rather than on main, so this is the only gate. It is
+# meant to fail loudly: a half-published release is worse than no release.
+on:
+  push:
+    branches: [prod]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Tags are needed to refuse a version that is already published.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: plugin/package-lock.json
+
+      - name: Install plugin dependencies
+        working-directory: plugin
+        run: npm ci
+
+      - name: Read VERSION
+        id: version
+        run: |
+          V="$(tr -d ' \t\n\r' <VERSION)"
+          if [ -z "$V" ]; then
+            echo "VERSION is empty." >&2
+            exit 1
+          fi
+          echo "v=$V" >>"$GITHUB_OUTPUT"
+          echo "Releasing $V"
+
+      - name: Every manifest declares this version
+        env:
+          V: ${{ steps.version.outputs.v }}
+        run: |
+          fail=0
+          check() {
+            if [ "$2" != "$V" ]; then
+              echo "$1 declares '$2', expected '$V'." >&2
+              fail=1
+            fi
+          }
+          check "plugin/manifest.json" \
+            "$(node -p "require('./plugin/manifest.json').version")"
+          check "plugin/package.json" \
+            "$(node -p "require('./plugin/package.json').version")"
+          check "vault/.obsidian/themes/NUI/manifest.json" \
+            "$(node -p "require('./vault/.obsidian/themes/NUI/manifest.json').version")"
+
+          # versions.json maps plugin version -> minimum Obsidian version. A
+          # missing entry costs one line and preserves the option of submitting
+          # to the community directory later.
+          if [ "$(node -p "require('./plugin/versions.json')['$V'] ?? ''")" = "" ]; then
+            echo "plugin/versions.json has no entry for '$V'." >&2
+            fail=1
+          fi
+
+          exit $fail
+
+      - name: Tag does not already exist
+        env:
+          V: ${{ steps.version.outputs.v }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Without this, re-pushing prod either silently no-ops or clobbers a
+          # published release. This is what makes a branch trigger safe.
+          if git rev-parse -q --verify "refs/tags/v$V" >/dev/null; then
+            echo "Tag v$V already exists. Bump VERSION before releasing." >&2
+            exit 1
+          fi
+          if gh release view "v$V" >/dev/null 2>&1; then
+            echo "Release v$V already exists." >&2
+            exit 1
+          fi
+
+      - name: Typecheck
+        working-directory: plugin
+        run: npm run typecheck
+
+      - name: Lint
+        working-directory: plugin
+        run: npm run lint
+
+      - name: Test
+        working-directory: plugin
+        run: npm test
+
+      - name: No personal paths in the plugin or the vault
+        run: node plugin/scripts/check-no-personal-paths.mjs plugin/src vault
+
+      - name: styles.css resolves without the theme
+        working-directory: plugin
+        run: node scripts/check-css-variables.mjs
+
+      - name: Example vault is coherent
+        run: node scripts/check-vault.mjs
+
+      - name: Theme bundles no fonts
+        run: |
+          THEME=vault/.obsidian/themes/NUI/theme.css
+          fail=0
+          for token in '@font-face' 'Bookish'; do
+            if grep -n -- "$token" "$THEME"; then
+              echo "theme.css still contains $token." >&2
+              fail=1
+            fi
+          done
+          # Local url() references only. The inline data: SVG mask-images for
+          # the external-link icon are legitimate and must not trip this.
+          if grep -nE 'url\((["'"'"']?)\.{0,2}/' "$THEME"; then
+            echo "theme.css references a local file via url()." >&2
+            fail=1
+          fi
+          exit $fail
+
+      - name: Build
+        working-directory: plugin
+        run: node esbuild.config.mjs production
+
+      - name: Package
+        run: scripts/package-release.sh
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          V: ${{ steps.version.outputs.v }}
+        run: |
+          gh release create "v$V" dist/* \
+            --title "NUI v$V" \
+            --generate-notes
