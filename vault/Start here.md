@@ -67,6 +67,71 @@ itself.
 **Scores** are a `score` number. The chart in `Scores.base` reads the distance
 recorded on each run.
 
+## Hotkeys
+
+This vault ships a `.obsidian/hotkeys.json`, so the keys below are already bound
+here. They are **not** installed into your own vault — nothing NUI ships ever
+writes your hotkeys. Rebind or clear any of them under Settings → Hotkeys.
+
+`Mod` is Cmd on macOS and Ctrl elsewhere.
+
+### NUI commands
+
+| Key | Command |
+| --- | --- |
+| `Mod+Alt+↑` / `Mod+Alt+↓` | Add cursor on line above / below |
+| `Mod+D` | Add next match to selections |
+| `Alt+Shift+↑` / `Alt+Shift+↓` | Copy line up / down |
+| `Mod+Escape` | Go to parent folder |
+| `Mod+§` | Show or hide chrome |
+
+`Mod+§` is the one key here that is *not* in `hotkeys.json`. It comes from the
+plugin's own opt-in default, which is why it lives under Settings → NUI →
+Hotkeys and only applies after a reload. Everything else in this table is a
+plain hotkey override and works regardless of those toggles.
+
+Five NUI commands ship with no key at all — **Open folder index**, **Create
+folder index**, **Turn note into folder**, **Set note text color**, and the
+`Mod+§` toggle if you leave it off. Bind them yourself under Settings → Hotkeys;
+search for "NUI".
+
+### Rebound Obsidian defaults
+
+The two worth knowing about first, because they are swapped from stock:
+
+| Key | Command | Obsidian's default |
+| --- | --- | --- |
+| `Mod+P` | Quick switcher | `Mod+O` |
+| `Mod+Shift+P` | Command palette | `Mod+P` |
+
+The rest:
+
+| Key | Command |
+| --- | --- |
+| `Mod+Enter` | Follow link |
+| `Mod+Alt+0` … `Mod+Alt+6` | Set heading level 0–6 |
+| `Mod+Shift+7` / `8` / `9` | Numbered list / bullet list / checklist |
+| `Mod+Shift+0` | Clear formatting |
+| `Mod+Shift+C` | Toggle code |
+| `Mod+'` | Toggle source mode |
+| `Alt+↑` / `Alt+↓` | Move line up / down |
+| `Ctrl+Alt+↑` / `Ctrl+Alt+↓` | Fold all / unfold all |
+| `Mod+Shift+Backspace` | Delete paragraph |
+| `Mod+Shift+E` | Toggle left sidebar |
+| `Mod+Alt+B` | Toggle right sidebar |
+| `Mod+Alt+E` | Toggle ribbon |
+| `Mod+=` / `Mod+-` | Zoom in / out |
+| `Mod+Shift+N` | New window |
+
+Four defaults are deliberately cleared rather than rebound: open link in new
+pane, go forward, new file in new pane, and add metadata property.
+
+> [!note] One collision away from macOS
+> NUI's cursor commands take `Mod+Alt+↑`/`↓` and fold-all takes `Ctrl+Alt+↑`/`↓`.
+> On macOS those are distinct, because `Mod` is Cmd. On Windows and Linux `Mod`
+> *is* Ctrl, so the two pairs collide and Obsidian will flag them. These
+> bindings were built on a Mac.
+
 ## What is missing on purpose
 
 There is no `workspace.json`, so Obsidian opens with its own default layout
