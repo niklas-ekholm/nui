@@ -106,11 +106,8 @@ def main() -> None:
     )
     parser.add_argument(
         "vault",
-        nargs="?",
-        default=Path.home()
-        / "Library/Mobile Documents/iCloud~md~obsidian/Documents/NipaNotes",
         type=Path,
-        help="Path to the NipaNotes vault (default: iCloud NipaNotes)",
+        help="Path to the vault to normalize",
     )
     parser.add_argument(
         "--dry-run",

@@ -16,7 +16,7 @@ const prod = process.argv[2] === "production";
  */
 const DEV_VAULT_PLUGIN_DIR = path.resolve(
 	__dirname,
-	"../nui-testvault/.obsidian/plugins/nui",
+	"../vault/.obsidian/plugins/nui",
 );
 
 const outDir = prod

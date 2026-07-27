@@ -53,7 +53,7 @@ npm install
 npm run dev
 ```
 
-`npm run dev` watches `src/` and writes the build into `../nui-testvault/.obsidian/plugins/nui/`. Point it somewhere else with `NUI_VAULT_PLUGIN_DIR`. `npm run build` produces a production bundle next to the source, and `npm run check` runs the typecheck, lint, tests, and path guard that CI runs.
+`npm run dev` watches `src/` and writes the build into `../vault/.obsidian/plugins/nui/`, the example vault in this repository. Point it somewhere else with `NUI_VAULT_PLUGIN_DIR`. `npm run build` produces a production bundle next to the source, and `npm run check` runs the typecheck, lint, tests, and path guard that CI runs.
 
 ## Licence
 

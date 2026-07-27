@@ -1,22 +1,134 @@
 # NUI
 
-Niklas User Interface. Personal setup — no guarantees of production quality or distribution.
+Niklas User Interface — an Obsidian plugin, a theme, and an example vault that
+demonstrates both. The plugin adds fourteen views to
+[Bases](https://help.obsidian.md/bases): timelines, habit trackers, card grids,
+file lists, and a score chart. The theme is the flat, muted appearance layer
+those views are drawn against. Each works without the other.
 
-Build tooling for the NUI Obsidian plugin. Source lives in the NipaNotes iCloud vault.
+> **Work in progress.** NUI is published so it can be used, not because it is
+> finished. The version is below 1.0.0 and minor releases will break things.
+> The example vault encodes highly opinionated Obsidian settings — a
+> folder-index navigation model, a habits-as-folders convention, and specific
+> frontmatter date properties. Read [INSTALL.md](INSTALL.md) before pointing
+> any of this at a vault you care about.
 
-Repo: [github.com/niklas-ekholm/nui](https://github.com/niklas-ekholm/nui)
+Requires Obsidian 1.10 or later, which is where the Bases view API became
+public.
+
+## Install
+
+Download the latest [release](https://github.com/niklas-ekholm/nui/releases).
+Three zips, depending on what you already have:
+
+| Zip | Use it when |
+| --- | --- |
+| `nui-v0.2.0.zip` | You want to see NUI working. A vault with the plugin and theme already installed and ~40 notes of demo content — unzip it and open the folder as a vault. |
+| `nui-plugin-0.2.0.zip` | You have a vault and want the Bases views. |
+| `nui-theme-0.2.0.zip` | You have a vault and want the appearance only. |
+
+Every zip contains the same `install.sh` and an `INSTALL.md` describing that
+zip's payload. To install into an existing vault:
+
+```bash
+./install.sh /path/to/vault
+```
+
+The installer writes only the files it ships and never touches your vault's
+content, your plugin settings (`data.json`), your appearance settings, or your
+workspace layout. `INSTALL.md` also gives the manual copy-the-files route.
+
+## Bases views
+
+Add any of these from a base's view picker. Each reads its data from the base's
+own query, so existing filters and sorts keep working. Dates come from whichever
+property the view is pointed at — `note.date` by default.
+
+Timeline · List: Tasks · Year Tracker · Month Tracker · Week Tracker: 3 ·
+Score Chart · Card: S · Card: L · List: Files · List: Files by Date ·
+List: Folders · Picture Gallery · List: Navigation · List: Today Daily Note
+
+[plugin/README.md](plugin/README.md) documents what each view shows, which
+properties it needs, and the folder-index and editor features. Everything that
+overrides built-in Obsidian behaviour defaults to off, behind one settings tab.
+
+## Theme
+
+Select **NUI** under Settings → Appearance → Themes.
+
+The theme bundles no typefaces — blockquotes fall back to a Georgia system
+stack, and everything else inherits Obsidian's own text font. Settings →
+Appearance → Font overrides all of it.
+
+### Palette
+
+Every hex value in the theme lives in `theme.css` §0. Everything below §0 uses
+`var(--n-*)` and `var(--nui-*)` only.
+
+| Token | Light | Dark | Role |
+| --- | --- | --- | --- |
+| `--n-surface` | `#fdfdfd` | `#000` | flat workspace background |
+| `--nui-content` | `#000` | `#aaa` | body copy, links, hover chrome |
+| `--nui-chrome` | `#aaa` | `#445` | muted chrome labels and icons |
+| `--n-border` | `#aaa` | `#445` | dividers, Bases borders |
+| `--nui-timeline-grid` | `#aaa` | `#445` | timeline and tracker gridlines |
+
+Accent colours follow Settings → Appearance → Accent color, via `--n-accent`
+and `--nui-on-accent`. When editing, do light first, then invert the pair.
+
+### Sections
+
+Edit at the top: **§0** palette, **§1b** typography scale, **§1a** spacing
+(`--nui-0` … `--nui-96`). Everything below is derived or layout.
+
+| § | Contents |
+| --- | --- |
+| 0 | Color palette — edit hex values here only |
+| 1a | Spacing scale |
+| 1b | Typography scale — edit type values here only |
+| 1c | Typography — element rules, derived from §1b |
+| 2 | Token aliases — maps §0 to Obsidian's variables; do not edit |
+| 3 | Workspace — flat surfaces |
+| 4 | Workspace — muted chrome and native Bases UI |
+| 4b | Properties — in-document metadata |
+| 5 | Links |
+| 6 | Tables |
+| 7 | Embeds — images and note transclusion |
+| 8 | Bases — table layout |
+| 9 | Backlinks — simple list |
+| 10 | NUI plugin views — inert without the plugin |
+
+## Repository layout
+
+| Path | Role |
+| --- | --- |
+| `plugin/` | Plugin source, build, and tests. `plugin/src` is the source of truth. |
+| `vault/` | The example vault, and the development vault. |
+| `vault/.obsidian/themes/NUI/theme.css` | The theme. This file is the source of truth — there is no separate copy. |
+| `scripts/` | Release packaging, the installer, and vault checks. |
+| `VERSION` | One version for the plugin, the theme, and the vault. |
 
 ## Development
 
 ```bash
-git clone git@github.com:niklas-ekholm/nui.git
-cd nui/Obsidian/plugin
+cd plugin
 npm install
-npm run dev    # or npm run build
+npm run dev
 ```
 
-Edit plugin source in `NipaNotes/.obsidian/plugins/nui/src/`. See [Obsidian/README.md](Obsidian/README.md).
+`npm run dev` watches `plugin/src` and writes `main.js`, `manifest.json`, and
+`styles.css` into `vault/.obsidian/plugins/nui/`, so opening `vault/` in
+Obsidian shows the build. Those three files are gitignored; `data.json` beside
+them is committed, because it is the example vault's demo configuration.
+Override the target with `NUI_VAULT_PLUGIN_DIR`.
 
-## Releases
+`npm run check` runs everything the release gate runs: typecheck, lint, tests,
+and the personal-path and CSS-variable guards.
 
-Published zips are on [GitHub Releases](https://github.com/niklas-ekholm/nui/releases). Publishing uses a separate release branch — see [Obsidian/RELEASE.md](Obsidian/RELEASE.md).
+Development happens on `main`. **`vault/` is public and is the shipped
+artifact, so every push to `main` publishes it.** Releases are cut by merging
+`main` into `prod` and pushing; see [CHANGELOG.md](CHANGELOG.md).
+
+## Licence
+
+[MIT](LICENSE).

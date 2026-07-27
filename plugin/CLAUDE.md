@@ -4,10 +4,10 @@ Obsidian plugin (id `nui`) providing Bases views, folder-index navigation, and e
 
 ## Build & reload loop
 
-`src/` is the TypeScript source. Obsidian loads the bundled `main.js`. All tooling lives in this repository — `~/Sites/nui-build` is retired, and `node_modules` is safe here because the repository is outside iCloud.
+`src/` is the TypeScript source. Obsidian loads the bundled `main.js`. All tooling lives in this directory, and `node_modules` is safe here because the repository is outside iCloud.
 
 - First setup: `npm install`
-- Watch mode:   `npm run dev` — writes `main.js`, `manifest.json`, and `styles.css` into `../nui-testvault/.obsidian/plugins/nui/`
+- Watch mode:   `npm run dev` — writes `main.js`, `manifest.json`, and `styles.css` into `../vault/.obsidian/plugins/nui/`, the example vault in this repository
 - One-off build: `npm run build` — writes `main.js` next to the source, which is what the release workflow uploads
 - Everything CI runs: `npm run check`
 - After a build, reload Obsidian (Cmd+P → "Reload app") or toggle the plugin off and on.
@@ -31,5 +31,6 @@ Override the watch target with `NUI_VAULT_PLUGIN_DIR`. esbuild bundles `src/main
 - The plugin must never write to a user's `.base` file. `habits/no-base-mutation.test.ts` guards this; it has regressed once already.
 - Plugin CSS uses Obsidian's native variables only. No `--nui-*` token layer, no literal typography values — typography belongs to the theme, and the theme is optional.
 - Anything that overrides built-in Obsidian behaviour defaults to off.
-- `scripts/check-no-personal-paths.mjs` rejects the author's private vault conventions in `src/`. Test fixtures are exempt.
-- Releases: the git tag equals `manifest.version` exactly, with no `v` prefix. Add the matching `versions.json` entry in the same commit.
+- `scripts/check-no-personal-paths.mjs` rejects the author's private vault conventions. With no arguments it checks `src/`; the release workflow also points it at `../vault`. Test fixtures are exempt.
+- Versions: `manifest.json`, `package.json`, `versions.json`, and the theme manifest all read from the repository's root `VERSION` file. Add the matching `versions.json` entry in the same commit as any bump.
+- Releases are cut from the monorepo root by pushing to `prod`, and the tag is `v{VERSION}`. Submitting this plugin to the community directory later would require extracting it to its own repository with an un-prefixed tag — see the release plan.
