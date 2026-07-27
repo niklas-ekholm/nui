@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, Platform, PluginSettingTab, Setting } from "obsidian";
 import type NuiPlugin from "../main";
 import { NuiSettings } from "./nui-settings";
 
@@ -30,6 +30,93 @@ export class NuiSettingTab extends PluginSettingTab {
 		this.displayEditor(containerEl);
 		this.displayAppearance(containerEl);
 		this.displayWorkspace(containerEl);
+		this.displayHotkeys(containerEl);
+	}
+
+	/**
+	 * Every command this plugin ships is bindable under Settings → Hotkeys. Two
+	 * of them also carry a default binding, and those two are gathered here
+	 * rather than in the feature sections they belong to, so that "which keys
+	 * does NUI take?" has one answer in one place.
+	 */
+	private hotkeyDefaults(): {
+		name: string;
+		combo: string;
+		get: () => boolean;
+		set: (value: boolean) => void;
+		inert?: string;
+	}[] {
+		return [
+			{
+				name: "Go to parent folder",
+				combo: "Mod+Escape",
+				get: () => this.settings.folderIndex.goToParentHotkey,
+				set: (value) => (this.settings.folderIndex.goToParentHotkey = value),
+				// The command drives the folder-index manager, which only exists
+				// when that feature is on. Binding the key regardless would be a
+				// dead key, so say so rather than quietly turning the feature on.
+				inert: this.settings.folderIndex.enabled
+					? undefined
+					: "Stays inert until “Open hub note on folder click” is on, above.",
+			},
+			{
+				name: "Show or hide chrome",
+				combo: "Mod+§",
+				get: () => this.settings.appearance.hideChromeHotkey,
+				set: (value) => (this.settings.appearance.hideChromeHotkey = value),
+			},
+		];
+	}
+
+	private displayHotkeys(containerEl: HTMLElement): void {
+		new Setting(containerEl).setName("Hotkeys").setHeading();
+
+		const defaults = this.hotkeyDefaults();
+		const allOn = defaults.every((row) => row.get());
+		const allOff = defaults.every((row) => !row.get());
+
+		const setAll = (value: boolean) => {
+			for (const row of defaults) row.set(value);
+			this.save();
+			this.display();
+		};
+
+		new Setting(containerEl)
+			.setDesc(
+				`Every NUI command is bindable under Settings → Hotkeys — search for “NUI”. The ${defaults.length} below also ship a default binding, and this turns them on together. ` +
+					(Platform.isDesktopApp
+						? RELOAD_NOTE
+						: "Default bindings apply on desktop only."),
+			)
+			.addButton((button) =>
+				button
+					.setButtonText("Turn all on")
+					.setCta()
+					.setDisabled(allOn)
+					.onClick(() => setAll(true)),
+			)
+			.addButton((button) =>
+				button
+					.setButtonText("Turn all off")
+					.setDisabled(allOff)
+					.onClick(() => setAll(false)),
+			);
+
+		for (const row of defaults) {
+			const desc = [`Binds ${row.combo}.`, row.inert, RELOAD_NOTE]
+				.filter((part): part is string => Boolean(part))
+				.join(" ");
+			new Setting(containerEl)
+				.setName(row.name)
+				.setDesc(desc)
+				.addToggle((toggle) =>
+					toggle.setValue(row.get()).onChange((value) => {
+						row.set(value);
+						this.save();
+						this.display();
+					}),
+				);
+		}
 	}
 
 	private displayFolderIndex(containerEl: HTMLElement): void {
@@ -74,20 +161,6 @@ export class NuiSettingTab extends PluginSettingTab {
 					.setValue(this.settings.folderIndex.hideAgentStubs)
 					.onChange((value) => {
 						this.settings.folderIndex.hideAgentStubs = value;
-						this.save();
-					}),
-			);
-
-		new Setting(containerEl)
-			.setName("Bind Mod+Escape to go to parent folder")
-			.setDesc(
-				`The command is always available to bind yourself under Hotkeys. ${RELOAD_NOTE}`,
-			)
-			.addToggle((toggle) =>
-				toggle
-					.setValue(this.settings.folderIndex.goToParentHotkey)
-					.onChange((value) => {
-						this.settings.folderIndex.goToParentHotkey = value;
 						this.save();
 					}),
 			);
@@ -235,13 +308,6 @@ export class NuiSettingTab extends PluginSettingTab {
 						this.save();
 					}),
 			);
-
-		this.toggle(containerEl, {
-			name: "Bind Mod+§ to show or hide chrome",
-			desc: `The command is always available to bind yourself under Hotkeys. ${RELOAD_NOTE}`,
-			get: () => this.settings.appearance.hideChromeHotkey,
-			set: (value) => (this.settings.appearance.hideChromeHotkey = value),
-		});
 	}
 
 	private displayWorkspace(containerEl: HTMLElement): void {

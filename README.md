@@ -52,6 +52,41 @@ List: Folders · Picture Gallery · List: Navigation · List: Today Daily Note
 properties it needs, and the folder-index and editor features. Everything that
 overrides built-in Obsidian behaviour defaults to off, behind one settings tab.
 
+## Commands and hotkeys
+
+NUI adds eleven commands. All of them are bindable under **Settings → Hotkeys**
+— search for "NUI". Nine ship with no key at all, so NUI takes nothing from you
+that you did not ask for.
+
+Two carry a default binding, and both are **opt-in**. Turn both on at once under
+**Settings → NUI → Hotkeys → Turn all on**, which is also where you turn them
+back off. Default bindings apply on desktop only, and take effect after
+reloading Obsidian.
+
+`Mod` is Cmd on macOS and Ctrl elsewhere.
+
+| Command | Default key | What it does | Needs |
+| --- | --- | --- | --- |
+| Show or hide chrome | `Mod+§` *(opt-in)* | Hides the tab bar, sidebars, and view headers, then brings them back | — |
+| Go to parent folder | `Mod+Escape` *(opt-in)* | Opens the hub note of the folder above the current one | Folder index |
+| Open folder index | — | Opens the hub note for the folder in context | Folder index |
+| Create folder index | — | Creates the hub note for the folder in context | Folder index |
+| Turn note into folder | — | Converts the current note into a folder with the note as its hub | Folder index |
+| Add cursor on line above | — | Adds a cursor one line up | Multi-cursor commands |
+| Add cursor on line below | — | Adds a cursor one line down | Multi-cursor commands |
+| Add next match to selections | — | Selects the next occurrence of the selection | Multi-cursor commands |
+| Copy line up | — | Duplicates the current line above itself | Multi-cursor commands |
+| Copy line down | — | Duplicates the current line below itself | Multi-cursor commands |
+| Set note text color | — | Sets a colour for the whole note | Text colour |
+
+The **Needs** column names the setting under Settings → NUI that has to be on
+for the command to be registered at all. *Multi-cursor commands* and *Text
+colour* are on by default; *Folder index* is off, since it redefines what
+clicking a folder does. The multi-cursor commands are desktop-only.
+
+`Mod+Escape` stays inert while Folder index is off — the settings tab says so
+rather than turning the feature on behind your back.
+
 ## Theme
 
 Select **NUI** under Settings → Appearance → Themes.

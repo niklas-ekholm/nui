@@ -10,6 +10,11 @@ RELEASE-PLAN.md
 vault/.obsidian/workspace*.json
 vault/.obsidian/graph.json
 
+# The folder-index root hub is named after the vault's own folder, so the one
+# created here is called vault.md and would be an orphan in a release, where the
+# folder is nui-vault-<version>. Obsidian recreates it on first open.
+vault/vault.md
+
 # Build artifacts copied into the example vault by `npm run dev`.
 # data.json beside them is committed on purpose — it is the demo configuration.
 vault/.obsidian/plugins/nui/main.js
