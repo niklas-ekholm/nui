@@ -7,11 +7,12 @@
 	"private": true,
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
-		"build": "npm run typecheck && node esbuild.config.mjs production",
+		"build": "npm run typecheck && node esbuild.config.mjs production && npm run sync",
 		"typecheck": "tsc --noEmit --skipLibCheck && tsc --noEmit --skipLibCheck -p tsconfig.test.json",
 		"test": "node --experimental-strip-types --test \"src/**/*.test.ts\"",
 		"lint": "eslint src",
-		"check": "npm run typecheck && npm run lint && npm run test && node scripts/check-no-personal-paths.mjs && node scripts/check-css-variables.mjs"
+		"check": "npm run typecheck && npm run lint && npm run test && node scripts/check-no-personal-paths.mjs && node scripts/check-css-variables.mjs",
+		"sync": "node scripts/sync-vault.mjs"
 	},
 	"keywords": [
 		"obsidian",

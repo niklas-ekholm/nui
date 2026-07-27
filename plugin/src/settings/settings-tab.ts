@@ -1,4 +1,4 @@
-import { App, Platform, PluginSettingTab, Setting } from "obsidian";
+import { App, Notice, Platform, PluginSettingTab, Setting } from "obsidian";
 import type NuiPlugin from "../main";
 import { NuiSettings } from "./nui-settings";
 
@@ -75,9 +75,22 @@ export class NuiSettingTab extends PluginSettingTab {
 		const allOn = defaults.every((row) => row.get());
 		const allOff = defaults.every((row) => !row.get());
 
+		// A default binding is handed to Obsidian when the command is registered,
+		// which happens once at load. Flipping a toggle here changes nothing the
+		// user can feel until then, and the buttons look like they act at once —
+		// so say it out loud rather than leaving it as trailing description text.
+		const announceReload = () => {
+			if (!Platform.isDesktopApp) return;
+			new Notice(
+				"Hotkey setting saved. Reload Obsidian for it to take effect — Cmd/Ctrl+P, “Reload app without saving”.",
+				8000,
+			);
+		};
+
 		const setAll = (value: boolean) => {
 			for (const row of defaults) row.set(value);
 			this.save();
+			announceReload();
 			this.display();
 		};
 
@@ -113,6 +126,7 @@ export class NuiSettingTab extends PluginSettingTab {
 					toggle.setValue(row.get()).onChange((value) => {
 						row.set(value);
 						this.save();
+						announceReload();
 						this.display();
 					}),
 				);
