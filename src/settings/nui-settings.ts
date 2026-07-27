@@ -5,10 +5,6 @@ import {
 	mergeTimelineTimespan,
 	TimelineTimespan,
 } from "../timeline/types";
-import {
-	DEFAULT_FOLDER_INDEX_FILENAME,
-	normalizeFolderIndexFilename,
-} from "../navigation/folder-index-path";
 
 /**
  * One settings object for the whole plugin, one section per feature area.
@@ -21,7 +17,6 @@ import {
 export interface FolderIndexSettings {
 	/** Off by default: this redefines what clicking a folder does. */
 	enabled: boolean;
-	indexFilename: string;
 	hideIndexInExplorer: boolean;
 	/** Hide root-level AGENTS.md / CLAUDE.md from the file explorer. */
 	hideAgentStubs: boolean;
@@ -97,7 +92,6 @@ export interface NuiSettings {
 export const DEFAULT_SETTINGS: NuiSettings = {
 	folderIndex: {
 		enabled: false,
-		indexFilename: DEFAULT_FOLDER_INDEX_FILENAME,
 		hideIndexInExplorer: false,
 		hideAgentStubs: false,
 		goToParentHotkey: false,
@@ -172,9 +166,6 @@ export function mergeSettings(loaded: Loaded): NuiSettings {
 	return {
 		folderIndex: {
 			enabled: bool(folderIndex.enabled, defaults.folderIndex.enabled),
-			indexFilename: normalizeFolderIndexFilename(
-				str(folderIndex.indexFilename, defaults.folderIndex.indexFilename),
-			),
 			hideIndexInExplorer: bool(
 				folderIndex.hideIndexInExplorer,
 				defaults.folderIndex.hideIndexInExplorer,

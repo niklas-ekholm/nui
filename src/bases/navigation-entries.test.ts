@@ -23,16 +23,16 @@ function entry(path: string) {
 
 test("direct child index detection works at root and nested hosts", () => {
 	assert.equal(
-		isDirectChildFolderIndexPath(entry("NUI/index.md"), "", isFolderIndexPath),
+		isDirectChildFolderIndexPath(entry("NUI/NUI.md"), "", isFolderIndexPath),
 		true,
 	);
 	assert.equal(
-		isDirectChildFolderIndexPath(entry("NUI/index.md"), "/", isFolderIndexPath),
+		isDirectChildFolderIndexPath(entry("NUI/NUI.md"), "/", isFolderIndexPath),
 		true,
 	);
 	assert.equal(
 		isDirectChildFolderIndexPath(
-			entry("NUI/NUIdocs/index.md"),
+			entry("NUI/NUIdocs/NUIdocs.md"),
 			"NUI",
 			isFolderIndexPath,
 		),
@@ -40,14 +40,14 @@ test("direct child index detection works at root and nested hosts", () => {
 	);
 	assert.equal(
 		isDirectChildFolderIndexPath(
-			entry("NUI/NUIdocs/Design/index.md"),
+			entry("NUI/NUIdocs/Design/Design.md"),
 			"NUI",
 			isFolderIndexPath,
 		),
 		false,
 	);
 	assert.equal(
-		isDirectChildFolderIndexPath(entry("NUI/NUI.md"), "", isFolderIndexPath),
+		isDirectChildFolderIndexPath(entry("NUI/index.md"), "", isFolderIndexPath),
 		false,
 	);
 	assert.equal(
@@ -56,21 +56,29 @@ test("direct child index detection works at root and nested hosts", () => {
 			"Habits",
 			isFolderIndexPath,
 		),
+		true,
+	);
+	assert.equal(
+		isDirectChildFolderIndexPath(
+			entry("Habits/Walking/notes.md"),
+			"Habits/Walking",
+			isFolderIndexPath,
+		),
 		false,
 	);
 });
 
 test("folder entries display their parent folder name", () => {
-	assert.equal(folderNameForEntry(entry("NUI/index.md")), "NUI");
-	assert.equal(folderNameForEntry(entry("NUI/NUIdocs/index.md")), "NUIdocs");
+	assert.equal(folderNameForEntry(entry("NUI/NUI.md")), "NUI");
+	assert.equal(folderNameForEntry(entry("NUI/NUIdocs/NUIdocs.md")), "NUIdocs");
 });
 
 test("navigation partition keeps child folders and sibling files separate", () => {
 	const entries = [
-		entry("NUI/index.md"),
+		entry("NUI/NUI.md"),
 		entry("NUI.md"),
 		entry("readme.md"),
-		entry("NUI/NUIdocs/index.md"),
+		entry("NUI/NUIdocs/NUIdocs.md"),
 		entry("Habits/Walking/Walking.md"),
 	];
 	const result = partitionNavigationEntryPathsForHost(
@@ -81,7 +89,7 @@ test("navigation partition keeps child folders and sibling files separate", () =
 
 	assert.deepEqual(
 		result.folders.map((item) => item.file.path),
-		["NUI/index.md"],
+		["NUI/NUI.md"],
 	);
 	assert.deepEqual(
 		result.files.map((item) => item.file.path),
@@ -98,5 +106,33 @@ test("navigation partition keeps child folders and sibling files separate", () =
 			isFolderIndexPath,
 		),
 		{ folders: [], files: [] },
+	);
+});
+
+test("an OKF sidecar index.md is an ordinary sibling file, not a folder entry", () => {
+	// index.md is generated alongside a folder's hub note in OKF-marked
+	// spaces, but it is never itself the folder's click target.
+	const entries = [entry("NUI/NUI.md"), entry("NUI/index.md")];
+	const result = partitionNavigationEntryPathsForHost(
+		entries,
+		"",
+		isFolderIndexPath,
+	);
+	assert.deepEqual(
+		result.folders.map((item) => item.file.path),
+		["NUI/NUI.md"],
+	);
+});
+
+test("nested folder hub notes surface once their own folder is the host", () => {
+	const entries = [entry("Habits/Walking/Walking.md")];
+	const result = partitionNavigationEntryPathsForHost(
+		entries,
+		"Habits",
+		isFolderIndexPath,
+	);
+	assert.deepEqual(
+		result.folders.map((item) => item.file.path),
+		["Habits/Walking/Walking.md"],
 	);
 });

@@ -13,10 +13,14 @@ import {
 import {
 	getFolderIndexPath,
 	isFolderIndexPath,
+	OKF_SIDECAR_FILENAME,
 	resolveFolderPath,
 	resolveParentFolderPathFromFilePath,
 	shouldHideNavFilePath,
 } from "./folder-index-path";
+import { isOkfSpaceFolder } from "./okf-space";
+import { isFolderIndexCreateSuppressed } from "./folder-index-suppress";
+import { DEFAULT_CALENDAR_FOLDER, isInsideHabitsRoot } from "../habits/habit-bundle";
 import type { FolderIndexSettings } from "../settings/nui-settings";
 import {
 	beginBreadcrumbFolderRename,
@@ -54,10 +58,15 @@ export class FolderIndexManager {
 	constructor(
 		private plugin: Plugin,
 		private getSettings: () => FolderIndexSettings,
+		private getHabitsRoot: () => string = () => DEFAULT_CALENDAR_FOLDER,
 	) {}
 
 	onload(): void {
 		this.registerClickHandler();
+		// Register after layout ready — vault emits create for existing folders on load.
+		this.plugin.app.workspace.onLayoutReady(() => {
+			this.registerCreateHandler();
+		});
 		this.registerBreadcrumbContextMenuHandlers();
 		this.registerRenameHandler();
 		this.registerHeaderSync();
@@ -78,15 +87,25 @@ export class FolderIndexManager {
 	async openFolderIndex(folderPath: string): Promise<boolean> {
 		this.lastClickedFolderPath = folderPath;
 
-		const indexPath = getFolderIndexPath({ path: folderPath });
-		const indexFile = this.plugin.app.vault.getAbstractFileByPath(indexPath);
-		if (indexFile instanceof TFile) {
-			await openFileInWorkspace(this.plugin.app, indexFile);
-			return true;
+		const folder = this.resolveFolder(folderPath);
+		if (!folder) {
+			return false;
 		}
 
-		const created = await this.createFolderIndex(folderPath, { silent: true });
-		return created !== null;
+		let indexFile = await this.resolveFolderIndexFile(folder);
+		if (!indexFile) {
+			indexFile = await this.createFolderIndex(folderPath, { silent: true });
+			if (!indexFile) {
+				return false;
+			}
+		} else {
+			// Backfills the OKF sidecar if the space was marked OKF after this
+			// folder's hub note already existed.
+			await this.maybeCreateOkfSidecar(folder);
+		}
+
+		await openFileInWorkspace(this.plugin.app, indexFile);
+		return true;
 	}
 
 	async createFolderIndex(
@@ -101,6 +120,7 @@ export class FolderIndexManager {
 
 		const existing = await this.resolveFolderIndexFile(folder);
 		if (existing) {
+			await this.maybeCreateOkfSidecar(folder);
 			await openFileInWorkspace(this.plugin.app, existing);
 			return existing;
 		}
@@ -108,8 +128,9 @@ export class FolderIndexManager {
 		const indexPath = getFolderIndexPath(folder);
 		const file = await this.plugin.app.vault.create(
 			indexPath,
-			buildFolderIndexContent(folder.name),
+			buildFolderIndexContent(),
 		);
+		await this.maybeCreateOkfSidecar(folder);
 		await openFileInWorkspace(this.plugin.app, file);
 		if (!options.silent) {
 			new Notice(`Created ${indexPath}`);
@@ -167,10 +188,217 @@ export class FolderIndexManager {
 		return indexFile instanceof TFile ? indexFile : null;
 	}
 
+	/**
+	 * Creates the folder's `index.md` OKF sidecar (spec §3.1) alongside its
+	 * `{FolderName}.md` hub, but only inside a space marked OKF (an ancestor
+	 * hub note's frontmatter declares `okf_version`). Created empty — the
+	 * listing content itself is curated by a human or an LLM, not generated
+	 * here.
+	 */
+	private async maybeCreateOkfSidecar(folder: TFolder): Promise<void> {
+		if (!isOkfSpaceFolder(this.plugin.app, folder)) {
+			return;
+		}
+
+		const sidecarPath = folder.path
+			? `${folder.path}/${OKF_SIDECAR_FILENAME}`
+			: OKF_SIDECAR_FILENAME;
+		if (this.plugin.app.vault.getAbstractFileByPath(sidecarPath)) {
+			return;
+		}
+
+		try {
+			await this.plugin.app.vault.create(
+				sidecarPath,
+				buildFolderIndexContent(),
+			);
+		} catch {
+			// Lost a create race (e.g. two rapid opens); the sidecar exists either way.
+		}
+	}
+
+	private isHabitFolder(folder: TFolder): boolean {
+		return isInsideHabitsRoot(folder, this.getHabitsRoot());
+	}
+
+	private async syncFolderIndexRename(
+		folder: TFolder,
+		oldPath: string,
+		attempt = 0,
+	): Promise<void> {
+		if (this.syncing) return;
+		if (this.isHabitFolder(folder)) return;
+
+		const oldFolderName = oldPath.split("/").pop();
+		if (!oldFolderName || oldFolderName === folder.name) {
+			return;
+		}
+
+		const liveFolder = this.plugin.app.vault.getAbstractFileByPath(folder.path);
+		if (!(liveFolder instanceof TFolder)) {
+			if (attempt < 3) {
+				window.setTimeout(() => {
+					void this.syncFolderIndexRename(folder, oldPath, attempt + 1);
+				}, 50 * (attempt + 1));
+			}
+			return;
+		}
+		if (this.isHabitFolder(liveFolder)) {
+			return;
+		}
+
+		const targetPath = getFolderIndexPath(liveFolder);
+		const targetExists = this.plugin.app.vault.getAbstractFileByPath(targetPath);
+		const staleFile = findStaleFolderIndexFile(liveFolder, oldFolderName);
+
+		if (
+			staleFile &&
+			targetExists instanceof TFile &&
+			staleFile.path !== targetPath
+		) {
+			new Notice(
+				`Folder index already exists at ${targetPath}; left ${staleFile.path} unchanged.`,
+			);
+			return;
+		}
+
+		if (staleFile) {
+			if (staleFile.path === targetPath) {
+				return;
+			}
+			this.syncing = true;
+			try {
+				await this.plugin.app.fileManager.renameFile(staleFile, targetPath);
+			} finally {
+				this.syncing = false;
+			}
+			return;
+		}
+
+		if (targetExists instanceof TFile) {
+			return;
+		}
+
+		// Child paths can lag the folder rename event — retry before creating.
+		if (attempt < 3) {
+			window.setTimeout(() => {
+				void this.syncFolderIndexRename(folder, oldPath, attempt + 1);
+			}, 50 * (attempt + 1));
+			return;
+		}
+
+		this.syncing = true;
+		try {
+			await this.plugin.app.vault.create(
+				targetPath,
+				buildFolderIndexContent(),
+			);
+		} finally {
+			this.syncing = false;
+		}
+	}
+
+	private async syncIndexFolderRename(
+		file: TFile,
+		oldPath: string,
+	): Promise<void> {
+		if (this.syncing) return;
+		if (!isFolderIndexPath(oldPath)) return;
+
+		const oldParentPath = parentPathOf(oldPath);
+		const parent = file.parent;
+		if (!(parent instanceof TFolder)) return;
+		if (this.isHabitFolder(parent)) return;
+
+		// Parent folder renamed in place: Old/Old.md → New/Old.md — sync hub to New.md.
+		if (parent.path !== oldParentPath) {
+			if (!isParentFolderRename(oldPath, file.path)) {
+				return;
+			}
+			if (parent.name === file.basename) {
+				return;
+			}
+			const targetPath = getFolderIndexPath(parent);
+			if (this.plugin.app.vault.getAbstractFileByPath(targetPath)) {
+				return;
+			}
+			this.syncing = true;
+			try {
+				await this.plugin.app.fileManager.renameFile(file, targetPath);
+			} finally {
+				this.syncing = false;
+			}
+			return;
+		}
+
+		const newName = file.basename;
+		if (parent.name === newName) return;
+
+		const newFolderPath = parent.parent
+			? `${parent.parent.path}/${newName}`
+			: newName;
+
+		if (this.plugin.app.vault.getAbstractFileByPath(newFolderPath)) {
+			new Notice(
+				`Cannot sync folder rename: "${newFolderPath}" already exists.`,
+			);
+			return;
+		}
+
+		this.syncing = true;
+		try {
+			await this.plugin.app.fileManager.renameFile(parent, newFolderPath);
+		} finally {
+			this.syncing = false;
+		}
+	}
+
+	private async onFolderCreated(folder: TFolder): Promise<void> {
+		if (isFolderIndexCreateSuppressed()) return;
+		if (this.isHabitFolder(folder)) return;
+
+		const indexPath = getFolderIndexPath(folder);
+		const existing = this.plugin.app.vault.getAbstractFileByPath(indexPath);
+		if (!(existing instanceof TFile)) {
+			try {
+				const file = await this.plugin.app.vault.create(
+					indexPath,
+					buildFolderIndexContent(),
+				);
+				await this.maybeCreateOkfSidecar(folder);
+				await openFileInWorkspace(this.plugin.app, file);
+			} catch (error) {
+				const message =
+					error instanceof Error ? error.message : "Could not create folder index";
+				new Notice(`Folder index: ${message}`);
+			}
+			return;
+		}
+
+		await this.maybeCreateOkfSidecar(folder);
+	}
+
+	private registerCreateHandler(): void {
+		this.plugin.registerEvent(
+			this.plugin.app.vault.on("create", (file) => {
+				if (file instanceof TFolder) {
+					void this.onFolderCreated(file);
+				}
+			}),
+		);
+	}
+
 	private registerRenameHandler(): void {
 		this.plugin.registerEvent(
-			this.plugin.app.vault.on("rename", () => {
-				// Folder and index.md names are independent now; just refresh header state.
+			this.plugin.app.vault.on("rename", (file, oldPath) => {
+				if (file instanceof TFolder) {
+					// Defer so child paths settle after the folder rename.
+					window.setTimeout(() => {
+						void this.syncFolderIndexRename(file, oldPath);
+					}, 0);
+				} else if (file instanceof TFile) {
+					void this.syncIndexFolderRename(file, oldPath);
+				}
 				this.scheduleHeaderSync();
 			}),
 		);
@@ -254,7 +482,7 @@ export class FolderIndexManager {
 				BREADCRUMB_SELECTOR.slice(1),
 				VAULT_BREADCRUMB_CLASS,
 			);
-			breadcrumb.setAttribute("aria-label", "Open vault index");
+			breadcrumb.setAttribute("aria-label", "Open vault hub");
 		}
 		breadcrumb.textContent = this.plugin.app.vault.getName();
 
@@ -281,13 +509,11 @@ export class FolderIndexManager {
 		}
 
 		const enabled = this.getSettings().enabled;
-		const rootIndex = this.plugin.app.vault.getAbstractFileByPath("index.md");
 		const vaultBreadcrumb = titleParent.querySelector(`.${VAULT_BREADCRUMB_CLASS}`);
 		if (vaultBreadcrumb instanceof HTMLElement) {
-			vaultBreadcrumb.classList.toggle(
-				BREADCRUMB_CLICKABLE_CLASS,
-				enabled && rootIndex instanceof TFile,
-			);
+			// Clickable whenever the feature is on: like every other folder, the
+			// root hub is created on click if it doesn't exist yet.
+			vaultBreadcrumb.classList.toggle(BREADCRUMB_CLICKABLE_CLASS, enabled);
 		}
 
 		for (const el of Array.from(titleParent.querySelectorAll(BREADCRUMB_SELECTOR))) {
@@ -415,16 +641,12 @@ export class FolderIndexManager {
 
 			const vaultBreadcrumb = target.closest(`.${VAULT_BREADCRUMB_CLASS}`);
 			if (vaultBreadcrumb instanceof HTMLElement) {
-				const rootIndex = this.plugin.app.vault.getAbstractFileByPath("index.md");
-				if (rootIndex instanceof TFile) {
-					event.preventDefault();
-					event.stopPropagation();
-					event.stopImmediatePropagation();
-					void openFileInWorkspace(this.plugin.app, rootIndex, {
-						anchorEl: vaultBreadcrumb,
-						evt: event,
-					});
-				}
+				event.preventDefault();
+				event.stopPropagation();
+				event.stopImmediatePropagation();
+				// Same path every other folder takes: open the hub, creating it
+				// first if it doesn't exist yet.
+				void this.openFolderIndex("");
 				return;
 			}
 
@@ -539,8 +761,52 @@ export class FolderIndexManager {
 	}
 }
 
-export function buildFolderIndexContent(folderName: string): string {
-	return `# ${folderName}\n\n`;
+function parentPathOf(filePath: string): string {
+	const slash = filePath.lastIndexOf("/");
+	return slash >= 0 ? filePath.slice(0, slash) : "";
+}
+
+/** Prefer in-memory children — path lookup can lag folder rename on iCloud. */
+function findStaleFolderIndexFile(
+	folder: TFolder,
+	oldFolderName: string,
+): TFile | null {
+	const fileName = `${oldFolderName}.md`;
+	for (const child of folder.children) {
+		if (child instanceof TFile && child.name === fileName) {
+			return child;
+		}
+	}
+	const byPath = folder.path ? `${folder.path}/${fileName}` : fileName;
+	const file = folder.vault.getAbstractFileByPath(byPath);
+	return file instanceof TFile ? file : null;
+}
+
+/** True when only the parent folder name segment changed (not a move to another tree). */
+function isParentFolderRename(oldPath: string, newPath: string): boolean {
+	const oldParts = oldPath.split("/");
+	const newParts = newPath.split("/");
+	if (oldParts.length !== newParts.length || oldParts.length < 2) {
+		return false;
+	}
+	if (oldParts[oldParts.length - 1] !== newParts[newParts.length - 1]) {
+		return false;
+	}
+	let diffs = 0;
+	for (let i = 0; i < oldParts.length - 1; i++) {
+		if (oldParts[i] !== newParts[i]) {
+			diffs++;
+		}
+	}
+	return diffs === 1;
+}
+
+/**
+ * Seed content for a freshly created hub note. Empty: inline title shows the
+ * note's name, so no H1 is needed.
+ */
+export function buildFolderIndexContent(): string {
+	return "";
 }
 
 export function isFolderIndexFile(file: TFile): boolean {
@@ -674,4 +940,3 @@ export function getParentFolderPath(file: TAbstractFile): string | null {
 	}
 	return null;
 }
-

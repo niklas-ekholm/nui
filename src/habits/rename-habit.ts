@@ -1,6 +1,9 @@
 
 import { App, Notice, TFile, TFolder } from "obsidian";
+import { isFolderIndexPath } from "../navigation/folder-index-path";
 import {
+	DEFAULT_CALENDAR_FOLDER,
+	habitFolderPath,
 	habitIndexPath,
 	habitTagFromName,
 	isHabitHubIndexPath,
@@ -8,32 +11,63 @@ import {
 	replaceHabitNameInBasename,
 } from "./habit-bundle";
 
+export type HabitRenameTrigger = "folder" | "index";
+
 export interface SyncHabitRenameOptions {
 	oldName: string;
 	newName: string;
 	folder: TFolder;
+	trigger: HabitRenameTrigger;
+	calendarFolder?: string;
 }
 
 /**
- * A habit is renamed by renaming its folder; this brings the day notes along.
- * The hub note is always `index.md`, so it carries no name to update.
+ * A habit renames from either end: renaming its folder brings the hub note
+ * and day notes along, and renaming its hub note (`{HabitName}.md`) brings
+ * the folder and day notes along. No `.base` file is touched — trackers
+ * resolve habit rows from the folder tree at render time
+ * (`listHabitRowsInHostFolder` + `file.inFolder(this.file.folder)`), so a
+ * rename needs no tag-registry update. `habits/no-base-mutation.test.ts`
+ * guards against reintroducing one.
  */
 export async function syncHabitRename(
 	app: App,
 	options: SyncHabitRenameOptions,
 ): Promise<void> {
+	const calendarFolder = options.calendarFolder ?? DEFAULT_CALENDAR_FOLDER;
+
 	const oldName = habitTagFromName(options.oldName);
 	const newName = habitTagFromName(options.newName);
+	let folder = options.folder;
 
-	if (!oldName || !newName || oldName === newName) {
+	if (!oldName || !newName) {
 		return;
 	}
 
-	await renameSiblingFilesAndPatchContents(app, options.folder, oldName, newName);
+	if (oldName === newName) {
+		if (options.trigger === "folder") {
+			await syncHubIndexRename(app, folder, oldName, newName);
+		}
+		return;
+	}
 
-	// No tag registry to update: the Week x3 and Year trackers resolve habits from
-	// the folder tree (listHabitRowsInHostFolder + file.inFolder(this.file.folder)),
-	// so a rename needs no base mutation.
+	if (options.trigger === "index") {
+		const targetFolderPath = habitFolderPath(calendarFolder, newName);
+		const existingFolder = app.vault.getAbstractFileByPath(targetFolderPath);
+		if (existingFolder && existingFolder.path !== folder.path) {
+			throw new Error(`Habit "${newName}" already exists.`);
+		}
+	}
+
+	await renameSiblingFilesAndPatchContents(app, folder, oldName, newName);
+
+	if (options.trigger === "index") {
+		if (folder.name !== newName) {
+			folder = await renameHabitFolder(app, folder, newName);
+		}
+	} else {
+		await syncHubIndexRename(app, folder, oldName, newName);
+	}
 }
 
 async function renameSiblingFilesAndPatchContents(
@@ -44,7 +78,7 @@ async function renameSiblingFilesAndPatchContents(
 ): Promise<void> {
 	// Own files only — a nested habit's day notes belong to that habit.
 	const files = listOwnFilesInHabitFolder(app.vault, folder);
-	const indexPath = findHubIndexPath(files, folder);
+	const indexPath = findHubIndexPath(files, folder, oldName, newName);
 
 	const renames: Array<{ file: TFile; newPath: string }> = [];
 
@@ -86,9 +120,23 @@ async function renameSiblingFilesAndPatchContents(
 	}
 }
 
-function findHubIndexPath(files: TFile[], folder: TFolder): string | null {
-	const indexPath = habitIndexPath(folder.path);
-	return files.some((file) => file.path === indexPath) ? indexPath : null;
+function findHubIndexPath(
+	files: TFile[],
+	folder: TFolder,
+	oldName: string,
+	newName: string,
+): string | null {
+	const candidates = [
+		habitIndexPath(folder.path, oldName),
+		habitIndexPath(folder.path, newName),
+		habitIndexPath(folder.path, folder.name),
+	];
+	for (const path of candidates) {
+		if (files.some((file) => file.path === path)) {
+			return path;
+		}
+	}
+	return null;
 }
 
 function isHabitDayNote(file: TFile, habitName: string): boolean {
@@ -128,8 +176,75 @@ async function patchDayNoteContent(
 	await app.vault.modify(file, `---\n${updatedFrontmatter}\n---${rest}`);
 }
 
+async function syncHubIndexRename(
+	app: App,
+	folder: TFolder,
+	oldName: string,
+	newName: string,
+): Promise<void> {
+	const stalePath = habitIndexPath(folder.path, oldName);
+	const targetPath = habitIndexPath(folder.path, newName);
+	if (stalePath === targetPath) {
+		return;
+	}
+
+	const staleFile = app.vault.getAbstractFileByPath(stalePath);
+	if (!(staleFile instanceof TFile)) {
+		return;
+	}
+
+	const targetExists = app.vault.getAbstractFileByPath(targetPath);
+	if (targetExists instanceof TFile) {
+		return;
+	}
+
+	await app.fileManager.renameFile(staleFile, targetPath);
+}
+
+async function renameHabitFolder(
+	app: App,
+	folder: TFolder,
+	newName: string,
+): Promise<TFolder> {
+	if (folder.name === newName) {
+		return folder;
+	}
+
+	const newFolderPath = folder.parent
+		? `${folder.parent.path}/${newName}`
+		: newName;
+
+	const existing = app.vault.getAbstractFileByPath(newFolderPath);
+	if (existing && existing.path !== folder.path) {
+		throw new Error(`Habit "${newName}" already exists.`);
+	}
+
+	await app.fileManager.renameFile(folder, newFolderPath);
+	const updated = app.vault.getAbstractFileByPath(newFolderPath);
+	if (!(updated instanceof TFolder)) {
+		throw new Error(`Could not rename habit folder to "${newName}".`);
+	}
+	return updated;
+}
+
 function escapeRegExp(value: string): string {
 	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function isHabitHubIndexRename(
+	file: TFile,
+	oldPath: string,
+	calendarFolder: string = DEFAULT_CALENDAR_FOLDER,
+): boolean {
+	if (!isFolderIndexPath(oldPath)) {
+		return false;
+	}
+	const parent = file.parent;
+	if (!(parent instanceof TFolder)) {
+		return false;
+	}
+	const habitsRoot = calendarFolder.trim().replace(/\/$/, "");
+	return parent.parent?.path === habitsRoot;
 }
 
 export function showHabitRenameError(error: unknown): void {

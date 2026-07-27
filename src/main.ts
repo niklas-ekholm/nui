@@ -11,11 +11,11 @@ import {
 	addNextMatchToSelections,
 	copyLine,
 } from "./editor/cursors";
+import { registerCollapsibleProperties } from "./editor/collapsible-properties";
 import { MobileSourceToggle } from "./editor/mobile-source-toggle";
 import { registerNoteCoverImageSync } from "./editor/note-cover-image";
 import { registerNoteTextColorSync } from "./editor/note-text-color";
 import { registerNoteWideSync } from "./editor/note-wide";
-import { registerCollapsibleProperties } from "./editor/collapsible-properties";
 import { registerTableColumnLayout } from "./editor/table-column-layout/register-table-column-layout";
 import {
 	registerNoteTextColorCommand,
@@ -29,8 +29,8 @@ import {
 	mergeSettings,
 	NuiSettings,
 } from "./settings/nui-settings";
-import { setFolderIndexFilename } from "./navigation/folder-index-path";
 import { FolderIndexManager } from "./navigation/folder-index";
+import { setVaultRootName } from "./navigation/folder-index-path";
 import { HabitRenameManager } from "./habits/habit-rename-manager";
 import { SidebarGraphNavigation } from "./navigation/sidebar-graph-navigation";
 import { isFolderIndexFile, openFileInWorkspace } from "./navigation/folder-index";
@@ -89,6 +89,7 @@ export default class NuiPlugin extends Plugin {
 		await this.loadSettings();
 		const { editor, appearance, folderIndex, workspace } = this.settings;
 
+		setVaultRootName(this.app.vault.getName());
 		this.applyAppearance();
 		this.registerBasesViews();
 
@@ -96,6 +97,7 @@ export default class NuiPlugin extends Plugin {
 			this.folderIndexManager = new FolderIndexManager(
 				this,
 				() => this.settings.folderIndex,
+				() => this.settings.habits.root,
 			);
 			this.folderIndexManager.onload();
 			this.registerFolderIndexCommands();
@@ -190,11 +192,9 @@ export default class NuiPlugin extends Plugin {
 
 	async loadSettings() {
 		this.settings = mergeSettings(await this.loadData());
-		setFolderIndexFilename(this.settings.folderIndex.indexFilename);
 	}
 
 	async saveSettings() {
-		setFolderIndexFilename(this.settings.folderIndex.indexFilename);
 		await this.saveData(this.settings);
 		this.folderIndexManager?.onSettingsChanged();
 		this.applyAppearance();

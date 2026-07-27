@@ -18,9 +18,16 @@ export function habitFolderPath(calendarFolder: string, name: string): string {
 	return base ? `${base}/${name}` : name;
 }
 
-/** A habit's hub note — always `index.md` in the habit folder. */
-export function habitIndexPath(folderPath: string): string {
-	return getFolderIndexPath({ path: folderPath });
+/**
+ * A habit's hub note — `{name}.md` in the habit folder. `name` defaults to
+ * the folder's own name, but callers mid-rename can pass the old or new name
+ * explicitly to compute what the hub path was, or will be.
+ */
+export function habitIndexPath(folderPath: string, name?: string): string {
+	return getFolderIndexPath({
+		path: folderPath,
+		name: name ?? folderPath.split("/").pop() ?? "",
+	});
 }
 
 export function habitTagFromName(name: string): string {
@@ -40,8 +47,9 @@ export function resolveUniqueHabitName(
 	return candidate;
 }
 
-export function buildHabitIndexContent(name: string, year: number): string {
-	return `# ${name}\n\n![[Year.base#${year}]]\n`;
+/** Inline title shows the habit's name, so the hub note needs no H1. */
+export function buildHabitIndexContent(year: number): string {
+	return `![[Year.base#${year}]]\n`;
 }
 
 export function buildMinimalDayNoteContent(): string {
@@ -130,7 +138,7 @@ export function listOwnFilesInHabitFolder(vault: Vault, folder: TFolder): TFile[
 }
 
 export function isHabitHubIndexPath(filePath: string, folderPath: string): boolean {
-	return filePath === getFolderIndexPath({ path: folderPath });
+	return filePath === habitIndexPath(folderPath);
 }
 
 /** A folder is a habit when it has a hub note; that is the whole contract. */

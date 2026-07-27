@@ -39,7 +39,7 @@ export async function createHabit(
 
 			await app.vault.createFolder(folderPath);
 
-			const indexContent = buildHabitIndexContent(name, year);
+			const indexContent = buildHabitIndexContent(year);
 			const indexFile = await app.vault.create(indexPath, indexContent);
 
 			return {

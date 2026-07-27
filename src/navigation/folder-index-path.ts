@@ -1,76 +1,97 @@
 /**
  * The pure folder-index path contract.
  *
- * The index filename is configurable, but the helpers below are called from
- * deep inside rendering code with no handle on the plugin. The plugin sets the
- * active name once on load and on every settings change; every helper still
- * takes an explicit name, so they stay directly testable.
+ * A folder's hub note is named after the folder itself — `{FolderName}.md`.
+ * The vault root has no folder name of its own, so its hub is named after
+ * the vault instead — `{VaultName}.md` — set once via `setVaultRootName` when
+ * the plugin loads (an intrinsic fact about the environment, not a user
+ * setting, the same way a folder's own name isn't configurable). The root
+ * therefore behaves like every other folder: its hub is `{VaultName}.md`,
+ * and — only if the root is itself marked OKF — its sidecar is the fixed
+ * `index.md`, a distinct file from the hub.
  */
 
-export const DEFAULT_FOLDER_INDEX_FILENAME = "index.md";
+const DEFAULT_ROOT_NAME = "index";
 
-let configuredFilename = DEFAULT_FOLDER_INDEX_FILENAME;
+let cachedRootName = DEFAULT_ROOT_NAME;
 
-/** Reject anything that is not a bare markdown filename. */
-export function normalizeFolderIndexFilename(value: string): string {
-	const trimmed = value.trim();
-	if (!trimmed || trimmed.includes("/")) {
-		return DEFAULT_FOLDER_INDEX_FILENAME;
-	}
-	return trimmed.toLowerCase().endsWith(".md") ? trimmed : `${trimmed}.md`;
+/** Call once on plugin load with `app.vault.getName()`. */
+export function setVaultRootName(name: string): void {
+	const trimmed = name.trim();
+	cachedRootName = trimmed || DEFAULT_ROOT_NAME;
 }
 
-export function setFolderIndexFilename(value: string): void {
-	configuredFilename = normalizeFolderIndexFilename(value);
+function rootHubFilename(): string {
+	return `${cachedRootName}.md`;
 }
 
-export function folderIndexFilename(): string {
-	return configuredFilename;
-}
+/**
+ * OKF's reserved directory-listing filename (spec §3.1). Fixed, not
+ * user-configurable: it is generated as a secondary sidecar alongside a
+ * folder's `{FolderName}.md` hub, only in folders that belong to a space
+ * marked as an OKF bundle (see `navigation/okf-space.ts`).
+ */
+export const OKF_SIDECAR_FILENAME = "index.md";
 
 export interface FolderPathLike {
 	path: string;
+	name: string;
 }
 
 /** Resolve a vault folder path; empty string is the vault root (not getAbstractFileByPath). */
-export function resolveFolderPath(
+export function resolveFolderPath<T extends { path: string }>(
 	folderPath: string,
-	getRoot: () => FolderPathLike,
-	getFolder: (path: string) => FolderPathLike | null,
-): FolderPathLike | null {
+	getRoot: () => T,
+	getFolder: (path: string) => T | null,
+): T | null {
 	if (folderPath === "") {
 		return getRoot();
 	}
 	return getFolder(folderPath);
 }
 
-export function getFolderIndexPath(
-	folder: FolderPathLike,
-	filename: string = folderIndexFilename(),
-): string {
-	return folder.path ? `${folder.path}/${filename}` : filename;
+function hubFilenameForFolderName(folderName: string): string {
+	return folderName ? `${folderName}.md` : rootHubFilename();
 }
 
-export function getFolderIndexPathFromFolderPath(
-	folderPath: string,
-	filename: string = folderIndexFilename(),
-): string {
-	return getFolderIndexPath({ path: folderPath }, filename);
+export function getFolderIndexPath(folder: FolderPathLike): string {
+	return folder.path
+		? `${folder.path}/${hubFilenameForFolderName(folder.name)}`
+		: rootHubFilename();
 }
 
-export function isFolderIndexPath(
-	filePath: string,
-	filename: string = folderIndexFilename(),
-): boolean {
-	return filePath === filename || filePath.endsWith(`/${filename}`);
+export function getFolderIndexPathFromFolderPath(folderPath: string): string {
+	const name = folderPath.split("/").pop() ?? "";
+	return getFolderIndexPath({ path: folderPath, name });
+}
+
+/** True when `filePath` is a folder's own hub note: `{folderName}.md`, or the root `{VaultName}.md`. */
+export function isFolderIndexPath(filePath: string): boolean {
+	const parts = filePath.split("/");
+	const fileName = parts.pop();
+	if (!fileName || !fileName.toLowerCase().endsWith(".md")) {
+		return false;
+	}
+
+	const folderName = parts.at(-1);
+	if (!folderName) {
+		return fileName === rootHubFilename();
+	}
+
+	return fileName === `${folderName}.md`;
+}
+
+/** True when `filePath` is an OKF directory-listing sidecar (fixed `index.md`, any folder). */
+export function isOkfSidecarPath(filePath: string): boolean {
+	return (
+		filePath === OKF_SIDECAR_FILENAME ||
+		filePath.endsWith(`/${OKF_SIDECAR_FILENAME}`)
+	);
 }
 
 /** Return the containing folder's name for a non-root folder index. */
-export function getFolderIndexFolderName(
-	filePath: string,
-	filename: string = folderIndexFilename(),
-): string | null {
-	if (!isFolderIndexPath(filePath, filename) || filePath === filename) {
+export function getFolderIndexFolderName(filePath: string): string | null {
+	if (!isFolderIndexPath(filePath)) {
 		return null;
 	}
 

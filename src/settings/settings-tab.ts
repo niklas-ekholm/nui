@@ -36,9 +36,9 @@ export class NuiSettingTab extends PluginSettingTab {
 		new Setting(containerEl).setName("Folder index").setHeading();
 
 		new Setting(containerEl)
-			.setName("Open index on folder click")
+			.setName("Open hub note on folder click")
 			.setDesc(
-				"Clicking a folder in the file explorer, or a folder in the note header breadcrumb, opens that folder's index note. The chevron still expands and collapses.",
+				"Clicking a folder in the file explorer, or a folder in the note header breadcrumb, opens that folder's hub note, FolderName.md. If it doesn't exist yet, clicking creates it. Folders inside a space marked okf_version in its hub note's frontmatter also get an index.md sidecar alongside the hub. The chevron still expands and collapses.",
 			)
 			.addToggle((toggle) =>
 				toggle
@@ -53,20 +53,7 @@ export class NuiSettingTab extends PluginSettingTab {
 		if (!this.settings.folderIndex.enabled) return;
 
 		new Setting(containerEl)
-			.setName("Index filename")
-			.setDesc("The note that represents a folder.")
-			.addText((text) =>
-				text
-					.setPlaceholder("index.md")
-					.setValue(this.settings.folderIndex.indexFilename)
-					.onChange((value) => {
-						this.settings.folderIndex.indexFilename = value;
-						this.save();
-					}),
-			);
-
-		new Setting(containerEl)
-			.setName("Hide index notes in the file explorer")
+			.setName("Hide hub notes in the file explorer")
 			.setDesc("The folder itself becomes the way in.")
 			.addToggle((toggle) =>
 				toggle

@@ -1,5 +1,6 @@
 
 import { isFolderIndexPath } from "../../navigation/folder-index";
+import { getFolderIndexPathFromFolderPath } from "../../navigation/folder-index-path";
 import { TimelineItem } from "../models/timeline-item";
 import { parentFolderPathFromItemPath } from "./project-label";
 
@@ -8,7 +9,7 @@ export function isSuperprojectItem(itemId: string): boolean {
 }
 
 export function superprojectPathForFolder(folderPath: string): string {
-	return `${folderPath}/index.md`;
+	return getFolderIndexPathFromFolderPath(folderPath);
 }
 
 export function getSubprojectIds(

@@ -1,7 +1,11 @@
 
-import { Plugin, TFolder } from "obsidian";
+import { Plugin, TFile, TFolder } from "obsidian";
 import { DEFAULT_CALENDAR_FOLDER, isHabitBundleRename } from "./habit-bundle";
-import { showHabitRenameError, syncHabitRename } from "./rename-habit";
+import {
+	isHabitHubIndexRename,
+	showHabitRenameError,
+	syncHabitRename,
+} from "./rename-habit";
 import { refreshAllTrackerViews } from "./tracker-registry";
 
 let activeManager: HabitRenameManager | null = null;
@@ -43,10 +47,10 @@ export class HabitRenameManager {
 					return;
 				}
 
-				// Only a folder rename renames a habit. The hub note is always
-				// `index.md`, so renaming it carries no name to propagate.
 				if (file instanceof TFolder) {
 					void this.handleFolderRename(file, oldPath);
+				} else if (file instanceof TFile) {
+					void this.handleIndexRename(file, oldPath);
 				}
 			}),
 		);
@@ -68,15 +72,45 @@ export class HabitRenameManager {
 			return;
 		}
 
-		await this.runSync({ oldName, newName, folder });
+		await this.runSync({ oldName, newName, folder, trigger: "folder" });
+	}
+
+	private async handleIndexRename(
+		file: TFile,
+		oldPath: string,
+	): Promise<void> {
+		if (!isHabitHubIndexRename(file, oldPath, this.getHabitsRoot())) {
+			return;
+		}
+
+		const parent = file.parent;
+		if (!(parent instanceof TFolder)) {
+			return;
+		}
+
+		const oldName = oldPath.split("/").pop()?.replace(/\.md$/, "");
+		const newName = file.basename;
+		if (!oldName || !newName || oldName === newName) {
+			return;
+		}
+
+		await this.runSync({
+			oldName,
+			newName,
+			folder: parent,
+			trigger: "index",
+		});
 	}
 
 	private async runSync(
-		options: Parameters<typeof syncHabitRename>[1],
+		options: Omit<Parameters<typeof syncHabitRename>[1], "calendarFolder">,
 	): Promise<void> {
 		this.syncing = true;
 		try {
-			await syncHabitRename(this.plugin.app, options);
+			await syncHabitRename(this.plugin.app, {
+				...options,
+				calendarFolder: this.getHabitsRoot(),
+			});
 		} catch (error) {
 			showHabitRenameError(error);
 		} finally {
@@ -85,4 +119,3 @@ export class HabitRenameManager {
 		}
 	}
 }
-

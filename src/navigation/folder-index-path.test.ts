@@ -1,8 +1,5 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import {
 	displayBasenameForNotePath,
 	getFolderIndexFolderName,
@@ -10,23 +7,24 @@ import {
 	getFolderIndexPath,
 	isFolderIndexPath,
 	isHiddenNavFilePath,
-	normalizeFolderIndexFilename,
+	isOkfSidecarPath,
 	resolveFolderPath,
 	resolveParentFolderPathFromFilePath,
+	setVaultRootName,
 	shouldHideNavFilePath,
 } from "./folder-index-path.ts";
 
 test("isHiddenNavFilePath hides agent stub files at vault root", () => {
 	assert.equal(isHiddenNavFilePath("CLAUDE.md"), true);
 	assert.equal(isHiddenNavFilePath("AGENTS.md"), true);
-	assert.equal(isHiddenNavFilePath("ai/index.md"), false);
+	assert.equal(isHiddenNavFilePath("ai/ai.md"), false);
 	assert.equal(isHiddenNavFilePath("NUI/CLAUDE.md"), false);
 });
 
 test("shouldHideNavFilePath hides nothing until asked", () => {
 	const off = { hideIndexInExplorer: false, hideAgentStubs: false };
 	assert.equal(shouldHideNavFilePath("CLAUDE.md", off), false);
-	assert.equal(shouldHideNavFilePath("NUI/index.md", off), false);
+	assert.equal(shouldHideNavFilePath("NUI/NUI.md", off), false);
 });
 
 test("shouldHideNavFilePath honours each toggle independently", () => {
@@ -38,14 +36,14 @@ test("shouldHideNavFilePath honours each toggle independently", () => {
 		true,
 	);
 	assert.equal(
-		shouldHideNavFilePath("NUI/index.md", {
+		shouldHideNavFilePath("NUI/NUI.md", {
 			hideIndexInExplorer: true,
 			hideAgentStubs: false,
 		}),
 		true,
 	);
 	assert.equal(
-		shouldHideNavFilePath("NUI/index.md", {
+		shouldHideNavFilePath("NUI/NUI.md", {
 			hideIndexInExplorer: false,
 			hideAgentStubs: true,
 		}),
@@ -53,36 +51,18 @@ test("shouldHideNavFilePath honours each toggle independently", () => {
 	);
 });
 
-test("the index filename is configurable", () => {
-	assert.equal(getFolderIndexPath({ path: "NUI" }, "_index.md"), "NUI/_index.md");
-	assert.equal(isFolderIndexPath("NUI/_index.md", "_index.md"), true);
-	assert.equal(isFolderIndexPath("NUI/index.md", "_index.md"), false);
-	assert.equal(getFolderIndexFolderName("NUI/Docs/_index.md", "_index.md"), "Docs");
-});
-
-test("normalizeFolderIndexFilename rejects anything but a bare filename", () => {
-	assert.equal(normalizeFolderIndexFilename("home"), "home.md");
-	assert.equal(normalizeFolderIndexFilename("  home.md  "), "home.md");
-	assert.equal(normalizeFolderIndexFilename("a/b.md"), "index.md");
-	assert.equal(normalizeFolderIndexFilename(""), "index.md");
-	assert.equal(normalizeFolderIndexFilename("   "), "index.md");
-});
-
-test("resolveParentFolderPathFromFilePath walks up to the vault root index", () => {
+test("resolveParentFolderPathFromFilePath walks up to the vault root hub", () => {
 	assert.equal(resolveParentFolderPathFromFilePath("index.md"), null);
-	assert.equal(resolveParentFolderPathFromFilePath("NUI/index.md"), "");
+	assert.equal(resolveParentFolderPathFromFilePath("NUI/NUI.md"), "");
 	assert.equal(
-		resolveParentFolderPathFromFilePath("NUI/NUIdocs/index.md"),
+		resolveParentFolderPathFromFilePath("NUI/NUIdocs/NUIdocs.md"),
 		"NUI",
 	);
 	assert.equal(
 		resolveParentFolderPathFromFilePath("NUI/NUIdocs/concepts/foo.md"),
 		"NUI/NUIdocs",
 	);
-	assert.equal(
-		getFolderIndexPathFromFolderPath(""),
-		"index.md",
-	);
+	assert.equal(getFolderIndexPathFromFolderPath(""), "index.md");
 });
 
 test("resolveFolderPath treats empty path as vault root", () => {
@@ -106,69 +86,71 @@ test("resolveFolderPath treats empty path as vault root", () => {
 	);
 });
 
-test("getFolderIndexPath resolves root and nested folder indexes", () => {
-	assert.equal(getFolderIndexPath({ path: "" }), "index.md");
-	assert.equal(getFolderIndexPath({ path: "NUI" }), "NUI/index.md");
+test("getFolderIndexPath names a folder's hub note after the folder", () => {
+	assert.equal(getFolderIndexPath({ path: "", name: "" }), "index.md");
+	assert.equal(getFolderIndexPath({ path: "NUI", name: "NUI" }), "NUI/NUI.md");
 	assert.equal(
-		getFolderIndexPath({ path: "NUI/NUIdocs" }),
-		"NUI/NUIdocs/index.md",
+		getFolderIndexPath({ path: "NUI/NUIdocs", name: "NUIdocs" }),
+		"NUI/NUIdocs/NUIdocs.md",
 	);
 });
 
-test("isFolderIndexPath only accepts an index.md path segment", () => {
-	assert.equal(isFolderIndexPath("index.md"), true);
-	assert.equal(isFolderIndexPath("NUI/index.md"), true);
-	assert.equal(isFolderIndexPath("NUI/NUIdocs/index.md"), true);
-	assert.equal(isFolderIndexPath("NUI/my-index.md"), false);
-	assert.equal(isFolderIndexPath("NUI/index.md.backup"), false);
+test("getFolderIndexPathFromFolderPath derives the folder name from the path", () => {
+	assert.equal(getFolderIndexPathFromFolderPath(""), "index.md");
+	assert.equal(getFolderIndexPathFromFolderPath("NUI"), "NUI/NUI.md");
+	assert.equal(
+		getFolderIndexPathFromFolderPath("NUI/NUIdocs"),
+		"NUI/NUIdocs/NUIdocs.md",
+	);
 });
 
-test("displayBasenameForNotePath uses parent folder name for folder indexes", () => {
-	assert.equal(displayBasenameForNotePath("NUI/NUIdocs/index.md"), "NUIdocs");
+test("isFolderIndexPath accepts a folder's own hub note, or the root hub", () => {
+	assert.equal(isFolderIndexPath("index.md"), true);
+	assert.equal(isFolderIndexPath("NUI/NUI.md"), true);
+	assert.equal(isFolderIndexPath("NUI/NUIdocs/NUIdocs.md"), true);
+	assert.equal(isFolderIndexPath("NUI/NUIdocs/NUI.md"), false);
+	assert.equal(isFolderIndexPath("NUI/index.md"), false);
+	assert.equal(isFolderIndexPath("Untitled.md"), false);
+});
+
+test("isOkfSidecarPath accepts the fixed index.md filename in any folder", () => {
+	assert.equal(isOkfSidecarPath("index.md"), true);
+	assert.equal(isOkfSidecarPath("NUI/index.md"), true);
+	assert.equal(isOkfSidecarPath("NUI/NUIdocs/index.md"), true);
+	assert.equal(isOkfSidecarPath("NUI/NUI.md"), false);
+	assert.equal(isOkfSidecarPath("NUI/my-index.md"), false);
+});
+
+test("displayBasenameForNotePath uses parent folder name for a hub note", () => {
+	assert.equal(displayBasenameForNotePath("NUI/NUIdocs/NUIdocs.md"), "NUIdocs");
 	assert.equal(displayBasenameForNotePath("NUI/project.md"), "project");
 	assert.equal(displayBasenameForNotePath("index.md"), "index");
 });
 
-test("getFolderIndexFolderName resolves timeline titles for folder indexes", () => {
-	assert.equal(getFolderIndexFolderName("NUI/index.md"), "NUI");
+test("getFolderIndexFolderName resolves timeline titles for a folder's hub note", () => {
+	assert.equal(getFolderIndexFolderName("NUI/NUI.md"), "NUI");
 	assert.equal(
-		getFolderIndexFolderName("NUI/NUI Projects/Superproject/index.md"),
+		getFolderIndexFolderName("NUI/NUI Projects/Superproject/Superproject.md"),
 		"Superproject",
 	);
 	assert.equal(getFolderIndexFolderName("index.md"), null);
 	assert.equal(getFolderIndexFolderName("NUI/project.md"), null);
 });
 
-/**
- * Architecture guard for the retired hub-note convention.
- *
- * Before the index.md model, a folder's hub note was named after the folder
- * (`Walking/Walking.md`), and habits were renamed by renaming that note. Both
- * conventions were deleted; a same-named note is now an ordinary note. These
- * tests fail if the check comes back.
- */
-test("a note named after its folder is not a folder index", () => {
-	assert.equal(isFolderIndexPath("Habits/Walking/Walking.md"), false);
-	assert.equal(isFolderIndexPath("NUI/NUI.md"), false);
-	assert.equal(isFolderIndexPath("Habits/Walking/index.md"), true);
-});
+test("setVaultRootName names the root hub after the vault, like any other folder", () => {
+	try {
+		setVaultRootName("My Vault");
+		assert.equal(getFolderIndexPath({ path: "", name: "" }), "My Vault.md");
+		assert.equal(getFolderIndexPathFromFolderPath(""), "My Vault.md");
+		assert.equal(isFolderIndexPath("My Vault.md"), true);
+		assert.equal(isFolderIndexPath("index.md"), false);
+		// the root's OKF sidecar, if the root is ever marked OKF, is a
+		// distinct file from its hub once the hub isn't named "index.md".
+		assert.equal(isOkfSidecarPath("index.md"), true);
 
-test("the same-named hub-note check has not returned", () => {
-	const srcDir = dirname(dirname(fileURLToPath(import.meta.url)));
-
-	const walk = (dir: string): string[] =>
-		readdirSync(dir).flatMap((name) => {
-			const full = join(dir, name);
-			if (statSync(full).isDirectory()) return walk(full);
-			return name.endsWith(".ts") && !name.endsWith(".test.ts") ? [full] : [];
-		});
-
-	for (const file of walk(srcDir)) {
-		const text = readFileSync(file, "utf8");
-		assert.equal(
-			text.includes("isSameNamedFolderNote"),
-			false,
-			`${file} references isSameNamedFolderNote; the hub-note convention was removed`,
-		);
+		setVaultRootName("  ");
+		assert.equal(getFolderIndexPathFromFolderPath(""), "index.md");
+	} finally {
+		setVaultRootName("index");
 	}
 });

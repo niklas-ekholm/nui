@@ -2,6 +2,7 @@
 import { App, Notice, TFile } from "obsidian";
 import { resolveUniqueSubfolderName } from "../../navigation/create-subfolder";
 import { isFolderIndexPath } from "../../navigation/folder-index";
+import { getFolderIndexPathFromFolderPath } from "../../navigation/folder-index-path";
 import { withFolderIndexCreateSuppressed } from "../../navigation/folder-index-suppress";
 
 function joinFolderPath(parentFolderPath: string, folderName: string): string {
@@ -24,7 +25,7 @@ export async function turnIntoProjectFolder(
 		file.basename,
 	);
 	const folderPath = joinFolderPath(parentFolderPath, folderName);
-	const indexPath = joinFolderPath(folderPath, "index.md");
+	const indexPath = getFolderIndexPathFromFolderPath(folderPath);
 
 	try {
 		return await withFolderIndexCreateSuppressed(async () => {

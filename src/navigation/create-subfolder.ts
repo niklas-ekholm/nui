@@ -44,7 +44,7 @@ export async function createSubfolder(
 			const indexPath = getFolderIndexPath(folder);
 			return await app.vault.create(
 				indexPath,
-				buildFolderIndexContent(folder.name),
+				buildFolderIndexContent(),
 			);
 		});
 	} catch (error) {
