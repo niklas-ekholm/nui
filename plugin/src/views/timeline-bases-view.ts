@@ -53,7 +53,7 @@ import {
 	mountBasesTitle,
 } from "../bases/bases-view-title";
 import { resolveNoteCreateFolder } from "../bases/bases-view-topbar";
-import { resolveTimelineLayoutFromEmbed, resolveEmbedResponsibilityFromEmbed } from "../embed/embed-pipe-sync";
+import { resolveTimelineLayoutFromEmbed, resolveEmbedResponsibilityFromEmbedAsync } from "../embed/embed-pipe-sync";
 import { EMBED_PIPES_CHANGED_EVENT } from "../embed/embed-pipe-events";
 import { TimelineItem } from "../core/models/timeline-item";
 import { TaskItem } from "../core/tasks/types";
@@ -155,12 +155,13 @@ export class TimelineBasesView extends BasesView {
 
 		const allItems = this.withProjectLabels(
 			groupTimelineItemsBySuperproject(
-				entriesToTimelineItems(this.data.data, this.config),
+				entriesToTimelineItems(this.data.data, this.config, this.app),
 			),
 		);
-		const responsibility = resolveEmbedResponsibilityFromEmbed(
+		const responsibility = await resolveEmbedResponsibilityFromEmbedAsync(
 			this.app,
 			this.containerEl,
+			this.config.name,
 		);
 		const responsibilityItems = responsibility
 			? filterTimelineItemsByResponsibility(allItems, responsibility)

@@ -12,7 +12,7 @@ import { renderTaskList } from "../core/task-list/render-task-list";
 import { taskSignature } from "../core/tasks/types";
 import { filterEntriesByResponsibility } from "../bases/responsibility-filter";
 import { EMBED_PIPES_CHANGED_EVENT } from "../embed/embed-pipe-events";
-import { resolveEmbedResponsibilityFromEmbed } from "../embed/embed-pipe-sync";
+import { resolveEmbedResponsibilityFromEmbedAsync } from "../embed/embed-pipe-sync";
 import {
 	TASK_LIST_BASES_VIEW_TYPE,
 	mergeShowCompleted,
@@ -75,16 +75,17 @@ export class TaskListBasesView extends BasesView {
 			this.config.get("timelineFolders"),
 		);
 		const order = this.config.getOrder().join(",");
-		const responsibility = resolveEmbedResponsibilityFromEmbed(
+		const responsibility = await resolveEmbedResponsibilityFromEmbedAsync(
 			this.app,
 			this.containerEl,
+			this.config.name,
 		);
 		let entries = this.filterEntries(this.data.data, {
 			projectScope,
 			timelineFolders,
 		});
 		if (responsibility) {
-			entries = filterEntriesByResponsibility(entries, responsibility);
+			entries = filterEntriesByResponsibility(entries, responsibility, this.app);
 		}
 		this.trackedPaths = new Set(entries.map((entry) => entry.file.path));
 

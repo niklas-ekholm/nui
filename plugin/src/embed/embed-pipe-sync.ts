@@ -7,6 +7,22 @@ import { notifyEmbedPipeViews } from "./embed-pipe-events";
 import { parseEmbedLinkText, type ParsedEmbedPipes } from "./parse-embed-pipes";
 import { syncPaneWidthInElement } from "./sync-pane-width";
 import type { TimelineLayoutMode } from "../timeline/types";
+import {
+	resolveEmbedResponsibilityFromEmbed,
+	resolveEmbedResponsibilityFromEmbedAsync,
+} from "./resolve-embed-responsibility";
+
+export {
+	resolveEmbedResponsibilityFromEmbed,
+	resolveEmbedResponsibilityFromEmbedAsync,
+};
+
+export function resolveTimelineResponsibilityFromEmbed(
+	app: App,
+	anchorEl: HTMLElement,
+): string | null {
+	return resolveEmbedResponsibilityFromEmbed(app, anchorEl);
+}
 
 const EMBED_SELECTOR =
 	".internal-embed.bases-embed, .block-language-base.bases-embed, .internal-embed";
@@ -181,23 +197,4 @@ export function resolveTimelineLayoutFromEmbed(
 	}
 
 	return null;
-}
-
-export function resolveTimelineResponsibilityFromEmbed(
-	app: App,
-	anchorEl: HTMLElement,
-): string | null {
-	return resolveEmbedResponsibilityFromEmbed(app, anchorEl);
-}
-
-export function resolveEmbedResponsibilityFromEmbed(
-	app: App,
-	anchorEl: HTMLElement,
-): string | null {
-	const parsed = resolveEmbedPipes(app, anchorEl);
-	if (parsed?.responsibility) return parsed.responsibility;
-
-	const embed = findBasesEmbedRoot(anchorEl);
-	const attr = embed?.getAttribute("data-nui-embed-responsibility")?.trim();
-	return attr || null;
 }

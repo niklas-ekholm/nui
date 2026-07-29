@@ -11,6 +11,7 @@
     "score": "number",
     "author": "text",
     "project": "text",
+    "responsibility": "text",
     "status": "text"
   }
 }

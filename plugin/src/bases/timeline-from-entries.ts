@@ -7,6 +7,7 @@ import {
 	NullValue,
 	parsePropertyId,
 	Value,
+	App,
 } from "obsidian";
 import { parseIsoDate } from "../core/parse/dates";
 import { TimelineItem } from "../core/models/timeline-item";
@@ -156,16 +157,26 @@ function readColor(entry: BasesEntry): string | undefined {
 	);
 }
 
-function readResponsibility(entry: BasesEntry): string | undefined {
-	return (
-		valueToString(entry.getValue("note.responsibility" as BasesPropertyId)) ??
-		undefined
+function readResponsibility(entry: BasesEntry, app: App): string | undefined {
+	const fromBases = valueToString(
+		entry.getValue("note.responsibility" as BasesPropertyId),
 	);
+	if (fromBases) return fromBases;
+
+	const fromFrontmatter = app.metadataCache.getFileCache(entry.file)
+		?.frontmatter?.responsibility;
+	if (typeof fromFrontmatter === "string") {
+		const text = fromFrontmatter.trim();
+		if (text) return text;
+	}
+
+	return undefined;
 }
 
 export function entriesToTimelineItems(
 	entries: BasesEntry[],
 	config: BasesViewConfig,
+	app: App,
 ): TimelineItem[] {
 	const items: TimelineItem[] = [];
 
@@ -181,7 +192,7 @@ export function entriesToTimelineItems(
 		const type = valueToString(entry.getValue("note.type" as BasesPropertyId));
 		const project = readProject(entry, config);
 		const color = readColor(entry);
-		const responsibility = readResponsibility(entry);
+		const responsibility = readResponsibility(entry, app);
 
 		items.push({
 			id: entry.file.path,

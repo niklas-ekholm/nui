@@ -1,21 +1,36 @@
-import { BasesEntry, BasesPropertyId, NullValue } from "obsidian";
+import { BasesEntry, BasesPropertyId, NullValue, App } from "obsidian";
 
-export function readEntryResponsibility(entry: BasesEntry): string | null {
+export function readEntryResponsibility(
+	entry: BasesEntry,
+	app?: App,
+): string | null {
 	const value = entry.getValue("note.responsibility" as BasesPropertyId);
-	if (!value || value instanceof NullValue) return null;
+	if (value && !(value instanceof NullValue)) {
+		const text = value.toString().trim();
+		if (text) return text;
+	}
 
-	const text = value.toString().trim();
-	return text || null;
+	if (app) {
+		const fromFrontmatter = app.metadataCache.getFileCache(entry.file)
+			?.frontmatter?.responsibility;
+		if (typeof fromFrontmatter === "string") {
+			const text = fromFrontmatter.trim();
+			if (text) return text;
+		}
+	}
+
+	return null;
 }
 
 export function filterEntriesByResponsibility(
 	entries: BasesEntry[],
 	responsibility: string,
+	app?: App,
 ): BasesEntry[] {
 	const needle = responsibility.trim();
 	if (!needle) return entries;
 
 	return entries.filter(
-		(entry) => readEntryResponsibility(entry) === needle,
+		(entry) => readEntryResponsibility(entry, app) === needle,
 	);
 }
