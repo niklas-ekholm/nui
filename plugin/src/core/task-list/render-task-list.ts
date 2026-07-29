@@ -78,7 +78,7 @@ function renderTaskRow(
 	});
 
 	const textEl = rowEl.createSpan({
-		cls: "nui-task-list-text",
+		cls: "nui-task-list-text nui-body-copy",
 	});
 	renderTaskText(textEl, app, task, () => {
 		void openTaskSource(app, task);
@@ -137,6 +137,15 @@ function renderTaskText(
 			text: segment.content,
 			href: "#",
 		});
+		if (
+			segment.target &&
+			!app.metadataCache.getFirstLinkpathDest(
+				segment.target,
+				task.filePath,
+			)
+		) {
+			linkEl.addClass("is-unresolved");
+		}
 		linkEl.addEventListener("click", (event) => {
 			event.preventDefault();
 			event.stopPropagation();

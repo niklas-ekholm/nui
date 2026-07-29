@@ -2129,7 +2129,8 @@ body.is-mobile.is-tablet
 	.cm-editor,
 	.popover .markdown-preview-view,
 	.bases-embed .bases-td,
-	.bases-view .bases-td
+	.bases-view .bases-td,
+	.nui-text-scope .nui-body-copy
 ) {
 	--link-color: var(--n-body-link-color);
 	--link-color-hover: var(--n-body-link-color);
@@ -2213,22 +2214,22 @@ body.is-mobile.is-tablet
 
 /* --- Resolved body-copy links (explicit; excludes unresolved) --- */
 
-:is(.markdown-reading-view, .markdown-preview-view) :is(
+:is(.markdown-reading-view, .markdown-preview-view, .nui-text-scope .nui-body-copy) :is(
 	a.internal-link:not(.is-unresolved),
 	a.external-link,
 	a.footnote-link
 ) {
 	color: var(--n-body-link-color) !important;
-	text-decoration-line: underline;
-	text-decoration-style: solid;
-	text-decoration-thickness: var(--n-body-link-underline-thickness);
-	text-underline-offset: var(--n-body-link-underline-offset);
-	text-decoration-color: var(--n-body-link-color);
+	text-decoration-line: underline !important;
+	text-decoration-style: solid !important;
+	text-decoration-thickness: var(--n-body-link-underline-thickness) !important;
+	text-underline-offset: var(--n-body-link-underline-offset) !important;
+	text-decoration-color: var(--n-body-link-color) !important;
 	font-weight: inherit;
 	opacity: 1;
 }
 
-:is(.markdown-reading-view, .markdown-preview-view) :is(
+:is(.markdown-reading-view, .markdown-preview-view, .nui-text-scope .nui-body-copy) :is(
 	a.internal-link:not(.is-unresolved),
 	a.external-link,
 	a.footnote-link
@@ -2312,7 +2313,8 @@ body.is-mobile.is-tablet
 	.cm-editor,
 	.popover .markdown-preview-view,
 	.bases-embed .bases-td,
-	.bases-view .bases-td
+	.bases-view .bases-td,
+	.nui-text-scope .nui-body-copy
 ) :is(a.internal-link.is-unresolved, a.is-unresolved, .internal-link.is-unresolved, .is-unresolved) {
 	color: var(--n-body-link-color) !important;
 	text-decoration-line: underline !important;
@@ -2331,7 +2333,8 @@ body.is-mobile.is-tablet
 	.cm-editor,
 	.popover .markdown-preview-view,
 	.bases-embed .bases-td,
-	.bases-view .bases-td
+	.bases-view .bases-td,
+	.nui-text-scope .nui-body-copy
 ) :is(a.internal-link.is-unresolved, a.is-unresolved, .internal-link.is-unresolved, .is-unresolved):hover {
 	text-decoration: none !important;
 }

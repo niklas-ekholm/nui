@@ -2882,8 +2882,69 @@ body.nui-hide-embed-edit-buttons .mod-cm6 .block-language-base ~ :is(.edit-block
 	cursor: pointer;
 }
 
-.nui-text-scope .nui-task-list-text {
+/* Body copy inside plugin views — same text + link treatment as reading view. */
+.nui-text-scope .nui-body-copy {
+	--link-decoration: underline;
+	--link-decoration-hover: none;
+	--link-unresolved-decoration-style: dashed;
+}
+
+.nui-text-scope .nui-body-copy,
+.nui-text-scope .nui-body-copy :is(*, ::before, ::after) {
 	color: var(--text-normal) !important;
+}
+
+.nui-text-scope .nui-body-copy :is(
+	a.internal-link:not(.is-unresolved),
+	a.external-link,
+	a.footnote-link
+) {
+	color: var(--link-color, var(--text-accent)) !important;
+	text-decoration-line: underline !important;
+	text-decoration-style: solid !important;
+	text-decoration-thickness: var(--link-decoration-thickness, 1px) !important;
+	text-underline-offset: var(--link-underline-offset, 1px) !important;
+	text-decoration-color: var(--link-color, var(--text-accent)) !important;
+	font-weight: inherit;
+	opacity: 1;
+}
+
+.nui-text-scope .nui-body-copy :is(
+	a.internal-link:not(.is-unresolved),
+	a.external-link,
+	a.footnote-link
+):hover {
+	color: var(--link-color-hover, var(--link-color, var(--text-accent))) !important;
+	text-decoration: var(--link-decoration-hover, none);
+}
+
+.nui-text-scope .nui-body-copy :is(
+	a.internal-link.is-unresolved,
+	a.is-unresolved,
+	.internal-link.is-unresolved
+) {
+	color: var(--link-unresolved-color, var(--link-color, var(--text-accent))) !important;
+	text-decoration-line: underline !important;
+	text-decoration-style: var(--link-unresolved-decoration-style, dashed) !important;
+	text-decoration-thickness: var(
+		--link-unresolved-decoration-thickness,
+		1px
+	) !important;
+	text-underline-offset: var(--link-underline-offset, 1px) !important;
+	text-decoration-color: var(
+		--link-unresolved-decoration-color,
+		var(--link-unresolved-color, var(--link-color, var(--text-accent)))
+	) !important;
+	opacity: 1 !important;
+	filter: none !important;
+}
+
+.nui-text-scope .nui-body-copy :is(
+	a.internal-link.is-unresolved,
+	a.is-unresolved,
+	.internal-link.is-unresolved
+):hover {
+	text-decoration: var(--link-unresolved-decoration-hover, none) !important;
 }
 
 .nui-task-list-row--completed .nui-task-list-text {
