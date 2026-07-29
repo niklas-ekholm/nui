@@ -58,11 +58,38 @@ test("resolveParentFolderPathFromFilePath walks up to the vault root hub", () =>
 		resolveParentFolderPathFromFilePath("NUI/NUIdocs/NUIdocs.md"),
 		"NUI",
 	);
+	assert.equal(getFolderIndexPathFromFolderPath(""), "index.md");
+});
+
+test("resolveParentFolderPathFromFilePath opens the containing folder hub when it exists", () => {
+	const exists = (path: string) =>
+		path === "Projects/Bunker library/Bunker library.md" ||
+		path === "NUI/NUIdocs/NUIdocs.md" ||
+		path === "Projects/Projects.md";
+
 	assert.equal(
-		resolveParentFolderPathFromFilePath("NUI/NUIdocs/concepts/foo.md"),
+		resolveParentFolderPathFromFilePath(
+			"Projects/Bunker library/Phase 1.md",
+			exists,
+		),
+		"Projects/Bunker library",
+	);
+	assert.equal(
+		resolveParentFolderPathFromFilePath("Projects/Lantern.md", exists),
+		"Projects",
+	);
+});
+
+test("resolveParentFolderPathFromFilePath skips folders without a hub note", () => {
+	const exists = (path: string) => path === "NUI/NUIdocs/NUIdocs.md";
+
+	assert.equal(
+		resolveParentFolderPathFromFilePath(
+			"NUI/NUIdocs/concepts/foo.md",
+			exists,
+		),
 		"NUI/NUIdocs",
 	);
-	assert.equal(getFolderIndexPathFromFolderPath(""), "index.md");
 });
 
 test("resolveFolderPath treats empty path as vault root", () => {

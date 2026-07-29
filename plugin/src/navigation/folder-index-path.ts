@@ -146,13 +146,31 @@ export function shouldHideNavFilePath(
 }
 
 /** Parent folder path for go-to-parent; null when the file lives at vault root. */
-export function resolveParentFolderPathFromFilePath(filePath: string): string | null {
+export function resolveParentFolderPathFromFilePath(
+	filePath: string,
+	folderIndexExists: (indexPath: string) => boolean = () => false,
+): string | null {
 	const slash = filePath.lastIndexOf("/");
 	if (slash < 0) {
 		return null;
 	}
 
 	const containingFolderPath = filePath.slice(0, slash);
+
+	if (isFolderIndexPath(filePath)) {
+		const parentSlash = containingFolderPath.lastIndexOf("/");
+		return parentSlash >= 0 ? containingFolderPath.slice(0, parentSlash) : "";
+	}
+
+	const containingIndexPath =
+		getFolderIndexPathFromFolderPath(containingFolderPath);
+	if (
+		containingIndexPath !== filePath &&
+		folderIndexExists(containingIndexPath)
+	) {
+		return containingFolderPath;
+	}
+
 	const parentSlash = containingFolderPath.lastIndexOf("/");
 	return parentSlash >= 0 ? containingFolderPath.slice(0, parentSlash) : "";
 }

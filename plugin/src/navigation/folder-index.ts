@@ -158,7 +158,14 @@ export class FolderIndexManager {
 			return null;
 		}
 
-		return resolveParentFolderPathFromFilePath(activeFile.path);
+		return resolveParentFolderPathFromFilePath(
+			activeFile.path,
+			(indexPath) => {
+				const file =
+					this.plugin.app.vault.getAbstractFileByPath(indexPath);
+				return file instanceof TFile;
+			},
+		);
 	}
 
 	async goToParentFolder(): Promise<boolean> {
