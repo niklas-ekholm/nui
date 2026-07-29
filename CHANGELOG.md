@@ -9,14 +9,27 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-07-30
+
 ### Added
 
 - **Collapse properties** setting: the info icon beside a note title toggles whether properties stay visible, and the choice persists across notes.
+- Timeline and task-list embed pipe filter by responsibility (e.g. `![[Note|responsibility]]`).
+- **Select all occurrences** and **add cursors to line ends** editor commands.
 - Hotkeys aligned across the plugin and example vault: opt-in defaults `Mod+Alt+` `` (show or hide chrome) and `Mod+Escape` (go to parent folder); example-vault bindings `Mod+` `` (toggle source mode), `Mod+Alt+↑`/`↓`, `Mod+D`, `Mod+Shift+L`, `Alt+Shift+I`, and `Alt+Shift+↑`/`↓` for multi-cursor commands.
 
 ### Changed
 
+- Example vault directory renamed to `vault-example/`; `Contents.base` renamed to `Navigation.base`.
 - Collapsible properties use a Lucide **info** icon with sizing tuned to align beside the note title.
+- Task list text renders wikilinks with reading-view body copy styling.
+
+### Fixed
+
+- Responsibility embed pipe filtering resolves from the host note and works for tasks and multi-embed notes.
+- Timeline embeds clip horizontal overflow.
+- `Mod+Escape` go-to-parent-folder behaviour.
+- Multi-cursor carets blink in sync.
 
 ## [0.2.0] — 2026-07-27
 
@@ -50,5 +63,6 @@ repository and start on a single version number, clearing the theme's earlier
 - The release-branch mirror workflow, which duplicated plugin and theme sources
   onto branches that were never merged back.
 
-[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/niklas-ekholm/nui/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/niklas-ekholm/nui/releases/tag/v0.2.0

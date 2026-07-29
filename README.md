@@ -23,9 +23,9 @@ Three zips, depending on what you already have:
 
 | Zip | Use it when |
 | --- | --- |
-| `nui-v0.2.0.zip` | You want to see NUI working. A vault with the plugin and theme already installed and ~40 notes of demo content — unzip it and open the folder as a vault. |
-| `nui-plugin-0.2.0.zip` | You have a vault and want the Bases views. |
-| `nui-theme-0.2.0.zip` | You have a vault and want the appearance only. |
+| `nui-v0.2.1.zip` | You want to see NUI working. A vault with the plugin and theme already installed and ~40 notes of demo content — unzip it and open the folder as a vault. |
+| `nui-plugin-0.2.1.zip` | You have a vault and want the Bases views. |
+| `nui-theme-0.2.1.zip` | You have a vault and want the appearance only. |
 
 Every zip contains the same `install.sh` and an `INSTALL.md` describing that
 zip's payload. To install into an existing vault:
