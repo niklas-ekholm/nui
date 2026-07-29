@@ -1040,7 +1040,8 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 .markdown-rendered .bases-embed .bases-view:has(.nui-timeline-bases-container:is(.nui-timeline--full, .nui-timeline--full-tasks)) {
 	height: auto;
 	min-height: 0;
-	overflow: visible;
+	overflow-x: hidden;
+	overflow-y: visible;
 }
 
 .bases-embed .nui-timeline-bases-container:is(.nui-timeline--full, .nui-timeline--full-tasks),
@@ -1055,7 +1056,8 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	min-height: var(--nui-timeline-full-height);
 	padding: 0;
 	margin: 0;
-	overflow: visible !important;
+	overflow-x: hidden !important;
+	overflow-y: visible;
 	display: flex;
 	flex-direction: column;
 }
@@ -1066,7 +1068,8 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 .markdown-rendered .bases-embed .nui-timeline-bases-container:is(.nui-timeline--full, .nui-timeline--full-tasks) > .nui-timeline-scroll,
 .markdown-source-view.mod-cm6 .internal-embed.bases-embed:has(:is(.nui-timeline--full, .nui-timeline--full-tasks)) .nui-timeline-bases-container > .nui-timeline-scroll,
 .markdown-source-view.mod-cm6 .cm-embed-block:has(:is(.nui-timeline--full, .nui-timeline--full-tasks)) .nui-timeline-bases-container > .nui-timeline-scroll {
-	overflow: visible !important;
+	overflow-x: hidden !important;
+	overflow-y: visible;
 	flex: none;
 	min-height: 0;
 }
@@ -1082,7 +1085,8 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	flex-direction: column;
 	height: auto;
 	min-height: var(--nui-timeline-full-height);
-	overflow: visible;
+	overflow-x: hidden;
+	overflow-y: visible;
 }
 
 .bases-embed:has(:is(.nui-timeline--full, .nui-timeline--full-tasks)) .nui-timeline,
@@ -1107,7 +1111,8 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 .markdown-rendered .bases-embed:has(:is(.nui-timeline--full, .nui-timeline--full-tasks)) .nui-timeline-scroll,
 .markdown-source-view.mod-cm6 .internal-embed.bases-embed:has(:is(.nui-timeline--full, .nui-timeline--full-tasks)) .nui-timeline-scroll,
 .markdown-source-view.mod-cm6 .cm-embed-block:has(:is(.nui-timeline--full, .nui-timeline--full-tasks)) .nui-timeline-scroll {
-	overflow: visible;
+	overflow-x: hidden;
+	overflow-y: visible;
 	flex: none;
 	min-height: 0;
 }
@@ -1253,7 +1258,8 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	height: auto;
 	min-height: var(--nui-timeline-full-height);
 	max-height: none;
-	overflow: visible;
+	overflow-x: hidden;
+	overflow-y: visible;
 }
 
 .markdown-preview-view p:has(> .internal-embed.bases-embed:has(:is(.nui-timeline--full, .nui-timeline--full-tasks))):not(:has(> [data-nui-embed-wide])),
@@ -1262,7 +1268,8 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 .markdown-source-view.mod-cm6 .cm-embed-block:has(:is(.nui-timeline--full, .nui-timeline--full-tasks)):not([data-nui-embed-wide-host]) {
 	width: 100%;
 	max-width: 100%;
-	overflow: visible;
+	overflow-x: hidden;
+	overflow-y: visible;
 }
 
 .nui-timeline {
@@ -1315,8 +1322,21 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 }
 
 .markdown-source-view.mod-cm6.is-readable-line-width .cm-embed-block:has(:is(.nui-timeline--full, .nui-timeline--full-tasks)) {
-	overflow: visible !important;
+	overflow-x: hidden !important;
+	overflow-y: visible !important;
 	contain: none !important;
+}
+
+/* Clip wide timeline events at the embed edge — pan/zoom moves content inside. */
+:is(.bases-embed, .cm-embed-block):has(.nui-timeline) {
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
+.nui-timeline-chart,
+.nui-timeline-body {
+	max-width: 100%;
+	overflow-x: hidden;
 }
 
 .nui-tracker-bases-container,
