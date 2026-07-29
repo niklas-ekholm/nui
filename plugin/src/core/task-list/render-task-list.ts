@@ -1,6 +1,7 @@
 
-import { App, TFile } from "obsidian";
+import { App, Keymap, TFile } from "obsidian";
 import { displayBasenameForNotePath } from "../../navigation/folder-index-path";
+import { parseTaskTextSegments } from "./parse-task-text-segments";
 import { TaskItem } from "../tasks/types";
 import { toggleTaskInVault } from "../tasks/toggle-task-in-vault";
 
@@ -78,9 +79,8 @@ function renderTaskRow(
 
 	const textEl = rowEl.createSpan({
 		cls: "nui-task-list-text",
-		text: task.text,
 	});
-	textEl.addEventListener("click", () => {
+	renderTaskText(textEl, app, task, () => {
 		void openTaskSource(app, task);
 	});
 
@@ -110,3 +110,42 @@ async function openTaskSource(app: App, task: TaskItem): Promise<void> {
 	});
 }
 
+function renderTaskText(
+	container: HTMLElement,
+	app: App,
+	task: TaskItem,
+	onPlainClick: () => void,
+): void {
+	const segments = parseTaskTextSegments(task.text);
+	const hasWikilink = segments.some((segment) => segment.type === "wikilink");
+
+	if (!hasWikilink) {
+		container.setText(task.text);
+		container.addEventListener("click", onPlainClick);
+		return;
+	}
+
+	for (const segment of segments) {
+		if (segment.type === "text") {
+			const textEl = container.createSpan({ text: segment.content });
+			textEl.addEventListener("click", onPlainClick);
+			continue;
+		}
+
+		const linkEl = container.createEl("a", {
+			cls: "internal-link",
+			text: segment.content,
+			href: "#",
+		});
+		linkEl.addEventListener("click", (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			if (!segment.target) return;
+			void app.workspace.openLinkText(
+				segment.target,
+				task.filePath,
+				Keymap.isModEvent(event),
+			);
+		});
+	}
+}
