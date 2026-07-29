@@ -53,7 +53,8 @@ import {
 	mountBasesTitle,
 } from "../bases/bases-view-title";
 import { resolveNoteCreateFolder } from "../bases/bases-view-topbar";
-import { resolveTimelineLayoutFromEmbed, resolveTimelineResponsibilityFromEmbed } from "../embed/embed-pipe-sync";
+import { resolveTimelineLayoutFromEmbed, resolveEmbedResponsibilityFromEmbed } from "../embed/embed-pipe-sync";
+import { EMBED_PIPES_CHANGED_EVENT } from "../embed/embed-pipe-events";
 import { TimelineItem } from "../core/models/timeline-item";
 import { TaskItem } from "../core/tasks/types";
 import {
@@ -124,6 +125,19 @@ export class TimelineBasesView extends BasesView {
 				}
 			}),
 		);
+		const onEmbedPipesChanged = (): void => {
+			this.onDataUpdated();
+		};
+		this.containerEl.addEventListener(
+			EMBED_PIPES_CHANGED_EVENT,
+			onEmbedPipesChanged,
+		);
+		this.register(() => {
+			this.containerEl.removeEventListener(
+				EMBED_PIPES_CHANGED_EVENT,
+				onEmbedPipesChanged,
+			);
+		});
 	}
 
 	onDataUpdated(): void {
@@ -144,7 +158,7 @@ export class TimelineBasesView extends BasesView {
 				entriesToTimelineItems(this.data.data, this.config),
 			),
 		);
-		const responsibility = resolveTimelineResponsibilityFromEmbed(
+		const responsibility = resolveEmbedResponsibilityFromEmbed(
 			this.app,
 			this.containerEl,
 		);

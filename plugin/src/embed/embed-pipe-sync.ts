@@ -2,12 +2,14 @@ import type { App, EmbedCache } from "obsidian";
 import { MarkdownView } from "obsidian";
 import { findHostFileForElement } from "../navigation/folder-index";
 import { applyParsedEmbedPipes } from "./apply-embed-pipes";
+import { findBaseEmbedWrapperForAnchor } from "./find-embed-for-anchor";
+import { notifyEmbedPipeViews } from "./embed-pipe-events";
 import { parseEmbedLinkText, type ParsedEmbedPipes } from "./parse-embed-pipes";
 import { syncPaneWidthInElement } from "./sync-pane-width";
 import type { TimelineLayoutMode } from "../timeline/types";
 
 const EMBED_SELECTOR =
-	".internal-embed, .block-language-base.bases-embed";
+	".internal-embed.bases-embed, .block-language-base.bases-embed, .internal-embed";
 
 const TIMELINE_EMBED_SELECTOR =
 	".nui-timeline, .nui-timeline-bases-root, .nui-timeline-bases-container";
@@ -24,10 +26,12 @@ function readEmbedOriginalFromDom(embedEl: HTMLElement): string | null {
 	return null;
 }
 
-function embedsForHost(app: App, hostPath: string): EmbedCache[] {
+function baseEmbedsForHost(app: App, hostPath: string): EmbedCache[] {
 	const file = app.vault.getFileByPath(hostPath);
 	if (!file) return [];
-	return app.metadataCache.getFileCache(file)?.embeds ?? [];
+	return (app.metadataCache.getFileCache(file)?.embeds ?? []).filter((entry) =>
+		entry.link.endsWith(".base"),
+	);
 }
 
 function matchEmbedByIndex(
@@ -37,6 +41,11 @@ function matchEmbedByIndex(
 ): EmbedCache | null {
 	const embedEls = Array.from(
 		scope.querySelectorAll<HTMLElement>(EMBED_SELECTOR),
+	).filter(
+		(el) =>
+			el.classList.contains("bases-embed") ||
+			!!el.querySelector(TIMELINE_EMBED_SELECTOR) ||
+			!!el.querySelector(".nui-task-list-bases-root"),
 	);
 	const index = embedEls.indexOf(embedEl);
 	if (index < 0 || index >= embeds.length) return null;
@@ -46,42 +55,53 @@ function matchEmbedByIndex(
 function resolveParsedPipes(
 	app: App,
 	hostPath: string,
-	embedEl: HTMLElement,
+	anchorEl: HTMLElement,
 	scope: ParentNode,
 ): ParsedEmbedPipes {
-	const embeds = embedsForHost(app, hostPath);
-	const matched = matchEmbedByIndex(embedEl, scope, embeds);
-	if (matched?.original) return parseEmbedLinkText(matched.original);
+	const embeds = baseEmbedsForHost(app, hostPath);
+	const embedEl =
+		findBaseEmbedWrapperForAnchor(anchorEl, scope) ??
+		anchorEl.closest<HTMLElement>(EMBED_SELECTOR);
 
-	const domOriginal = readEmbedOriginalFromDom(embedEl);
-	if (domOriginal) return parseEmbedLinkText(domOriginal);
+	if (embedEl) {
+		const matched = matchEmbedByIndex(embedEl, scope, embeds);
+		if (matched?.original) return parseEmbedLinkText(matched.original);
+
+		const domOriginal = readEmbedOriginalFromDom(embedEl);
+		if (domOriginal) return parseEmbedLinkText(domOriginal);
+	}
 
 	return { rawTokens: [] };
 }
 
-function findTimelineEmbedRoot(anchorEl: HTMLElement): HTMLElement | null {
+function findBasesEmbedRoot(anchorEl: HTMLElement): HTMLElement | null {
 	return anchorEl.closest<HTMLElement>(
 		".internal-embed.bases-embed, .block-language-base.bases-embed, .bases-embed",
 	);
 }
 
-export function resolveTimelineEmbedPipes(
+export function resolveEmbedPipes(
 	app: App,
 	anchorEl: HTMLElement,
 ): ParsedEmbedPipes | null {
-	const embed = findTimelineEmbedRoot(anchorEl);
-	if (!embed) return null;
-
 	const hostFile = findHostFileForElement(app, anchorEl);
 	if (!hostFile) return null;
 
 	const scope =
-		embed.closest(
+		anchorEl.closest(
 			".markdown-reading-view, .markdown-preview-view, .markdown-rendered, .markdown-source-view",
-		) ?? embed.parentElement ??
+		) ?? anchorEl.parentElement ??
 		document.body;
 
-	return resolveParsedPipes(app, hostFile.path, embed, scope);
+	return resolveParsedPipes(app, hostFile.path, anchorEl, scope);
+}
+
+/** @deprecated Use resolveEmbedPipes */
+export function resolveTimelineEmbedPipes(
+	app: App,
+	anchorEl: HTMLElement,
+): ParsedEmbedPipes | null {
+	return resolveEmbedPipes(app, anchorEl);
 }
 
 export function syncEmbedPipesInElement(
@@ -96,6 +116,11 @@ export function syncEmbedPipesInElement(
 
 	for (const embedEl of Array.from(
 		scope.querySelectorAll<HTMLElement>(EMBED_SELECTOR),
+	).filter(
+		(el) =>
+			el.classList.contains("bases-embed") ||
+			!!el.querySelector(TIMELINE_EMBED_SELECTOR) ||
+			!!el.querySelector(".nui-task-list-bases-root"),
 	)) {
 		const parsed = resolveParsedPipes(app, hostPath, embedEl, scope);
 		applyParsedEmbedPipes(embedEl, parsed, {
@@ -114,6 +139,7 @@ export function syncEmbedPipesInElement(
 	}
 
 	syncPaneWidthInElement(root);
+	notifyEmbedPipeViews(scope);
 }
 
 export function syncEmbedPipesInActiveLeaf(app: App): void {
@@ -129,11 +155,11 @@ export function isTimelineEmbedCompact(
 	app: App,
 	anchorEl: HTMLElement,
 ): boolean {
-	const parsed = resolveTimelineEmbedPipes(app, anchorEl);
+	const parsed = resolveEmbedPipes(app, anchorEl);
 	if (parsed?.timelineLayout === "compact") return true;
 	if (parsed?.timelineCompact === true) return true;
 
-	const embed = findTimelineEmbedRoot(anchorEl);
+	const embed = findBasesEmbedRoot(anchorEl);
 	return embed?.hasAttribute("data-nui-embed-compact") ?? false;
 }
 
@@ -141,10 +167,10 @@ export function resolveTimelineLayoutFromEmbed(
 	app: App,
 	anchorEl: HTMLElement,
 ): TimelineLayoutMode | null {
-	const parsed = resolveTimelineEmbedPipes(app, anchorEl);
+	const parsed = resolveEmbedPipes(app, anchorEl);
 	if (parsed?.timelineLayout) return parsed.timelineLayout;
 
-	const embed = findTimelineEmbedRoot(anchorEl);
+	const embed = findBasesEmbedRoot(anchorEl);
 	const attr = embed?.getAttribute("data-nui-embed-timeline-layout");
 	if (
 		attr === "compact" ||
@@ -161,10 +187,17 @@ export function resolveTimelineResponsibilityFromEmbed(
 	app: App,
 	anchorEl: HTMLElement,
 ): string | null {
-	const parsed = resolveTimelineEmbedPipes(app, anchorEl);
+	return resolveEmbedResponsibilityFromEmbed(app, anchorEl);
+}
+
+export function resolveEmbedResponsibilityFromEmbed(
+	app: App,
+	anchorEl: HTMLElement,
+): string | null {
+	const parsed = resolveEmbedPipes(app, anchorEl);
 	if (parsed?.responsibility) return parsed.responsibility;
 
-	const embed = findTimelineEmbedRoot(anchorEl);
+	const embed = findBasesEmbedRoot(anchorEl);
 	const attr = embed?.getAttribute("data-nui-embed-responsibility")?.trim();
 	return attr || null;
 }

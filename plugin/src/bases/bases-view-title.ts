@@ -1,6 +1,7 @@
 
 import { App, FileView, Notice, TFile } from "obsidian";
 import { resolveTimelineEmbedPipes } from "../embed/embed-pipe-sync";
+import { findBaseEmbedWrapperForAnchor } from "../embed/find-embed-for-anchor";
 import { shouldEmbedBeWide } from "../embed/apply-embed-pipes";
 import { syncPaneWidthInElement } from "../embed/sync-pane-width";
 import {
@@ -120,12 +121,20 @@ function findBaseEmbedFileFromMetadata(
 			".markdown-preview-view, .markdown-rendered, .markdown-source-view, .cm-sizer",
 		) ?? embedRoot?.ownerDocument?.body;
 	if (embedRoot && scope) {
+		const embedEl =
+			findBaseEmbedWrapperForAnchor(el, scope) ?? embedRoot;
 		const embedEls = Array.from(
 			scope.querySelectorAll<HTMLElement>(
 				".internal-embed.bases-embed, .block-language-base.bases-embed",
 			),
+		).filter(
+			(candidate) =>
+				candidate.classList.contains("bases-embed") ||
+				!!candidate.querySelector(
+					".bases-view, [data-type='bases'], .nui-timeline-bases-container, .nui-task-list-bases-root",
+				),
 		);
-		const index = embedEls.indexOf(embedRoot);
+		const index = embedEls.indexOf(embedEl);
 		if (index >= 0 && index < embeds.length) {
 			const file = resolveBaseFileFromLink(
 				app,

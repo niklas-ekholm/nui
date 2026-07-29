@@ -10,6 +10,9 @@ import { syncBasesViewTopbar } from "../bases/bases-view-topbar";
 import { createNuiBasesContainer, mountBasesTitle } from "../bases/bases-view-title";
 import { renderTaskList } from "../core/task-list/render-task-list";
 import { taskSignature } from "../core/tasks/types";
+import { filterEntriesByResponsibility } from "../bases/responsibility-filter";
+import { EMBED_PIPES_CHANGED_EVENT } from "../embed/embed-pipe-events";
+import { resolveEmbedResponsibilityFromEmbed } from "../embed/embed-pipe-sync";
 import {
 	TASK_LIST_BASES_VIEW_TYPE,
 	mergeShowCompleted,
@@ -42,6 +45,20 @@ export class TaskListBasesView extends BasesView {
 				this.onDataUpdated();
 			}),
 		);
+		const onEmbedPipesChanged = (): void => {
+			this.renderedSignature = "";
+			this.onDataUpdated();
+		};
+		this.containerEl.addEventListener(
+			EMBED_PIPES_CHANGED_EVENT,
+			onEmbedPipesChanged,
+		);
+		this.register(() => {
+			this.containerEl.removeEventListener(
+				EMBED_PIPES_CHANGED_EVENT,
+				onEmbedPipesChanged,
+			);
+		});
 	}
 
 	onDataUpdated(): void {
@@ -58,10 +75,17 @@ export class TaskListBasesView extends BasesView {
 			this.config.get("timelineFolders"),
 		);
 		const order = this.config.getOrder().join(",");
-		const entries = this.filterEntries(this.data.data, {
+		const responsibility = resolveEmbedResponsibilityFromEmbed(
+			this.app,
+			this.containerEl,
+		);
+		let entries = this.filterEntries(this.data.data, {
 			projectScope,
 			timelineFolders,
 		});
+		if (responsibility) {
+			entries = filterEntriesByResponsibility(entries, responsibility);
+		}
 		this.trackedPaths = new Set(entries.map((entry) => entry.file.path));
 
 		this.syncChrome();
@@ -75,6 +99,7 @@ export class TaskListBasesView extends BasesView {
 			projectScope,
 			timelineFolders.join(","),
 			order,
+			responsibility ?? "",
 			taskSignature(tasks),
 		].join("|");
 
@@ -86,9 +111,11 @@ export class TaskListBasesView extends BasesView {
 			containerEl: this.containerEl,
 			tasks,
 			emptyMessage:
-				projectScope === "ongoing"
-					? "No open tasks for today."
-					: undefined,
+				responsibility
+					? `No tasks for ${responsibility}.`
+					: projectScope === "ongoing"
+						? "No open tasks for today."
+						: undefined,
 			onToggle: () => {
 				this.renderedSignature = "";
 				this.onDataUpdated();
