@@ -2,6 +2,30 @@
 /* Layout & behaviour only — colours in NUI Theme theme.css §10.
    Type sizes/weights: theme.css §1b (--nui-h*, --nui-timeline-bar-title, …) */
 
+/* Synchronized multi-cursor blink — only when a secondary caret is present.
+   Single-cursor editing keeps Obsidian's native caret. With multiple carets,
+   hide the native primary so every caret goes through CodeMirror's layer and
+   blinks together. */
+.markdown-source-view.mod-cm6 .cm-editor:has(.cm-cursor-secondary) .cm-content,
+.markdown-source-view.mod-cm6
+	.cm-editor:has(.cm-cursor-secondary)
+	.cm-content
+	* {
+	caret-color: transparent !important;
+}
+
+.markdown-source-view.mod-cm6
+	.cm-editor:has(.cm-cursor-secondary)
+	.cm-cursor,
+.markdown-source-view.mod-cm6
+	.cm-editor:has(.cm-cursor-secondary)
+	.cm-cursor-primary,
+.markdown-source-view.mod-cm6
+	.cm-editor:has(.cm-cursor-secondary)
+	.cm-cursor-secondary {
+	animation: none !important;
+}
+
 .nui-timeline-bases-container,
 .nui-timeline-view {
 	height: 100%;
