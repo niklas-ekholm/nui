@@ -5,8 +5,7 @@ project: Meridian
 status: planned
 ---
 
-Move the stairwell switch down to hand height and put a second one at the top.
-Waiting on the first run being pulled.
+Move the stairwell switch down to hand height and put a second one at the top. Waiting on the first run being pulled.
 
 - [ ] Confirm the drop is inside the stud bay
 - [ ] Chase the channel

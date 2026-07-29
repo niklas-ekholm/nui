@@ -5,8 +5,7 @@ project: Meridian
 status: active
 ---
 
-The reading light that hangs over the stairwell. Part of Meridian, since it
-shares the same low-voltage run and the same dimmer.
+The reading light that hangs over the stairwell. Part of Meridian, since it shares the same low-voltage run and the same dimmer.
 
 - [x] Sketch three shapes
 - [x] Order the brass tube

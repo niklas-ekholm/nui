@@ -5,9 +5,7 @@ project: Kettle
 status: done
 ---
 
-Replace the old boiler controller with something that can be read from across
-the room. Finished in May, a month later than planned, because the display
-housing had to be redesigned twice.
+Replace the old boiler controller with something that can be read from across the room. Finished in May, a month later than planned, because the display housing had to be redesigned twice.
 
 - [x] Measure the existing mount
 - [x] Pick a display
