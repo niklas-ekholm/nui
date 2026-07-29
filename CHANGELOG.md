@@ -9,6 +9,15 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 
 ## [Unreleased]
 
+### Added
+
+- **Collapse properties** setting: the info icon beside a note title toggles whether properties stay visible, and the choice persists across notes.
+- Example-vault hotkeys: **Show or hide chrome** on `Mod+Alt+` `` and **Toggle source mode** on `Mod+` `` (replacing Obsidian's `Mod+'` default here).
+
+### Changed
+
+- Collapsible properties use a Lucide **info** icon with sizing tuned to align beside the note title.
+
 ## [0.2.0] — 2026-07-27
 
 The first published release. Plugin, theme, and example vault move into one

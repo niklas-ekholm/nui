@@ -136,14 +136,6 @@
       "key": "C"
     }
   ],
-  "editor:toggle-source": [
-    {
-      "modifiers": [
-        "Mod"
-      ],
-      "key": "'"
-    }
-  ],
   "editor:swap-line-up": [
     {
       "modifiers": [
@@ -289,6 +281,23 @@
         "Mod"
       ],
       "key": "Escape"
+    }
+  ],
+  "editor:toggle-source": [
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "`"
+    }
+  ],
+  "nui:toggle-hide-chrome": [
+    {
+      "modifiers": [
+        "Alt",
+        "Mod"
+      ],
+      "key": "`"
     }
   ]
 }

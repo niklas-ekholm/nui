@@ -54,11 +54,11 @@ This vault ships a `.obsidian/hotkeys.json`, so the keys below are already bound
 | `Mod+D` | Add next match to selections |
 | `Alt+Shift+↑` / `Alt+Shift+↓` | Copy line up / down |
 | `Mod+Escape` | Go to parent folder |
-| `Mod+§` | Show or hide chrome |
+| `Mod+Alt+` `` | Show or hide chrome |
 
-`Mod+§` is the one key here that is *not* in `hotkeys.json`. It comes from the plugin's own opt-in default, which is why it lives under Settings → NUI → Hotkeys and only applies after a reload. Everything else in this table is a plain hotkey override and works regardless of those toggles.
+**Show or hide chrome** is bound here as `Mod+Alt+` `` in `hotkeys.json`, not the plugin's opt-in default (`Mod+§`, under Settings → NUI → Hotkeys). Everything else in this table is a plain hotkey override and works regardless of those toggles.
 
-Five NUI commands ship with no key at all — **Open folder index**, **Create folder index**, **Turn note into folder**, **Set note text color**, and the `Mod+§` toggle if you leave it off. Bind them yourself under Settings → Hotkeys; search for "NUI".
+Four NUI commands ship with no key in this vault — **Open folder index**, **Create folder index**, **Turn note into folder**, and **Set note text color**. Bind them yourself under Settings → Hotkeys; search for "NUI".
 
 ### Rebound Obsidian defaults
 
@@ -78,7 +78,7 @@ The rest:
 | `Mod+Shift+7` / `8` / `9` | Numbered list / bullet list / checklist |
 | `Mod+Shift+0` | Clear formatting |
 | `Mod+Shift+C` | Toggle code |
-| `Mod+'` | Toggle source mode |
+| `Mod+` `` | Toggle source mode |
 | `Alt+↑` / `Alt+↓` | Move line up / down |
 | `Ctrl+Alt+↑` / `Ctrl+Alt+↓` | Fold all / unfold all |
 | `Mod+Shift+Backspace` | Delete paragraph |
