@@ -78,6 +78,7 @@ export default class NuiPlugin extends Plugin {
 	habitRenameManager: HabitRenameManager | null = null;
 	sidebarGraphNavigation: SidebarGraphNavigation | null = null;
 	mobileSourceToggle: MobileSourceToggle | null = null;
+	refreshCollapsibleProperties: (() => void) | null = null;
 
 	/**
 	 * Every opinionated feature is gated here, and anything that overrides
@@ -133,7 +134,9 @@ export default class NuiPlugin extends Plugin {
 			registerPropertyColorSwatch(this);
 			registerNoteTextColorCommand(this);
 		}
-		if (editor.collapsibleProperties) registerCollapsibleProperties(this);
+		if (editor.collapsibleProperties) {
+			this.refreshCollapsibleProperties = registerCollapsibleProperties(this);
+		}
 		if (editor.tableColumnLayout) registerTableColumnLayout(this);
 		if (editor.htmlLivePreview) {
 			registerHtmlLpField(this, () => ({

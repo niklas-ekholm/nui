@@ -237,6 +237,18 @@ export class NuiSettingTab extends PluginSettingTab {
 			set: (value) => (this.settings.editor.collapsibleProperties = value),
 		});
 
+		if (this.settings.editor.collapsibleProperties) {
+			this.toggle(containerEl, {
+				name: "Collapse properties",
+				desc: "When on, note properties stay folded away. The button beside the note title toggles this.",
+				get: () => this.settings.editor.collapseProperties,
+				set: (value) => {
+					this.settings.editor.collapseProperties = value;
+					this.plugin.refreshCollapsibleProperties?.();
+				},
+			});
+		}
+
 		this.toggle(containerEl, {
 			name: "HTML in Live Preview",
 			desc: `Renders inline HTML in Live Preview. ${RELOAD_NOTE}`,

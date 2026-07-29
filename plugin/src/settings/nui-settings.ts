@@ -47,6 +47,8 @@ export interface EditorSettings extends HtmlLivePreviewSettings {
 	tableColumnLayout: boolean;
 	htmlLivePreview: boolean;
 	collapsibleProperties: boolean;
+	/** When true, note properties stay folded until the title-bar toggle shows them. */
+	collapseProperties: boolean;
 	embedPipes: boolean;
 }
 
@@ -112,6 +114,7 @@ export const DEFAULT_SETTINGS: NuiSettings = {
 		htmlLivePreview: true,
 		alwaysRenderHtmlInLivePreview: true,
 		collapsibleProperties: true,
+		collapseProperties: true,
 		embedPipes: true,
 	},
 	appearance: {
@@ -214,6 +217,10 @@ export function mergeSettings(loaded: Loaded): NuiSettings {
 			collapsibleProperties: bool(
 				editor.collapsibleProperties,
 				defaults.editor.collapsibleProperties,
+			),
+			collapseProperties: bool(
+				editor.collapseProperties,
+				defaults.editor.collapseProperties,
 			),
 			embedPipes: bool(editor.embedPipes, defaults.editor.embedPipes),
 		},

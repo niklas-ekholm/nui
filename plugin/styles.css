@@ -3625,8 +3625,9 @@ table.nui-table-layout tr.nui-table-phantom-separator {
    Centring the icon against row one's height — which is the title's own
    height — keeps the two aligned without any measured pixel offsets.
 
-   Scoped with `:has()` to the collapsed state only: an expanded note keeps
-   whatever stacked layout Obsidian or the active theme provides, untouched.
+   Scoped with `:has()` per state: collapsed notes put the show icon beside
+   the title; expanded notes put a hide button there and keep properties on
+   the row below.
 
    `!important` is load-bearing here, not laziness. A theme may legitimately
    own the title/properties grid (the NUI theme does, pinning properties to
@@ -3664,7 +3665,6 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	grid-column: 2 !important;
 	grid-row: 1 !important;
 	justify-self: end !important;
-	width: var(--icon-s) !important;
 	min-width: 0 !important;
 	max-width: none !important;
 	margin: 0 !important;
@@ -3674,25 +3674,82 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	   height comes from JS because no CSS length tracks a sibling's box.
 	   Without it, fall back to top-aligning against the title. */
 	align-self: start !important;
-	height: var(--nui-properties-row-height, var(--icon-s)) !important;
 	/* Obsidian nudges the properties block left to optically align its
 	   padded rows with the text column; a bare icon needs no such nudge. */
 	transform: none !important;
 }
 
+:is(.cm-sizer, .markdown-preview-sizer):has(
+		> :is(.metadata-container.nui-properties-collapsed, .nui-properties-add)
+	)
+	> .nui-properties-add {
+	width: var(--icon-s) !important;
+	height: var(--nui-properties-row-height, var(--icon-s)) !important;
+}
+
+:is(.cm-sizer, .markdown-preview-sizer):has(
+		> :is(.metadata-container.nui-properties-collapsed, .nui-properties-add)
+	)
+	> .metadata-container.nui-properties-collapsed {
+	width: var(--nui-properties-info-width) !important;
+	height: var(--nui-properties-info-height) !important;
+}
+
+:is(.cm-sizer, .markdown-preview-sizer):has(> .nui-properties-toggle) {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+:is(.cm-sizer, .markdown-preview-sizer):has(> .nui-properties-toggle) > * {
+	grid-column: 1 / -1;
+}
+
+:is(.cm-sizer, .markdown-preview-sizer):has(> .nui-properties-toggle)
+	> .inline-title {
+	grid-column: 1 !important;
+	grid-row: 1 !important;
+	min-width: 0;
+	margin-bottom: 0;
+}
+
+:is(.cm-sizer, .markdown-preview-sizer):has(> .nui-properties-toggle)
+	> .nui-properties-toggle {
+	grid-column: 2 !important;
+	grid-row: 1 !important;
+	justify-self: end !important;
+	width: var(--nui-properties-info-width) !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	margin: 0 !important;
+	align-self: start !important;
+	height: var(--nui-properties-info-height) !important;
+	transform: none !important;
+}
+
+:is(.cm-sizer, .markdown-preview-sizer):has(> .nui-properties-toggle)
+	> .metadata-container {
+	grid-column: 1 / -1 !important;
+	grid-row: 2 !important;
+	min-width: 0;
+	max-width: 100%;
+	width: 100%;
+	margin-block-start: 0;
+}
+
 /* The collapsed container is its own click target: contents hidden, box
    shrunk to the icon drawn by ::before. */
 .metadata-container.nui-properties-collapsed,
-.nui-properties-add {
+.nui-properties-add,
+.nui-properties-toggle {
+	--nui-properties-info-size: 16px;
+	--nui-properties-info-width: 26px;
+	--nui-properties-info-height: 32px;
 	/* `display` needs !important: Obsidian sets the container's display from
 	   `--metadata-display-editing` at a higher specificity than this. */
 	display: flex !important;
 	align-items: center;
 	justify-content: center;
 	box-sizing: border-box;
-	width: var(--icon-s);
-	height: var(--icon-s);
-	padding: 0;
 	border: none;
 	background: transparent;
 	box-shadow: none;
@@ -3705,16 +3762,28 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	touch-action: manipulation;
 }
 
+.nui-properties-add {
+	width: var(--icon-s);
+	height: var(--icon-s);
+	padding: 0;
+}
+
+.metadata-container.nui-properties-collapsed,
+.nui-properties-toggle {
+	width: var(--nui-properties-info-width);
+	height: var(--nui-properties-info-height);
+	padding: 0;
+}
+
 .metadata-container.nui-properties-collapsed > * {
 	display: none;
 }
 
 .metadata-container.nui-properties-collapsed::before,
-.nui-properties-add::before {
+.nui-properties-add::before,
+.nui-properties-toggle::before {
 	content: "";
 	display: block;
-	width: var(--icon-s);
-	height: var(--icon-s);
 	background-color: currentColor;
 	-webkit-mask-image: var(--nui-properties-glyph);
 	mask-image: var(--nui-properties-glyph);
@@ -3726,9 +3795,21 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	mask-position: center;
 }
 
-/* lucide `text` — the same glyph Obsidian uses for a text property. */
-.metadata-container.nui-properties-collapsed {
-	--nui-properties-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 5H3'/%3E%3Cpath d='M15 12H3'/%3E%3Cpath d='M17 19H3'/%3E%3C/svg%3E");
+.nui-properties-add::before {
+	width: var(--icon-s);
+	height: var(--icon-s);
+}
+
+.metadata-container.nui-properties-collapsed::before,
+.nui-properties-toggle::before {
+	width: var(--nui-properties-info-size);
+	height: var(--nui-properties-info-size);
+}
+
+/* lucide `info` — show/hide properties beside the note title. */
+.metadata-container.nui-properties-collapsed,
+.nui-properties-toggle {
+	--nui-properties-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E");
 }
 
 /* lucide `plus` — no properties yet, so the affordance is "add one". */
@@ -3737,12 +3818,14 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 }
 
 .metadata-container.nui-properties-collapsed:hover,
-.nui-properties-add:hover {
+.nui-properties-add:hover,
+.nui-properties-toggle:hover {
 	color: var(--text-normal);
 }
 
 .metadata-container.nui-properties-collapsed:is(:focus, :focus-visible),
-.nui-properties-add:is(:focus, :focus-visible, :active) {
+.nui-properties-add:is(:focus, :focus-visible, :active),
+.nui-properties-toggle:is(:focus, :focus-visible, :active) {
 	border: none;
 	outline: none;
 	background: transparent;

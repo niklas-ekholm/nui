@@ -2,11 +2,12 @@ import { MarkdownView, type Plugin } from "obsidian";
 
 const COLLAPSED_CLASS = "nui-properties-collapsed";
 const ADD_CLASS = "nui-properties-add";
+const TOGGLE_CLASS = "nui-properties-toggle";
 const ROW_HEIGHT_VAR = "--nui-properties-row-height";
 
-interface PropertiesState {
-	filePath: string | null;
-	expanded: boolean;
+interface CollapsiblePropertiesPlugin extends Plugin {
+	settings: { editor: { collapseProperties: boolean } };
+	saveSettings(): Promise<void>;
 }
 
 interface AppCommands {
@@ -52,9 +53,9 @@ function publishTitleHeight(sizer: HTMLElement): void {
 	}
 }
 
-function ownAddButtons(view: MarkdownView): HTMLElement[] {
+function ownButtons(view: MarkdownView, className: string): HTMLElement[] {
 	return Array.from(
-		view.containerEl.querySelectorAll<HTMLElement>(`.${ADD_CLASS}`),
+		view.containerEl.querySelectorAll<HTMLElement>(`.${className}`),
 	).filter((el) => isOwnElement(view, el));
 }
 
@@ -65,23 +66,20 @@ function isRawSourceView(view: MarkdownView): boolean {
 	return state.mode === "source" && state.source === true;
 }
 
-export function registerCollapsibleProperties(plugin: Plugin): void {
-	const states = new WeakMap<MarkdownView, PropertiesState>();
-	const expandedViews = new Set<MarkdownView>();
+export function registerCollapsibleProperties(
+	plugin: CollapsiblePropertiesPlugin,
+): () => void {
 	let syncTimer: number | null = null;
 
-	const getState = (view: MarkdownView): PropertiesState => {
-		const filePath = view.file?.path ?? null;
-		const existing = states.get(view);
-		if (existing?.filePath === filePath) {
-			return existing;
-		}
+	const isExpanded = (): boolean => !plugin.settings.editor.collapseProperties;
 
-		// A new file starts collapsed.
-		const state = { filePath, expanded: false };
-		states.set(view, state);
-		expandedViews.delete(view);
-		return state;
+	const setCollapsed = (collapsed: boolean): void => {
+		if (plugin.settings.editor.collapseProperties === collapsed) {
+			return;
+		}
+		plugin.settings.editor.collapseProperties = collapsed;
+		void plugin.saveSettings();
+		syncAll();
 	};
 
 	const hasFileProperties = (view: MarkdownView): boolean => {
@@ -96,37 +94,53 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 		);
 	};
 
-	const clearAddButtons = (view: MarkdownView): void => {
-		for (const button of ownAddButtons(view)) {
+	const clearButtons = (view: MarkdownView, className: string): void => {
+		for (const button of ownButtons(view, className)) {
 			button.remove();
 		}
+	};
+
+	const syncTitleBarButton = (
+		sizer: HTMLElement,
+		className: string,
+		ariaLabel: string,
+	): void => {
+		const existing = Array.from(
+			sizer.querySelectorAll<HTMLElement>(`:scope > .${className}`),
+		);
+		for (const duplicate of existing.slice(1)) {
+			duplicate.remove();
+		}
+
+		let button = existing[0];
+		if (!button) {
+			const created = document.createElement("button");
+			created.type = "button";
+			created.className = className;
+			const title = sizer.querySelector<HTMLElement>(":scope > .inline-title");
+			if (title) {
+				title.after(created);
+			} else {
+				sizer.prepend(created);
+			}
+			button = created;
+		}
+
+		button.setAttribute("aria-label", ariaLabel);
 	};
 
 	/** With no frontmatter there is no `.metadata-container` to collapse, so
 	 * the "add a property" affordance is our own button in the same slot. */
 	const syncAddButtons = (view: MarkdownView): void => {
 		for (const sizer of contentSizers(view)) {
-			const existing = Array.from(
-				sizer.querySelectorAll<HTMLElement>(`:scope > .${ADD_CLASS}`),
-			);
-			for (const duplicate of existing.slice(1)) {
-				duplicate.remove();
-			}
-			if (existing.length > 0) {
-				continue;
-			}
+			syncTitleBarButton(sizer, ADD_CLASS, "Add file property");
+		}
+	};
 
-			const button = document.createElement("button");
-			button.type = "button";
-			button.className = ADD_CLASS;
-			button.setAttribute("aria-label", "Add file property");
-
-			const title = sizer.querySelector<HTMLElement>(":scope > .inline-title");
-			if (title) {
-				title.after(button);
-			} else {
-				sizer.prepend(button);
-			}
+	/** When properties are visible, a hide button sits beside the title. */
+	const syncToggleButtons = (view: MarkdownView): void => {
+		for (const sizer of contentSizers(view)) {
+			syncTitleBarButton(sizer, TOGGLE_CLASS, "Hide properties");
 		}
 	};
 
@@ -135,26 +149,34 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 
 		if (isRawSourceView(view)) {
 			container?.classList.remove(COLLAPSED_CLASS);
-			clearAddButtons(view);
+			clearButtons(view, ADD_CLASS);
+			clearButtons(view, TOGGLE_CLASS);
 			return;
 		}
 
-		const state = getState(view);
+		const expanded = isExpanded();
 		const sizers = contentSizers(view);
 
 		if (container) {
-			container.classList.toggle(COLLAPSED_CLASS, !state.expanded);
-			container.setAttribute("aria-expanded", String(state.expanded));
-			container.setAttribute(
-				"aria-label",
-				state.expanded ? "Hide properties" : "Show properties",
-			);
-			clearAddButtons(view);
+			container.classList.toggle(COLLAPSED_CLASS, !expanded);
+			if (expanded) {
+				container.removeAttribute("aria-expanded");
+				container.removeAttribute("aria-label");
+				clearButtons(view, ADD_CLASS);
+				syncToggleButtons(view);
+			} else {
+				container.setAttribute("aria-expanded", "false");
+				container.setAttribute("aria-label", "Show properties");
+				clearButtons(view, TOGGLE_CLASS);
+				clearButtons(view, ADD_CLASS);
+			}
 		} else if (hasFileProperties(view)) {
 			// Obsidian is showing raw YAML under the cursor — leave it alone.
-			clearAddButtons(view);
+			clearButtons(view, ADD_CLASS);
+			clearButtons(view, TOGGLE_CLASS);
 		} else {
 			// No properties yet: offer to add one.
+			clearButtons(view, TOGGLE_CLASS);
 			syncAddButtons(view);
 		}
 
@@ -202,17 +224,6 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 		}, 0);
 	};
 
-	const setExpanded = (view: MarkdownView, expanded: boolean): void => {
-		const state = getState(view);
-		state.expanded = expanded;
-		if (expanded) {
-			expandedViews.add(view);
-		} else {
-			expandedViews.delete(view);
-		}
-		syncView(view);
-	};
-
 	const findViewForElement = (element: Element): MarkdownView | null => {
 		for (const leaf of plugin.app.workspace.getLeavesOfType("markdown")) {
 			if (
@@ -244,7 +255,7 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 		}
 		const view = findViewForElement(container);
 		if (view) {
-			setExpanded(view, true);
+			setCollapsed(false);
 		}
 	});
 
@@ -263,7 +274,7 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 				evt.stopPropagation();
 				const view = findViewForElement(addButton);
 				if (view) {
-					setExpanded(view, true);
+					setCollapsed(false);
 					(plugin.app as unknown as AppCommands).commands.executeCommandById(
 						"markdown:add-metadata-property",
 					);
@@ -272,27 +283,19 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 				return;
 			}
 
+			const toggleButton = target.closest(`.${TOGGLE_CLASS}`);
+			if (toggleButton) {
+				evt.preventDefault();
+				evt.stopPropagation();
+				setCollapsed(true);
+				return;
+			}
+
 			const collapsed = target.closest(`.metadata-container.${COLLAPSED_CLASS}`);
 			if (collapsed) {
 				evt.preventDefault();
 				evt.stopPropagation();
-				const view = findViewForElement(collapsed);
-				if (view) {
-					setExpanded(view, true);
-				}
-				return;
-			}
-
-			if (
-				target.closest(
-					".metadata-container, .suggestion-container, .menu, .popover, .modal-container",
-				)
-			) {
-				return;
-			}
-
-			for (const view of Array.from(expandedViews)) {
-				setExpanded(view, false);
+				setCollapsed(false);
 			}
 		},
 		true,
@@ -312,10 +315,12 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 		)) {
 			sizer.style.removeProperty(ROW_HEIGHT_VAR);
 		}
-		for (const button of Array.from(
-			document.querySelectorAll<HTMLElement>(`.${ADD_CLASS}`),
-		)) {
-			button.remove();
+		for (const className of [ADD_CLASS, TOGGLE_CLASS]) {
+			for (const button of Array.from(
+				document.querySelectorAll<HTMLElement>(`.${className}`),
+			)) {
+				button.remove();
+			}
 		}
 		for (const container of Array.from(
 			document.querySelectorAll<HTMLElement>(".metadata-container"),
@@ -327,4 +332,5 @@ export function registerCollapsibleProperties(plugin: Plugin): void {
 	});
 
 	scheduleSync();
+	return syncAll;
 }
