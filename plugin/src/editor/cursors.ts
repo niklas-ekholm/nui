@@ -228,3 +228,68 @@ export function addNextMatchToSelections(editor: Editor): void {
 	scrollSelectionIntoView(editor, nextSelection);
 }
 
+function normalizedSelectionBounds(
+	editor: Editor,
+	selection: EditorSelection,
+): { from: EditorPosition; to: EditorPosition } {
+	const anchorOffset = posOffset(editor, selection.anchor);
+	const headOffset = posOffset(editor, selection.head);
+	if (anchorOffset <= headOffset) {
+		return { from: selection.anchor, to: selection.head };
+	}
+	return { from: selection.head, to: selection.anchor };
+}
+
+export function selectAllOccurrences(editor: Editor): void {
+	const { text: initialText, wordAnchor, wordHead } = getSelectionTarget(editor);
+	let text = initialText;
+
+	if (!editor.somethingSelected()) {
+		if (!text) {
+			return;
+		}
+		editor.setSelection(wordAnchor, wordHead);
+	} else {
+		const { from, to } = normalizedSelectionBounds(editor, {
+			anchor: editor.getCursor("from"),
+			head: editor.getCursor("to"),
+		});
+		text = editor.getRange(from, to);
+	}
+
+	if (!text) {
+		return;
+	}
+
+	const regex = new RegExp(escapeRegex(text), "g");
+	const matches = [...editor.getValue().matchAll(regex)];
+	if (matches.length === 0) {
+		return;
+	}
+
+	const selections = matches.map((match) => selectionFromMatch(editor, match));
+	editor.setSelections(reconstructSelections(selections));
+	const last = selections[selections.length - 1];
+	if (last) {
+		scrollSelectionIntoView(editor, last);
+	}
+}
+
+export function addCursorsToLineEnds(editor: Editor): void {
+	const selections = editor.listSelections();
+	if (selections.length !== 1) {
+		return;
+	}
+
+	const { from, to } = normalizedSelectionBounds(editor, selections[0]!);
+	const ends: EditorSelection[] = [];
+
+	for (let line = from.line; line <= to.line; line++) {
+		const lineEnd = { line, ch: editor.getLine(line).length };
+		const head = line === to.line ? to : lineEnd;
+		ends.push({ anchor: head, head });
+	}
+
+	editor.setSelections(reconstructSelections(ends));
+}
+

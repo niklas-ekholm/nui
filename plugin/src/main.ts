@@ -8,8 +8,10 @@ import { toggleChromeHidden } from "./appearance/hide-chrome";
 import { turnIntoProjectFolder } from "./core/mutate/turn-into-project-folder";
 import {
 	addCursorOnAdjacentLine,
+	addCursorsToLineEnds,
 	addNextMatchToSelections,
 	copyLine,
+	selectAllOccurrences,
 } from "./editor/cursors";
 import { registerCollapsibleProperties } from "./editor/collapsible-properties";
 import { MobileSourceToggle } from "./editor/mobile-source-toggle";
@@ -594,6 +596,18 @@ export default class NuiPlugin extends Plugin {
 			id: "add-next-match-to-selections",
 			name: "Add next match to selections",
 			editorCallback: (editor) => addNextMatchToSelections(editor),
+		});
+
+		this.addCommand({
+			id: "select-all-occurrences",
+			name: "Select all occurrences of find match",
+			editorCallback: (editor) => selectAllOccurrences(editor),
+		});
+
+		this.addCommand({
+			id: "add-cursors-to-line-ends",
+			name: "Cursor to line ends",
+			editorCallback: (editor) => addCursorsToLineEnds(editor),
 		});
 
 		this.addCommand({

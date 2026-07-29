@@ -60,6 +60,8 @@ columns match for every command listed below.
 | `Mod+Escape` | Go to parent folder |
 | `Mod+Alt+↑` / `Mod+Alt+↓` | Add cursor on line above / below |
 | `Mod+D` | Add next match to selections |
+| `Mod+Shift+L` | Select all occurrences of find match |
+| `Alt+Shift+I` | Cursor to line ends |
 | `Alt+Shift+↑` / `Alt+Shift+↓` | Copy line up / down |
 
 Four NUI commands have no binding in this vault — **Open folder index**,

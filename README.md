@@ -54,7 +54,7 @@ overrides built-in Obsidian behaviour defaults to off, behind one settings tab.
 
 ## Commands and hotkeys
 
-NUI adds eleven commands. All of them are bindable under **Settings → Hotkeys**
+NUI adds thirteen commands. All of them are bindable under **Settings → Hotkeys**
 — search for "NUI".
 
 **Plugin default** is the opt-in binding registered when you turn it on under
@@ -79,6 +79,8 @@ you did not ask for. Two carry an opt-in default — turn both on at once under
 | Add cursor on line above | — | `Mod+Alt+↑` | Adds a cursor one line up | Multi-cursor commands |
 | Add cursor on line below | — | `Mod+Alt+↓` | Adds a cursor one line down | Multi-cursor commands |
 | Add next match to selections | — | `Mod+D` | Selects the next occurrence of the selection | Multi-cursor commands |
+| Select all occurrences of find match | — | `Mod+Shift+L` | Selects every occurrence of the selection at once | Multi-cursor commands |
+| Cursor to line ends | — | `Alt+Shift+I` | Adds a cursor at the end of each selected line | Multi-cursor commands |
 | Copy line up | — | `Alt+Shift+↑` | Duplicates the current line above itself | Multi-cursor commands |
 | Copy line down | — | `Alt+Shift+↓` | Duplicates the current line below itself | Multi-cursor commands |
 | Set note text color | — | — | Sets a colour for the whole note | Text colour |

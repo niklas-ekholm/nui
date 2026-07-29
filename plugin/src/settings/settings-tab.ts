@@ -204,7 +204,7 @@ export class NuiSettingTab extends PluginSettingTab {
 
 		this.toggle(containerEl, {
 			name: "Multi-cursor and copy line commands",
-			desc: `Adds commands for adding cursors, selecting the next match, and copying a line up or down. They ship without hotkeys. ${RELOAD_NOTE}`,
+			desc: `Adds commands for adding cursors, selecting the next or all matches, placing cursors at line ends, and copying a line up or down. They ship without hotkeys. ${RELOAD_NOTE}`,
 			get: () => this.settings.editor.multiCursorCommands,
 			set: (value) => (this.settings.editor.multiCursorCommands = value),
 		});

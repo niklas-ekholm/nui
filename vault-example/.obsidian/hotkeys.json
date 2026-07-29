@@ -257,6 +257,24 @@
       "key": "D"
     }
   ],
+  "nui:select-all-occurrences": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "L"
+    }
+  ],
+  "nui:add-cursors-to-line-ends": [
+    {
+      "modifiers": [
+        "Alt",
+        "Shift"
+      ],
+      "key": "I"
+    }
+  ],
   "nui:copy-line-up": [
     {
       "modifiers": [

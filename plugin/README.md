@@ -36,14 +36,18 @@ Optionally, clicking a folder in the file explorer opens that folder's `index.md
 
 ## Editor tools
 
-Multi-cursor commands (add cursor above/below, add next match, copy line up/down), a text-colour picker, per-note cover images and wide layout, collapsible properties, table column widths, and HTML rendering in Live Preview.
+Multi-cursor commands (add cursor above/below, add next match, select all occurrences, cursor to line ends, copy line up/down), a text-colour picker, per-note cover images and wide layout, collapsible properties, table column widths, and HTML rendering in Live Preview.
 
 ## Commands and hotkeys
 
-Eleven commands, all bindable under Settings → Hotkeys. Nine ship without a
+Thirteen commands, all bindable under Settings → Hotkeys. Eleven ship without a
 plugin default. Two carry an opt-in default — `Mod+Alt+` `` for "Show or hide
 chrome" and `Mod+Escape` for "Go to parent folder" — and Settings → NUI →
-Hotkeys turns both on or off together. The [root README](../README.md#commands-and-hotkeys)
+Hotkeys turns both on or off together.
+
+The [example vault](../vault-example/Start%20here.md#hotkeys) also binds the
+multi-cursor commands (`Mod+Alt+↑`/`↓`, `Mod+D`, `Mod+Shift+L`, `Alt+Shift+I`,
+`Alt+Shift+↑`/`↓`). The [root README](../README.md#commands-and-hotkeys)
 tabulates every command with plugin defaults, example-vault bindings, and the
 setting each one depends on.
 
