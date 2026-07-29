@@ -156,6 +156,13 @@ function readColor(entry: BasesEntry): string | undefined {
 	);
 }
 
+function readResponsibility(entry: BasesEntry): string | undefined {
+	return (
+		valueToString(entry.getValue("note.responsibility" as BasesPropertyId)) ??
+		undefined
+	);
+}
+
 export function entriesToTimelineItems(
 	entries: BasesEntry[],
 	config: BasesViewConfig,
@@ -174,6 +181,7 @@ export function entriesToTimelineItems(
 		const type = valueToString(entry.getValue("note.type" as BasesPropertyId));
 		const project = readProject(entry, config);
 		const color = readColor(entry);
+		const responsibility = readResponsibility(entry);
 
 		items.push({
 			id: entry.file.path,
@@ -187,6 +195,7 @@ export function entriesToTimelineItems(
 			type: type ?? undefined,
 			project: project ?? undefined,
 			color,
+			responsibility,
 		});
 	}
 

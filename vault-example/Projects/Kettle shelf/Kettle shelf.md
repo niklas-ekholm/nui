@@ -2,6 +2,7 @@
 start: 2026-07-16
 end: 2026-09-14
 project: Kettle
+responsibility: Anna
 status: active
 ---
 

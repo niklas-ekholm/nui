@@ -41,6 +41,12 @@ export function applyParsedEmbedPipes(
 		el.removeAttribute("data-nui-embed-timeline-layout");
 	}
 
+	if (parsed.responsibility) {
+		el.setAttribute("data-nui-embed-responsibility", parsed.responsibility);
+	} else {
+		el.removeAttribute("data-nui-embed-responsibility");
+	}
+
 	const img = el.matches("img")
 		? el
 		: el.querySelector<HTMLImageElement>("img");

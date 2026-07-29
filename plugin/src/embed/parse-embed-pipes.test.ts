@@ -40,6 +40,24 @@ test("parseEmbedPipeTokens handles timeline layout tokens", () => {
 	});
 });
 
+test("parseEmbedPipeTokens treats unknown tokens as responsibility filters", () => {
+	assert.deepEqual(parseEmbedPipeTokens(["Niklas"]), {
+		rawTokens: ["Niklas"],
+		responsibility: "Niklas",
+	});
+	assert.deepEqual(parseEmbedPipeTokens(["Niklas", "compact"]), {
+		rawTokens: ["Niklas", "compact"],
+		responsibility: "Niklas",
+		timelineCompact: true,
+		timelineLayout: "compact",
+	});
+	assert.deepEqual(parseEmbedPipeTokens(["full-tasks", "Niklas"]), {
+		rawTokens: ["full-tasks", "Niklas"],
+		timelineLayout: "full-tasks",
+		responsibility: "Niklas",
+	});
+});
+
 test("parseEmbedPipeTokens handles legacy image dimensions", () => {
 	assert.deepEqual(parseEmbedPipeTokens(["640x480"]), {
 		rawTokens: ["640x480"],
@@ -64,6 +82,15 @@ test("parseEmbedLinkText parses embed originals", () => {
 		wide: true,
 		timelineCompact: true,
 		timelineLayout: "compact",
+	});
+	assert.deepEqual(parseEmbedLinkText("![[Timeline.base|Niklas]]"), {
+		rawTokens: ["Niklas"],
+		responsibility: "Niklas",
+	});
+	assert.deepEqual(parseEmbedLinkText("![[Timeline.base|full-tasks|Niklas]]"), {
+		rawTokens: ["full-tasks", "Niklas"],
+		timelineLayout: "full-tasks",
+		responsibility: "Niklas",
 	});
 	assert.deepEqual(parseEmbedLinkText("![[photo.png|wide]]"), {
 		rawTokens: ["wide"],

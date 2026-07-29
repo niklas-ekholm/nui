@@ -4,6 +4,7 @@ export interface ParsedEmbedPipes {
 	widthPx?: number;
 	timelineCompact?: boolean;
 	timelineLayout?: "compact" | "full" | "full-tasks";
+	responsibility?: string;
 	imageWidthPx?: number;
 	imageHeightPx?: number;
 	rawTokens: string[];
@@ -50,7 +51,10 @@ export function parseEmbedPipeTokens(tokens: string[]): ParsedEmbedPipes {
 		const px = token.match(PX_TOKEN);
 		if (px) {
 			result.widthPx = Number(px[1]);
+			continue;
 		}
+
+		result.responsibility = token;
 	}
 
 	return result;

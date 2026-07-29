@@ -2,6 +2,7 @@
 start: 2026-04-13
 end: 2026-09-30
 project: Meridian
+responsibility: Niklas
 status: active
 ---
 

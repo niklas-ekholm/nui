@@ -156,3 +156,15 @@ export function resolveTimelineLayoutFromEmbed(
 
 	return null;
 }
+
+export function resolveTimelineResponsibilityFromEmbed(
+	app: App,
+	anchorEl: HTMLElement,
+): string | null {
+	const parsed = resolveTimelineEmbedPipes(app, anchorEl);
+	if (parsed?.responsibility) return parsed.responsibility;
+
+	const embed = findTimelineEmbedRoot(anchorEl);
+	const attr = embed?.getAttribute("data-nui-embed-responsibility")?.trim();
+	return attr || null;
+}

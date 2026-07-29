@@ -37,6 +37,7 @@ import {
 	isTimelineTitleEditing,
 } from "../core/timeline/timeline-title-rename";
 import { filterTimelineItems } from "../core/timeline/timeline-search";
+import { filterTimelineItemsByResponsibility } from "../core/timeline/timeline-responsibility-filter";
 import { resolveProjectLabelFromIndexNotes } from "../core/timeline/project-label";
 import { resolveInheritedEventColor } from "../core/timeline/event-color";
 import {
@@ -52,7 +53,7 @@ import {
 	mountBasesTitle,
 } from "../bases/bases-view-title";
 import { resolveNoteCreateFolder } from "../bases/bases-view-topbar";
-import { resolveTimelineLayoutFromEmbed } from "../embed/embed-pipe-sync";
+import { resolveTimelineLayoutFromEmbed, resolveTimelineResponsibilityFromEmbed } from "../embed/embed-pipe-sync";
 import { TimelineItem } from "../core/models/timeline-item";
 import { TaskItem } from "../core/tasks/types";
 import {
@@ -143,7 +144,17 @@ export class TimelineBasesView extends BasesView {
 				entriesToTimelineItems(this.data.data, this.config),
 			),
 		);
-		const searchedItems = filterTimelineItems(allItems, this.searchQuery);
+		const responsibility = resolveTimelineResponsibilityFromEmbed(
+			this.app,
+			this.containerEl,
+		);
+		const responsibilityItems = responsibility
+			? filterTimelineItemsByResponsibility(allItems, responsibility)
+			: allItems;
+		const searchedItems = filterTimelineItems(
+			responsibilityItems,
+			this.searchQuery,
+		);
 		const items = filterCollapsedSubprojects(
 			searchedItems,
 			this.collapsedSuperprojectIds,
