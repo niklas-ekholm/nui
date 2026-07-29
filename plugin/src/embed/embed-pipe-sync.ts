@@ -1,7 +1,11 @@
 import type { App, EmbedCache } from "obsidian";
 import { MarkdownView } from "obsidian";
-import { findHostFileForElement } from "../navigation/folder-index";
+import { findHostFileWithFallback } from "../navigation/folder-index";
 import { applyParsedEmbedPipes } from "./apply-embed-pipes";
+import {
+	readEmbedLinkFromDom,
+	readEmbedOriginalFromDom,
+} from "./embed-dom";
 import { findBaseEmbedWrapperForAnchor } from "./find-embed-for-anchor";
 import { notifyEmbedPipeViews } from "./embed-pipe-events";
 import { parseEmbedLinkText, type ParsedEmbedPipes } from "./parse-embed-pipes";
@@ -34,11 +38,38 @@ function isTimelineEmbedEl(embedEl: HTMLElement): boolean {
 	return !!embedEl.querySelector(TIMELINE_EMBED_SELECTOR);
 }
 
-function readEmbedOriginalFromDom(embedEl: HTMLElement): string | null {
-	for (const attr of ["alt", "src", "data-src"]) {
-		const value = embedEl.getAttribute(attr)?.trim();
-		if (value?.includes("|")) return value;
+function resolveEmbedPath(
+	app: App,
+	link: string,
+	hostPath: string,
+): string | null {
+	const path = link.split("#")[0]?.split("|")[0]?.trim();
+	if (!path) return null;
+
+	const file =
+		app.vault.getFileByPath(path) ??
+		app.metadataCache.getFirstLinkpathDest(path, hostPath);
+	return file?.path ?? null;
+}
+
+function matchEmbedByDomPath(
+	embedEl: HTMLElement,
+	embeds: EmbedCache[],
+	resolvePath: (link: string) => string | null,
+): EmbedCache | null {
+	const domLink = readEmbedLinkFromDom(embedEl);
+	if (!domLink) return null;
+
+	const domPath = resolvePath(domLink);
+	if (!domPath) return null;
+
+	for (const embed of embeds) {
+		for (const candidate of [embed.link, embed.original]) {
+			if (!candidate) continue;
+			if (resolvePath(candidate) === domPath) return embed;
+		}
 	}
+
 	return null;
 }
 
@@ -78,13 +109,27 @@ function resolveParsedPipes(
 	const embedEl =
 		findBaseEmbedWrapperForAnchor(anchorEl, scope) ??
 		anchorEl.closest<HTMLElement>(EMBED_SELECTOR);
+	const resolvePath = (link: string) => resolveEmbedPath(app, link, hostPath);
 
 	if (embedEl) {
+		const matchedByPath = matchEmbedByDomPath(
+			embedEl,
+			embeds,
+			resolvePath,
+		);
+		if (matchedByPath?.original) {
+			return parseEmbedLinkText(matchedByPath.original);
+		}
+
 		const matched = matchEmbedByIndex(embedEl, scope, embeds);
 		if (matched?.original) return parseEmbedLinkText(matched.original);
 
 		const domOriginal = readEmbedOriginalFromDom(embedEl);
-		if (domOriginal) return parseEmbedLinkText(domOriginal);
+		if (domOriginal) {
+			const parsed = parseEmbedLinkText(domOriginal);
+			delete parsed.responsibility;
+			return parsed;
+		}
 	}
 
 	return { rawTokens: [] };
@@ -100,7 +145,7 @@ export function resolveEmbedPipes(
 	app: App,
 	anchorEl: HTMLElement,
 ): ParsedEmbedPipes | null {
-	const hostFile = findHostFileForElement(app, anchorEl);
+	const hostFile = findHostFileWithFallback(app, anchorEl);
 	if (!hostFile) return null;
 
 	const scope =
@@ -138,6 +183,7 @@ export function syncEmbedPipesInElement(
 			!!el.querySelector(TIMELINE_EMBED_SELECTOR) ||
 			!!el.querySelector(".nui-task-list-bases-root"),
 	)) {
+		embedEl.setAttribute("data-nui-embed-host-path", hostPath);
 		const parsed = resolveParsedPipes(app, hostPath, embedEl, scope);
 		applyParsedEmbedPipes(embedEl, parsed, {
 			defaultWide: isTimelineEmbedEl(embedEl),

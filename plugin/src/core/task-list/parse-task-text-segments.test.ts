@@ -9,12 +9,12 @@ test("parseTaskTextSegments returns plain text when there are no wikilinks", () 
 });
 
 test("parseTaskTextSegments parses a single wikilink", () => {
-	assert.deepEqual(parseTaskTextSegments("Review [[Meridian]] wiring"), [
+	assert.deepEqual(parseTaskTextSegments("Review [[The Colt]] wiring"), [
 		{ type: "text", content: "Review " },
 		{
 			type: "wikilink",
-			content: "Meridian",
-			target: "Meridian",
+			content: "The Colt",
+			target: "The Colt",
 			alias: undefined,
 		},
 		{ type: "text", content: " wiring" },
@@ -22,19 +22,19 @@ test("parseTaskTextSegments parses a single wikilink", () => {
 });
 
 test("parseTaskTextSegments parses alias syntax and heading links", () => {
-	assert.deepEqual(parseTaskTextSegments("See [[Lantern|the lamp]] and [[Meridian#wiring]]"), [
+	assert.deepEqual(parseTaskTextSegments("See [[The Colt|the gun]] and [[Stopping the Apocalypse#seals]]"), [
 		{ type: "text", content: "See " },
 		{
 			type: "wikilink",
-			content: "the lamp",
-			target: "Lantern",
-			alias: "the lamp",
+			content: "the gun",
+			target: "The Colt",
+			alias: "the gun",
 		},
 		{ type: "text", content: " and " },
 		{
 			type: "wikilink",
-			content: "Meridian#wiring",
-			target: "Meridian#wiring",
+			content: "Stopping the Apocalypse#seals",
+			target: "Stopping the Apocalypse#seals",
 			alias: undefined,
 		},
 	]);

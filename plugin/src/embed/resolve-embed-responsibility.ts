@@ -1,18 +1,12 @@
 import type { App } from "obsidian";
 import { TFile } from "obsidian";
 import { findBasesFileForElement } from "../bases/bases-view-title";
-import { findHostFileForElement } from "../navigation/folder-index";
-import { parseResponsibilityForBaseEmbed } from "./parse-responsibility-embed";
-import { parseEmbedLinkText } from "./parse-embed-pipes";
-
-function readEmbedPathFromDom(embedRoot: HTMLElement): string | null {
-	for (const attr of ["src", "data-src", "alt"]) {
-		const value = embedRoot.getAttribute(attr)?.trim();
-		if (!value) continue;
-		return value.split("#")[0]?.split("|")[0]?.trim() ?? null;
-	}
-	return null;
-}
+import { findHostFileWithFallback } from "../navigation/folder-index";
+import { readEmbedLinkFromDom } from "./embed-dom";
+import {
+	parseResponsibilityForBaseEmbed,
+	parseEmbedLinkText,
+} from "./parse-embed-pipes";
 
 function resolveBasePathFromEmbedLink(
 	app: App,
@@ -36,13 +30,13 @@ function resolveBaseFile(
 	const fromFinder = findBasesFileForElement(app, anchorEl, viewName);
 	if (fromFinder) return fromFinder;
 
-	const host = findHostFileForElement(app, anchorEl);
+	const host = findHostFileWithFallback(app, anchorEl);
 	if (!host) return null;
 
 	const embed = findBasesEmbedRoot(anchorEl);
 	if (!embed) return null;
 
-	const domPath = readEmbedPathFromDom(embed);
+	const domPath = readEmbedLinkFromDom(embed);
 	if (!domPath) return null;
 
 	const file =
@@ -57,26 +51,19 @@ function findBasesEmbedRoot(anchorEl: HTMLElement): HTMLElement | null {
 	);
 }
 
-/** @deprecated Prefer resolveEmbedResponsibilityFromEmbedAsync */
-export function resolveEmbedResponsibilityFromEmbed(
+/** Responsibility pipes come only from the host note — never reused embed DOM. */
+function resolveResponsibilityFromHostMetadata(
 	app: App,
-	anchorEl: HTMLElement,
-	viewName?: string,
+	hostFile: TFile,
+	baseFile: TFile,
 ): string | null {
-	const embed = findBasesEmbedRoot(anchorEl);
-	const attr = embed?.getAttribute("data-nui-embed-responsibility")?.trim();
-	if (attr) return attr;
-
-	const hostFile = findHostFileForElement(app, anchorEl);
-	if (!hostFile) return null;
-
-	const baseFile = resolveBaseFile(app, anchorEl, viewName);
-	if (!baseFile) return null;
-
 	const cache = app.metadataCache.getFileCache(hostFile);
 	for (const embedCache of cache?.embeds ?? []) {
 		if (!embedCache.link.endsWith(".base")) continue;
-		if (resolveBasePathFromEmbedLink(app, embedCache.link, hostFile.path) !== baseFile.path) {
+		if (
+			resolveBasePathFromEmbedLink(app, embedCache.link, hostFile.path) !==
+			baseFile.path
+		) {
 			continue;
 		}
 
@@ -90,19 +77,38 @@ export function resolveEmbedResponsibilityFromEmbed(
 	return null;
 }
 
+/** @deprecated Prefer resolveEmbedResponsibilityFromEmbedAsync */
+export function resolveEmbedResponsibilityFromEmbed(
+	app: App,
+	anchorEl: HTMLElement,
+	viewName?: string,
+): string | null {
+	const hostFile = findHostFileWithFallback(app, anchorEl);
+	if (!hostFile) return null;
+
+	const baseFile = resolveBaseFile(app, anchorEl, viewName);
+	if (!baseFile) return null;
+
+	return resolveResponsibilityFromHostMetadata(app, hostFile, baseFile);
+}
+
 export async function resolveEmbedResponsibilityFromEmbedAsync(
 	app: App,
 	anchorEl: HTMLElement,
 	viewName?: string,
 ): Promise<string | null> {
-	const cached = resolveEmbedResponsibilityFromEmbed(app, anchorEl, viewName);
-	if (cached) return cached;
-
-	const hostFile = findHostFileForElement(app, anchorEl);
+	const hostFile = findHostFileWithFallback(app, anchorEl);
 	if (!hostFile) return null;
 
 	const baseFile = resolveBaseFile(app, anchorEl, viewName);
 	if (!baseFile) return null;
+
+	const fromMetadata = resolveResponsibilityFromHostMetadata(
+		app,
+		hostFile,
+		baseFile,
+	);
+	if (fromMetadata) return fromMetadata;
 
 	const source = await app.vault.cachedRead(hostFile);
 	return parseResponsibilityForBaseEmbed(source, baseFile.path, (link) =>

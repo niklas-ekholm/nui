@@ -827,6 +827,33 @@ export function findHostFileForElement(
 	return null;
 }
 
+/** Host note for an embedded block, including the active-file fallback Bases uses. */
+export function findHostFileWithFallback(
+	app: App,
+	el: HTMLElement,
+): TFile | null {
+	const fromLeaf = findHostFileForElement(app, el);
+	if (fromLeaf) return fromLeaf;
+
+	const hostPath = el
+		.closest<HTMLElement>(
+			".internal-embed.bases-embed, .block-language-base.bases-embed, .bases-embed",
+		)
+		?.getAttribute("data-nui-embed-host-path")
+		?.trim();
+	if (hostPath) {
+		const file = app.vault.getFileByPath(hostPath);
+		if (file instanceof TFile) return file;
+	}
+
+	const active = app.workspace.getActiveFile();
+	if (!active) return null;
+
+	const leaf = app.workspace.activeLeaf;
+	if (!leaf?.view.containerEl.contains(el)) return null;
+	return active;
+}
+
 export function findMarkdownLeafForElement(
 	app: App,
 	el: HTMLElement,

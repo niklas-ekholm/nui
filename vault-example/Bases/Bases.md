@@ -14,7 +14,7 @@ That is also why opening one of these from this folder shows nothing (or nearly 
 | Base | Scope | Embedded in |
 | --- | --- | --- |
 | [[Navigation.base]] | Folder + below, excl. self | [[Start here]], [[Daily]] |
-| [[Timeline.base]] | Folder only, incl. self | [[Projects]], [[Kettle shelf]] |
+| [[Timeline.base]] | Folder only, incl. self | [[Projects]], [[Bunker library]] |
 | [[Tasks.base]] | Folder + below, excl. self | [[Projects]] |
 | [[Tracker.base]] | Folder only, incl. self | [[Habits]], [[Reading]], [[Running]] |
 | [[Scores.base]] | Folder + below, excl. self | [[Running]] |

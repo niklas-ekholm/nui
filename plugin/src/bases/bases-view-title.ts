@@ -5,9 +5,10 @@ import { findBaseEmbedWrapperForAnchor } from "../embed/find-embed-for-anchor";
 import { shouldEmbedBeWide } from "../embed/apply-embed-pipes";
 import { syncPaneWidthInElement } from "../embed/sync-pane-width";
 import {
-	findHostFileForElement,
+	findHostFileWithFallback,
 	openFileInWorkspace,
 } from "../navigation/folder-index";
+import { readEmbedLinkFromDom } from "../embed/embed-dom";
 
 const TITLE_CLASS = "nui-bases-view-title";
 const TITLE_CLICKABLE_CLASS = "nui-bases-view-title-clickable";
@@ -54,16 +55,7 @@ function findEmbedRoot(el: HTMLElement): HTMLElement | null {
 }
 
 function findHostFile(app: App, el: HTMLElement): TFile | null {
-	return (
-		findHostFileForElement(app, el) ??
-		(() => {
-			const active = app.workspace.getActiveFile();
-			if (!active) return null;
-			const leaf = app.workspace.activeLeaf;
-			if (!leaf?.view.containerEl.contains(el)) return null;
-			return active;
-		})()
-	);
+	return findHostFileWithFallback(app, el);
 }
 
 function resolveBaseFileFromLink(
@@ -71,7 +63,7 @@ function resolveBaseFileFromLink(
 	link: string,
 	hostPath: string,
 ): TFile | null {
-	const path = link.split("#")[0]?.trim();
+	const path = link.split("#")[0]?.split("|")[0]?.trim();
 	if (!path) return null;
 
 	const file =
@@ -84,11 +76,7 @@ function resolveBaseFileFromLink(
 }
 
 function readEmbedPathFromDom(embedRoot: HTMLElement): string | null {
-	for (const attr of ["src", "data-src", "alt"]) {
-		const value = embedRoot.getAttribute(attr)?.trim();
-		if (value) return value;
-	}
-	return null;
+	return readEmbedLinkFromDom(embedRoot);
 }
 
 function findBaseEmbedFileFromMetadata(

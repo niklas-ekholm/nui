@@ -14,7 +14,7 @@ Open the **note**, not the base. Every base in [[Bases]] filters on `file.inFold
 | Open this | To see |
 | --- | --- |
 | [[Projects]] | Every project as a bar on a date axis, three layouts, plus the task lists |
-| [[Kettle shelf]] | The same timeline embed, one folder down: that project's three phases and nothing else |
+| [[Bunker library]] | The same timeline embed, one folder down: that project's three phases and nothing else |
 | [[Habits]] | Three-week, year, and month trackers across Reading, Running and Writing |
 | [[Running]] | One habit's distances as a line chart and as bars, and the trackers narrowed to it |
 | [[Library]] | The picture gallery and both card sizes |
@@ -34,7 +34,7 @@ These are the parts you would have to match in your own vault for the views to f
 
 **Habits are folders.** `Habits/` holds one folder per habit — Reading, Running, Writing — and each dated note inside a habit folder is one completion. A `rating` from 1 to 5 shades the cell. Three of the fourteen views ignore the query and read the host folder directly: **Week Tracker: 3** takes its rows from the subfolders of wherever it is embedded, which is why the same `Tracker.base` shows three habits from [[Habits]] and one from [[Running]]. **List: Navigation** and **List: Folders** walk out from the host folder the same way.
 
-**Projects** carry `start`, `end`, and `project`. The timeline groups bars by `project`, so `Meridian` gathers four notes under one heading and `Kettle` gathers two. The phases under [[Kettle shelf]] carry no `project` at all, which is what an ungrouped bar looks like. Checkbox lines in the note body feed the task views.
+**Projects** carry `start`, `end`, and `project`. The timeline groups bars by `project`, so `Apocalypse` gathers four notes under one heading and `Bunker` gathers two. The phases under [[Bunker library]] carry no `project` at all, which is what an ungrouped bar looks like. Checkbox lines in the note body feed the task views. Filter by person with `responsibility` — see [[Dean Responsibilities]] and [[Sam Responsibilities]].
 
 **Cover images** go in a `coverimage` property as a link — `"[[quiet-machines.png]]"`. The same property drives the card grids and the image at the top of the note itself.
 
