@@ -19,7 +19,7 @@ projects or habit completions. They are meant to be embedded, not opened.
 
 | Base | Scope | Embedded in |
 | --- | --- | --- |
-| [[Contents.base]] | Folder + below, excl. self | [[Start here]], [[Daily]] |
+| [[Navigation.base]] | Folder + below, excl. self | [[Start here]], [[Daily]] |
 | [[Timeline.base]] | Folder only, incl. self | [[Projects]], [[Kettle shelf]] |
 | [[Tasks.base]] | Folder + below, excl. self | [[Projects]] |
 | [[Tracker.base]] | Folder only, incl. self | [[Habits]], [[Reading]], [[Running]] |

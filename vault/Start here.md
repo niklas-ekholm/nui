@@ -30,7 +30,7 @@ view picker in its top-right corner — most hold more than one view.
 Because folder-index is on, clicking any of those folders in the sidebar opens
 the note above. The whole vault at once looks like this:
 
-![[Contents.base]]
+![[Navigation.base]]
 
 ## The conventions this vault uses
 
