@@ -17,7 +17,7 @@ repository and start on a single version number, clearing the theme's earlier
 
 ### Added
 
-- Example vault at `vault/`, which is also the development vault. Ships in the
+- Example vault at `vault-example/`, which is also the development vault. Ships in the
   release zip ready to open, with the plugin and theme already installed.
 - `install.sh`, shipped inside every release zip. It detects its own payload —
   plugin files, a theme folder, or a full vault — and installs whatever it

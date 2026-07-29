@@ -58,8 +58,8 @@ jobs:
             "$(node -p "require('./plugin/manifest.json').version")"
           check "plugin/package.json" \
             "$(node -p "require('./plugin/package.json').version")"
-          check "vault/.obsidian/themes/NUI/manifest.json" \
-            "$(node -p "require('./vault/.obsidian/themes/NUI/manifest.json').version")"
+          check "vault-example/.obsidian/themes/NUI/manifest.json" \
+            "$(node -p "require('./vault-example/.obsidian/themes/NUI/manifest.json').version")"
 
           # versions.json maps plugin version -> minimum Obsidian version. A
           # missing entry costs one line and preserves the option of submitting
@@ -100,7 +100,7 @@ jobs:
         run: npm test
 
       - name: No personal paths in the plugin or the vault
-        run: node plugin/scripts/check-no-personal-paths.mjs plugin/src vault
+        run: node plugin/scripts/check-no-personal-paths.mjs plugin/src vault-example
 
       - name: styles.css resolves without the theme
         working-directory: plugin
@@ -111,7 +111,7 @@ jobs:
 
       - name: Theme bundles no fonts
         run: |
-          THEME=vault/.obsidian/themes/NUI/theme.css
+          THEME=vault-example/.obsidian/themes/NUI/theme.css
           fail=0
           for token in '@font-face' 'Bookish'; do
             if grep -n -- "$token" "$THEME"; then

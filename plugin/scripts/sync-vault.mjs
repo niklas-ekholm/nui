@@ -18,15 +18,15 @@ const PLUGIN = join(dirname(fileURLToPath(import.meta.url)), "..");
 const VAULT_PLUGIN_DIR = join(
 	PLUGIN,
 	"..",
-	"vault",
+	"vault-example",
 	".obsidian",
 	"plugins",
 	"nui",
 );
 const FILES = ["main.js", "manifest.json", "styles.css"];
 
-if (!existsSync(join(PLUGIN, "..", "vault"))) {
-	console.log("sync-vault: no vault/ beside plugin/, nothing to do.");
+if (!existsSync(join(PLUGIN, "..", "vault-example"))) {
+	console.log("sync-vault: no vault-example/ beside plugin/, nothing to do.");
 	process.exit(0);
 }
 
@@ -44,6 +44,6 @@ for (const file of FILES) {
 }
 
 console.log(
-	`sync-vault: copied ${FILES.join(", ")} into vault/.obsidian/plugins/nui/.\n` +
+	`sync-vault: copied ${FILES.join(", ")} into vault-example/.obsidian/plugins/nui/.\n` +
 		"Reload Obsidian (Cmd+P → “Reload app without saving”) to pick it up.",
 );

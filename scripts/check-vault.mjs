@@ -21,7 +21,7 @@ import { dirname, extname, join, relative } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const VAULT = join(ROOT, "vault");
+const VAULT = join(ROOT, "vault-example");
 const PLUGIN_SRC = join(ROOT, "plugin", "src");
 const MAIN_TS = join(PLUGIN_SRC, "main.ts");
 

@@ -138,8 +138,8 @@ Edit at the top: **§0** palette, **§1b** typography scale, **§1a** spacing
 | Path | Role |
 | --- | --- |
 | `plugin/` | Plugin source, build, and tests. `plugin/src` is the source of truth. |
-| `vault/` | The example vault, and the development vault. |
-| `vault/.obsidian/themes/NUI/theme.css` | The theme. This file is the source of truth — there is no separate copy. |
+| `vault-example/` | The example vault, and the development vault. |
+| `vault-example/.obsidian/themes/NUI/theme.css` | The theme. This file is the source of truth — there is no separate copy. |
 | `scripts/` | Release packaging, the installer, and vault checks. |
 | `VERSION` | One version for the plugin, the theme, and the vault. |
 
@@ -152,7 +152,7 @@ npm run dev
 ```
 
 `npm run dev` watches `plugin/src` and writes `main.js`, `manifest.json`, and
-`styles.css` into `vault/.obsidian/plugins/nui/`, so opening `vault/` in
+`styles.css` into `vault-example/.obsidian/plugins/nui/`, so opening `vault-example/` in
 Obsidian shows the build. Those three files are gitignored; `data.json` beside
 them is committed, because it is the example vault's demo configuration.
 Override the target with `NUI_VAULT_PLUGIN_DIR`.
@@ -160,7 +160,7 @@ Override the target with `NUI_VAULT_PLUGIN_DIR`.
 `npm run check` runs everything the release gate runs: typecheck, lint, tests,
 and the personal-path and CSS-variable guards.
 
-Development happens on `main`. **`vault/` is public and is the shipped
+Development happens on `main`. **`vault-example/` is public and is the shipped
 artifact, so every push to `main` publishes it.** Releases are cut by merging
 `main` into `prod` and pushing; see [CHANGELOG.md](CHANGELOG.md).
 

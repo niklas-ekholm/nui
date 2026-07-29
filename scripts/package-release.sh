@@ -24,7 +24,7 @@ VERSION="$(tr -d ' \t\n\r' <"${ROOT}/VERSION")"
 [[ -n "${VERSION}" ]] || { echo "error: VERSION is empty" >&2; exit 1; }
 
 PLUGIN="${ROOT}/plugin"
-THEME="${ROOT}/vault/.obsidian/themes/NUI"
+THEME="${ROOT}/vault-example/.obsidian/themes/NUI"
 
 [[ -f "${PLUGIN}/main.js" ]] || {
 	echo "error: ${PLUGIN}/main.js is missing — run the production build first:" >&2
@@ -213,7 +213,7 @@ mkdir -p "${VAULT_STAGE}"
 # Copy the vault, minus anything local. workspace files carry someone else's
 # pane layout; git ignores them and so does the release.
 (
-	cd "${ROOT}/vault"
+	cd "${ROOT}/vault-example"
 	find . \
 		-name ".DS_Store" -prune -o \
 		-name "workspace.json" -prune -o \
@@ -222,7 +222,7 @@ mkdir -p "${VAULT_STAGE}"
 		-type f -print
 ) | while IFS= read -r file; do
 	mkdir -p "${VAULT_STAGE}/$(dirname "${file}")"
-	cp "${ROOT}/vault/${file}" "${VAULT_STAGE}/${file}"
+	cp "${ROOT}/vault-example/${file}" "${VAULT_STAGE}/${file}"
 done
 
 # The vault ships with the plugin already built into it.
