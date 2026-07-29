@@ -708,7 +708,7 @@ export default class NuiPlugin extends Plugin {
 			id: "toggle-hide-chrome",
 			name: "Show or hide chrome",
 			...(Platform.isDesktopApp && this.settings.appearance.hideChromeHotkey
-				? { hotkeys: [{ modifiers: ["Mod"], key: "§" }] }
+				? { hotkeys: [{ modifiers: ["Alt", "Mod"], key: "`" }] }
 				: {}),
 			callback: () => toggleChromeHidden(),
 		});

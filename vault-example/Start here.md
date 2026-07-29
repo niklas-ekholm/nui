@@ -42,7 +42,13 @@ These are the parts you would have to match in your own vault for the views to f
 
 ## Hotkeys
 
-This vault ships a `.obsidian/hotkeys.json`, so the keys below are already bound here. They are **not** installed into your own vault — nothing NUI ships ever writes your hotkeys. Rebind or clear any of them under Settings → Hotkeys.
+This vault ships a `.obsidian/hotkeys.json`, so the keys below are already bound
+here. They are **not** installed into your own vault — nothing NUI ships ever
+writes your hotkeys. Rebind or clear any of them under Settings → Hotkeys.
+
+The [root README](../README.md#commands-and-hotkeys) tabulates the same NUI
+bindings with plugin opt-in defaults. **Plugin default** and **Example vault**
+columns match for every command listed below.
 
 `Mod` is Cmd on macOS and Ctrl elsewhere.
 
@@ -50,15 +56,15 @@ This vault ships a `.obsidian/hotkeys.json`, so the keys below are already bound
 
 | Key | Command |
 | --- | --- |
+| `Mod+Alt+` `` | Show or hide chrome |
+| `Mod+Escape` | Go to parent folder |
 | `Mod+Alt+↑` / `Mod+Alt+↓` | Add cursor on line above / below |
 | `Mod+D` | Add next match to selections |
 | `Alt+Shift+↑` / `Alt+Shift+↓` | Copy line up / down |
-| `Mod+Escape` | Go to parent folder |
-| `Mod+Alt+` `` | Show or hide chrome |
 
-**Show or hide chrome** is bound here as `Mod+Alt+` `` in `hotkeys.json`, not the plugin's opt-in default (`Mod+§`, under Settings → NUI → Hotkeys). Everything else in this table is a plain hotkey override and works regardless of those toggles.
-
-Four NUI commands ship with no key in this vault — **Open folder index**, **Create folder index**, **Turn note into folder**, and **Set note text color**. Bind them yourself under Settings → Hotkeys; search for "NUI".
+Four NUI commands have no binding in this vault — **Open folder index**,
+**Create folder index**, **Turn note into folder**, and **Set note text color**.
+Bind them yourself under Settings → Hotkeys; search for "NUI".
 
 ### Rebound Obsidian defaults
 
@@ -89,6 +95,7 @@ The rest:
 | `Mod+Shift+N` | New window |
 
 Four defaults are deliberately cleared rather than rebound: open link in new pane, go forward, new file in new pane, and add metadata property.
+
 ## What is missing on purpose
 
 There is no `workspace.json`, so Obsidian opens with its own default layout rather than one saved on someone else's monitor. Set the panes up however you like — the vault will remember it from then on, and git ignores it.

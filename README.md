@@ -55,29 +55,33 @@ overrides built-in Obsidian behaviour defaults to off, behind one settings tab.
 ## Commands and hotkeys
 
 NUI adds eleven commands. All of them are bindable under **Settings → Hotkeys**
-— search for "NUI". Nine ship with no key at all, so NUI takes nothing from you
-that you did not ask for.
+— search for "NUI".
 
-Two carry a default binding, and both are **opt-in**. Turn both on at once under
-**Settings → NUI → Hotkeys → Turn all on**, which is also where you turn them
-back off. Default bindings apply on desktop only, and take effect after
-reloading Obsidian.
+**Plugin default** is the opt-in binding registered when you turn it on under
+**Settings → NUI → Hotkeys** (desktop only; reload required). **Example vault**
+is what the bundled demo vault binds in `.obsidian/hotkeys.json` — NUI never
+writes hotkeys into your vault. See [Start here](vault-example/Start%20here.md#hotkeys)
+for the full Obsidian override list there too.
+
+Eleven commands ship with no plugin default, so NUI takes nothing from you that
+you did not ask for. Two carry an opt-in default — turn both on at once under
+**Settings → NUI → Hotkeys → Turn all on**.
 
 `Mod` is Cmd on macOS and Ctrl elsewhere.
 
-| Command | Default key | What it does | Needs |
-| --- | --- | --- | --- |
-| Show or hide chrome | `Mod+§` *(opt-in)* | Hides the tab bar, sidebars, and view headers, then brings them back | — |
-| Go to parent folder | `Mod+Escape` *(opt-in)* | Opens the hub note of the folder above the current one | Folder index |
-| Open folder index | — | Opens the hub note for the folder in context | Folder index |
-| Create folder index | — | Creates the hub note for the folder in context | Folder index |
-| Turn note into folder | — | Converts the current note into a folder with the note as its hub | Folder index |
-| Add cursor on line above | — | Adds a cursor one line up | Multi-cursor commands |
-| Add cursor on line below | — | Adds a cursor one line down | Multi-cursor commands |
-| Add next match to selections | — | Selects the next occurrence of the selection | Multi-cursor commands |
-| Copy line up | — | Duplicates the current line above itself | Multi-cursor commands |
-| Copy line down | — | Duplicates the current line below itself | Multi-cursor commands |
-| Set note text color | — | Sets a colour for the whole note | Text colour |
+| Command | Plugin default | Example vault | What it does | Needs |
+| --- | --- | --- | --- | --- |
+| Show or hide chrome | `Mod+Alt+` `` *(opt-in)* | `Mod+Alt+` `` | Hides the tab bar, sidebars, and view headers, then brings them back | — |
+| Go to parent folder | `Mod+Escape` *(opt-in)* | `Mod+Escape` | Opens the hub note of the folder above the current one | Folder index |
+| Open folder index | — | — | Opens the hub note for the folder in context | Folder index |
+| Create folder index | — | — | Creates the hub note for the folder in context | Folder index |
+| Turn note into folder | — | — | Converts the current note into a folder with the note as its hub | Folder index |
+| Add cursor on line above | — | `Mod+Alt+↑` | Adds a cursor one line up | Multi-cursor commands |
+| Add cursor on line below | — | `Mod+Alt+↓` | Adds a cursor one line down | Multi-cursor commands |
+| Add next match to selections | — | `Mod+D` | Selects the next occurrence of the selection | Multi-cursor commands |
+| Copy line up | — | `Alt+Shift+↑` | Duplicates the current line above itself | Multi-cursor commands |
+| Copy line down | — | `Alt+Shift+↓` | Duplicates the current line below itself | Multi-cursor commands |
+| Set note text color | — | — | Sets a colour for the whole note | Text colour |
 
 The **Needs** column names the setting under Settings → NUI that has to be on
 for the command to be registered at all. *Multi-cursor commands* and *Text

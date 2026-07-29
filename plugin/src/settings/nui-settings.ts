@@ -66,7 +66,7 @@ export interface AppearanceSettings {
 	 * it applies to every base, including views this plugin did not add.
 	 */
 	fadeBasesChrome: boolean;
-	/** Bind Mod+§ to "Show or hide chrome". Applies on reload. */
+	/** Bind Mod+Alt+` to "Show or hide chrome". Applies on reload. */
 	hideChromeHotkey: boolean;
 }
 

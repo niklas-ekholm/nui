@@ -61,7 +61,7 @@ export class NuiSettingTab extends PluginSettingTab {
 			},
 			{
 				name: "Show or hide chrome",
-				combo: "Mod+§",
+				combo: "Mod+Alt+`",
 				get: () => this.settings.appearance.hideChromeHotkey,
 				set: (value) => (this.settings.appearance.hideChromeHotkey = value),
 			},

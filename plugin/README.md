@@ -40,7 +40,12 @@ Multi-cursor commands (add cursor above/below, add next match, copy line up/down
 
 ## Commands and hotkeys
 
-Eleven commands, all bindable under Settings → Hotkeys. Nine ship without a key. Two carry an opt-in default — `Mod+§` for "Show or hide chrome" and `Mod+Escape` for "Go to parent folder" — and Settings → NUI → Hotkeys turns both on or off together. The [root README](../README.md#commands-and-hotkeys) tabulates every command with the setting it depends on.
+Eleven commands, all bindable under Settings → Hotkeys. Nine ship without a
+plugin default. Two carry an opt-in default — `Mod+Alt+` `` for "Show or hide
+chrome" and `Mod+Escape` for "Go to parent folder" — and Settings → NUI →
+Hotkeys turns both on or off together. The [root README](../README.md#commands-and-hotkeys)
+tabulates every command with plugin defaults, example-vault bindings, and the
+setting each one depends on.
 
 ## The NUI theme is optional
 

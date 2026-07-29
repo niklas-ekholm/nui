@@ -12,7 +12,7 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 ### Added
 
 - **Collapse properties** setting: the info icon beside a note title toggles whether properties stay visible, and the choice persists across notes.
-- Example-vault hotkeys: **Show or hide chrome** on `Mod+Alt+` `` and **Toggle source mode** on `Mod+` `` (replacing Obsidian's `Mod+'` default here).
+- Hotkeys aligned across the plugin and example vault: opt-in defaults `Mod+Alt+` `` (show or hide chrome) and `Mod+Escape` (go to parent folder); example vault binds `Mod+` `` for toggle source mode.
 
 ### Changed
 
