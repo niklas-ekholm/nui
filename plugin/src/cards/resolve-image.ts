@@ -16,6 +16,7 @@ import {
 	normalizeImagePath,
 	resolveNoteImageSrc,
 } from "../core/resolve/note-image";
+import { readNoteCoverImageSrc } from "../editor/note-cover-image";
 
 export function resolveImageProperty(
 	config: BasesViewConfig,
@@ -51,9 +52,25 @@ export function resolveCardImageSrc(
 	}
 
 	const value = entry.getValue(imageProperty);
-	if (!value) return null;
+	if (value) {
+		const fromProperty = valueToImageSrc(app, value, entry.file.path);
+		if (fromProperty) return fromProperty;
+	}
 
-	return valueToImageSrc(app, value, entry.file.path);
+	if (entry.file instanceof TFile) {
+		const fromFrontmatter = resolveCardImageFromFrontmatter(
+			app,
+			entry.file,
+			imageProperty,
+		);
+		if (fromFrontmatter) return fromFrontmatter;
+	}
+
+	if (isImageExtension(entry.file.extension)) {
+		return app.vault.getResourcePath(entry.file);
+	}
+
+	return null;
 }
 
 function valueToImageSrc(
@@ -86,4 +103,27 @@ function valueToImageSrc(
 	const text = value.toString().trim();
 	if (!text) return null;
 	return resolveNoteImageSrc(app, text, sourcePath);
+}
+
+/** Bases may not surface every frontmatter key; read `note.*` image fields directly. */
+function resolveCardImageFromFrontmatter(
+	app: App,
+	file: TFile,
+	imageProperty: BasesPropertyId,
+): string | null {
+	if (imageProperty === "note.coverimage") {
+		return readNoteCoverImageSrc(app, file);
+	}
+
+	if (!imageProperty.startsWith("note.")) {
+		return null;
+	}
+
+	const key = imageProperty.slice("note.".length);
+	const raw = app.metadataCache.getFileCache(file)?.frontmatter?.[key];
+	if (typeof raw !== "string" || !raw.trim()) {
+		return null;
+	}
+
+	return resolveNoteImageSrc(app, raw.trim(), file.path);
 }

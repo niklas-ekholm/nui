@@ -1,22 +1,13 @@
 filters:
   and:
-    - file.inFolder(this.file.folder)
     - file.path != this.file.path
-    - note.coverimage
+    - file.ext == "md"
 views:
-  - type: nui-picture-gallery
-    name: Picture Gallery
-    order:
-      - file.name
-    sort:
-      - property: file.name
-        direction: ASC
-    image: note.coverimage
-    imageFit: cover
-    imageAspectRatio: 1.4
-    cardSize: 140
   - type: nui-card-l
     name: Card L
+    filters:
+      and:
+        - file.inFolder(this.file.folder)
     order:
       - file.name
       - note.author
@@ -30,6 +21,9 @@ views:
     cardSize: 220
   - type: nui-card-s
     name: Card S
+    filters:
+      and:
+        - file.inFolder(this.file.folder)
     order:
       - file.name
       - note.author
@@ -40,3 +34,19 @@ views:
     imageFit: cover
     imageAspectRatio: 1
     cardSize: 140
+  - type: nui-card-l
+    name: folder
+    filters:
+      and:
+        - file.folder == this.file.folder
+    order:
+      - file.name
+      - note.author
+      - note.finished
+    sort:
+      - property: note.finished
+        direction: DESC
+    image: note.coverimage
+    imageFit: cover
+    imageAspectRatio: 1.4
+    cardSize: 220

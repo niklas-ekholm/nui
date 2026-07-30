@@ -10,6 +10,7 @@
     "rating": "number",
     "score": "number",
     "author": "text",
+    "coverimage": "text",
     "project": "text",
     "responsibility": "text",
     "status": "text"

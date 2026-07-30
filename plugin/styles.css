@@ -2228,6 +2228,12 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	font-weight: var(--h1-weight);
 }
 
+.nui-cards-title--h3 {
+	font-size: var(--h3-size);
+	line-height: var(--h3-line-height);
+	font-weight: var(--h3-weight);
+}
+
 .nui-cards-title--body {
 	font-size: var(--font-text-size);
 	font-weight: var(--font-normal);
@@ -2244,6 +2250,7 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 
 .nui-cards-bases-container:has(.nui-cards--list-files),
 .nui-cards-bases-container:has(.nui-cards--list-folders),
+.nui-cards-bases-container:has(.nui-cards--none),
 .nui-folders-links.nui-cards-bases-container,
 .nui-navigation-folders-links.nui-cards-bases-container {
 	padding: 0;

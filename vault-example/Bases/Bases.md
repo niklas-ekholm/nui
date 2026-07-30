@@ -18,6 +18,7 @@ That is also why opening one of these from this folder shows nothing (or nearly 
 | [[Tasks.base]] | Folder + below, excl. self | [[Projects]] |
 | [[Tracker.base]] | Folder only, incl. self | [[Habits]], [[Reading]], [[Running]] |
 | [[Scores.base]] | Folder + below, excl. self | [[Running]] |
-| [[Gallery.base]] | Folder + below, excl. self | [[Library]] |
+| [[ImageGallery.base]] | Folder + below, excl. self — image files (`file.ext`) | [[Tulsa motel — scene photos]] |
+| [[NoteGallery.base]] | Folder + below, excl. self — all notes; cards show `coverimage` when set. **#folder** view is siblings only | [[Sam's personal notes]] |
 
 Three views ignore the query and read the host folder directly, so they follow the embed rather than the filter: **List: Navigation** and **List: Folders** walk out from the folder they are rendered in, and **Week Tracker: 3** takes its rows from that folder's subfolders.

@@ -4,6 +4,7 @@ import { renderCards, RenderCardsOptions } from "../cards/render-cards";
 import { resolveImageProperty } from "../cards/resolve-image";
 import { readEntryDate, sortEntriesByDate } from "../bases/entry-date";
 import { folderEntryTitle } from "../bases/navigation-entries";
+import { EMBED_PIPES_CHANGED_EVENT } from "../embed/embed-pipe-events";
 import {
 	CardImageFit,
 	CardTitleMode,
@@ -45,6 +46,20 @@ abstract class BaseCardsBasesView extends BasesView {
 			parentEl,
 			"nui-text-scope nui-cards-bases-root",
 		);
+		const onEmbedPipesChanged = (): void => {
+			this.renderedSignature = "";
+			this.onDataUpdated();
+		};
+		this.containerEl.addEventListener(
+			EMBED_PIPES_CHANGED_EVENT,
+			onEmbedPipesChanged,
+		);
+		this.register(() => {
+			this.containerEl.removeEventListener(
+				EMBED_PIPES_CHANGED_EVENT,
+				onEmbedPipesChanged,
+			);
+		});
 	}
 
 	onDataUpdated(): void {

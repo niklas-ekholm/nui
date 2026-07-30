@@ -1,0 +1,25 @@
+filters:
+  and:
+    - file.inFolder(this.file.folder)
+    - file.path != this.file.path
+    - or:
+      - file.ext == "png"
+      - file.ext == "jpg"
+      - file.ext == "jpeg"
+      - file.ext == "gif"
+      - file.ext == "webp"
+      - file.ext == "svg"
+      - file.ext == "avif"
+      - file.ext == "bmp"
+views:
+  - type: nui-picture-gallery
+    name: Images
+    order:
+      - file.name
+    sort:
+      - property: file.name
+        direction: ASC
+    image: file.file
+    imageFit: cover
+    imageAspectRatio: 1.4
+    cardSize: 140

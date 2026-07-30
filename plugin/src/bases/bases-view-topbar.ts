@@ -3,7 +3,7 @@ import { App, Notice } from "obsidian";
 import { resolveUniqueNoteName } from "../core/mutate/create-note";
 import { createUntitledSubfolder } from "../navigation/create-subfolder";
 import {
-	findHostFileForElement,
+	findHostFileWithFallback,
 	openFileInWorkspace,
 } from "../navigation/folder-index";
 import { findAdoptedBasesTitle, findBasesFileForElement } from "./bases-view-title";
@@ -18,7 +18,7 @@ export function resolveEmbedHostFolderPath(
 	app: App,
 	el: HTMLElement,
 ): string | null {
-	const host = findHostFileForElement(app, el);
+	const host = findHostFileWithFallback(app, el);
 	return host?.parent?.path ?? null;
 }
 

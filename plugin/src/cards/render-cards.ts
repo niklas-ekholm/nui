@@ -210,15 +210,15 @@ function defaultEntryTitle(entry: BasesEntry): string {
 
 function titleStyleForMode(
 	mode: CardTitleMode,
-): "small" | "large" | "body" {
+): "small" | "large" | "body" | "h3" {
 	switch (mode) {
 		case "card-l":
+		case "card-s":
+			return "h3";
 		case "list-folders":
 			return "large";
 		case "list-files":
 			return "body";
-		case "card-s":
-			return "small";
 		default:
 			return "small";
 	}
