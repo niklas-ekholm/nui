@@ -27,7 +27,7 @@ curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/inst
 ```
 
 Pass a path to target a different vault instead: `bash -s -- /path/to/vault`.
-Add `--version v0.2.1` to pin a specific release instead of the latest.
+Add `--version v0.2.2` to pin a specific release instead of the latest.
 
 Want to see NUI working first? This downloads the demo vault — plugin, theme,
 and ~40 notes of content — into the current directory (or a directory you
@@ -43,9 +43,9 @@ by hand. Three zips, depending on what you already have:
 
 | Zip | Use it when |
 | --- | --- |
-| `nui-v0.2.1.zip` | You want to see NUI working. A vault with the plugin and theme already installed and ~40 notes of demo content — unzip it and open the folder as a vault. |
-| `nui-plugin-0.2.1.zip` | You have a vault and want the Bases views. |
-| `nui-theme-0.2.1.zip` | You have a vault and want the appearance only. |
+| `nui-v0.2.2.zip` | You want to see NUI working. A vault with the plugin and theme already installed and ~40 notes of demo content — unzip it and open the folder as a vault. |
+| `nui-plugin-0.2.2.zip` | You have a vault and want the Bases views. |
+| `nui-theme-0.2.2.zip` | You have a vault and want the appearance only. |
 
 Every zip contains the same `install.sh` and an `INSTALL.md` describing that
 zip's payload. To install into an existing vault:
