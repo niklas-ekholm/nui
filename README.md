@@ -18,18 +18,28 @@ public.
 
 ## Install
 
-If you already have a vault, this installs the latest release into it:
+If you already have a vault, this installs the latest release into it. Run it
+from inside the vault — with no path, it installs into the current directory:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
-  | bash -s -- /path/to/vault
+  | bash -s --
 ```
 
+Pass a path to target a different vault instead: `bash -s -- /path/to/vault`.
 Add `--version v0.2.1` to pin a specific release instead of the latest.
 
+Want to see NUI working first? This downloads the demo vault — plugin, theme,
+and ~40 notes of content — into the current directory (or a directory you
+pass) as `nui-vault-<version>/`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote-vault.sh \
+  | bash -s --
+```
+
 Otherwise, download the latest [release](https://github.com/niklas-ekholm/nui/releases)
-by hand — for the demo vault, or a specific zip. Three zips, depending on what
-you already have:
+by hand. Three zips, depending on what you already have:
 
 | Zip | Use it when |
 | --- | --- |

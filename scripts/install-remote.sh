@@ -5,6 +5,12 @@
 #   curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
 #     | bash -s -- /path/to/vault
 #
+# With no vault path, installs into the current directory — run this from
+# inside the vault you want updated:
+#
+#   curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
+#     | bash -s --
+#
 # This script downloads the plugin and theme zips for a release, verifies them
 # against that release's SHA256SUMS, unpacks them into a temporary directory,
 # and runs the install.sh that ships inside each zip. Nothing is left behind.
@@ -12,6 +18,9 @@
 # It writes nothing itself. Every file that lands in the vault is written by the
 # release's own install.sh, under the guarantees documented in INSTALL.md:
 # data.json, notes, appearance.json, and workspace.json are never touched.
+#
+# To download the demo vault instead of installing into one you already have,
+# see scripts/install-remote-vault.sh.
 #
 # Options:
 #   --version <tag>  install a specific release (default: latest)
@@ -48,8 +57,10 @@ usage() {
     cat <<'EOF'
 Fetch a NUI release and install it into an Obsidian vault.
 
-  install-remote.sh [options] /path/to/vault
+  install-remote.sh [options] [/path/to/vault]
   install-remote.sh [options] --all
+
+With no vault path (and without --all), installs into the current directory.
 
 Options:
   --version <tag>  install a specific release, e.g. v0.2.1 (default: latest)
@@ -77,11 +88,18 @@ while [[ $# -gt 0 ]]; do
         --theme-only) COMPONENTS=(theme); shift ;;
         --no-verify) VERIFY=0; shift ;;
         -h|--help) usage; exit 0 ;;
-        *) ARGS+=("$1"); shift ;;
+        -*) ARGS+=("$1"); shift ;;
+        *) ARGS+=("$1"); HAVE_TARGET=1; shift ;;
     esac
 done
 
-[[ ${#ARGS[@]} -gt 0 ]] || { usage; exit 1; }
+# No positional vault path and no --all: default to the current directory, so
+# the script can be run from inside the vault to update.
+if [[ -z "${HAVE_TARGET:-}" ]]; then
+    have_all=0
+    for a in "${ARGS[@]}"; do [[ "${a}" == "--all" ]] && have_all=1; done
+    (( have_all )) || ARGS+=(".")
+fi
 
 # ---------------------------------------------------------------- environment
 

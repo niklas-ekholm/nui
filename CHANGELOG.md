@@ -11,7 +11,8 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 
 ### Added
 
-- `scripts/install-remote.sh`: fetches, verifies, and installs a release into a vault you already have, in one command, without downloading a zip by hand first.
+- `scripts/install-remote.sh`: fetches, verifies, and installs a release into a vault you already have, in one command, without downloading a zip by hand first. With no vault path, installs into the current directory.
+- `scripts/install-remote-vault.sh`: fetches and unpacks the demo vault the same way, for trying NUI without an existing vault. With no directory, unpacks into the current directory.
 
 ## [0.2.1] — 2026-07-30
 

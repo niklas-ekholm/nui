@@ -17,22 +17,40 @@ shasum -a 256 -c SHA256SUMS --ignore-missing
 
 ## Trying NUI without touching an existing vault
 
-Unzip `nui-v<version>.zip`, then in Obsidian choose **Open folder as vault** and
-pick the unzipped folder. The plugin and theme are already in place and the
-vault has around forty notes of demo content, so every view has something to
-show. Obsidian will ask you to trust the vault, because it contains a plugin.
+```bash
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote-vault.sh \
+  | bash -s --
+```
+
+Downloads the latest release's vault zip, verifies it against that release's
+`SHA256SUMS`, and unpacks it as `nui-vault-<version>/` in the current
+directory (pass a directory argument to unpack elsewhere instead). In
+Obsidian, choose **Open folder as vault** and pick that folder. The plugin and
+theme are already in place and the vault has around forty notes of demo
+content, so every view has something to show. Obsidian will ask you to trust
+the vault, because it contains a plugin.
 
 This is the recommended way to see what NUI does. Nothing here touches any vault
 you already have.
 
+`--version v0.2.1` installs a specific release instead of the latest;
+`--no-verify` skips checksum verification. See the `bash`-not-`sh` and
+read-before-running notes below — they apply to this script too.
+
+Or unzip `nui-v<version>.zip` by hand from the [release page](https://github.com/niklas-ekholm/nui/releases)
+and open the unzipped folder the same way.
+
 ## Installing into a vault you already have
 
-The fastest route, no manual download required:
+The fastest route, no manual download required. Run it from inside the vault —
+with no path, it installs into the current directory:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
-  | bash -s -- /path/to/vault
+  | bash -s --
 ```
+
+Pass a path to target a different vault instead: `bash -s -- /path/to/vault`.
 
 This fetches the latest release, verifies the zips against that release's
 `SHA256SUMS`, and hands off to the same `install.sh` described below — nothing
