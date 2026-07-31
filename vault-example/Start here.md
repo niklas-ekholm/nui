@@ -18,7 +18,6 @@ Open the **note**, not the base. Every base in [[Bases]] filters on `file.inFold
 | [[Habits]] | Three-week, year, and month trackers across Reading, Running and Writing |
 | [[Running]] | One habit's distances as a line chart and as bars, and the trackers narrowed to it |
 | [[Sam's personal notes]] | Text formatting, tables, cover images, and NoteGallery / ImageGallery |
-| [[okf-wiki]] | An OKF space: hub notes and `index.md` sidecars living side by side |
 | [[Daily]] | Files grouped by date, and the link to today's daily note |
 
 Between them those cover all fourteen views the plugin adds. Each embed has a view picker in its top-right corner — most hold more than one view.
@@ -40,8 +39,6 @@ These are the parts you would have to match in your own vault for the views to f
 **Cover images** go in a `coverimage` property as a link — `"[[djinn-research-cover.png]]"`. Use a wide crop (this vault uses 3.5:1) for note banners and card grids; pick a landscape or location still, not a portrait. Store the image beside the note (`attachmentFolderPath` is `./`). **ImageGallery.base** embeds list image files from the base query (PNG, JPEG, and the like). **NoteGallery.base** embeds show note cards in the folder and below — use **#folder** for siblings only. See [[Sam's personal notes]] and [[Tulsa motel — scene photos]].
 
 **Scores** are a `score` number. The chart in `Scores.base` reads the distance recorded on each run.
-
-**OKF spaces** are folders marked once on their root hub with `okf_version` in frontmatter. Every folder beneath gets an `index.md` sidecar alongside its `{FolderName}.md` hub note. Folder-index navigation always opens the **hub** — the sidecar is a separate directory listing for OKF-aware tools, created empty by NUI and curated by you (or an agent). The two files are not kept in sync automatically. See [[okf-wiki]] for a worked example with realistic content in both files.
 
 ## Hotkeys
 

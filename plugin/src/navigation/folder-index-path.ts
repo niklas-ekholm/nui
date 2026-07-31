@@ -6,9 +6,12 @@
  * the vault instead — `{VaultName}.md` — set once via `setVaultRootName` when
  * the plugin loads (an intrinsic fact about the environment, not a user
  * setting, the same way a folder's own name isn't configurable). The root
- * therefore behaves like every other folder: its hub is `{VaultName}.md`,
- * and — only if the root is itself marked OKF — its sidecar is the fixed
- * `index.md`, a distinct file from the hub.
+ * therefore behaves like every other folder: its hub is `{VaultName}.md`.
+ *
+ * Hub notes exist only to help humans read and navigate the vault. Machine-
+ * oriented directory listings (e.g. OKF `index.md` sidecars) belong in a
+ * separate vault and plugin — not here, where they would collide with the
+ * hub-note convention.
  */
 
 const DEFAULT_ROOT_NAME = "index";
@@ -24,14 +27,6 @@ export function setVaultRootName(name: string): void {
 function rootHubFilename(): string {
 	return `${cachedRootName}.md`;
 }
-
-/**
- * OKF's reserved directory-listing filename (spec §3.1). Fixed, not
- * user-configurable: it is generated as a secondary sidecar alongside a
- * folder's `{FolderName}.md` hub, only in folders that belong to a space
- * marked as an OKF bundle (see `navigation/okf-space.ts`).
- */
-export const OKF_SIDECAR_FILENAME = "index.md";
 
 export interface FolderPathLike {
 	path: string;
@@ -94,14 +89,6 @@ export function isFolderIndexPath(filePath: string): boolean {
 	}
 
 	return fileName === `${folderName}.md`;
-}
-
-/** True when `filePath` is an OKF directory-listing sidecar (fixed `index.md`, any folder). */
-export function isOkfSidecarPath(filePath: string): boolean {
-	return (
-		filePath === OKF_SIDECAR_FILENAME ||
-		filePath.endsWith(`/${OKF_SIDECAR_FILENAME}`)
-	);
 }
 
 /** Return the containing folder's name for a non-root folder index. */

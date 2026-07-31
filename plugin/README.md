@@ -32,7 +32,7 @@ Drag a bar to move it, drag its edges to reshape it, and the plugin writes the n
 
 ## Folder index
 
-Optionally, clicking a folder in the file explorer opens that folder's `index.md` instead of just expanding it, and the note header breadcrumb becomes clickable. The chevron still expands and collapses. Turn it on in settings; it is off by default because it changes what a click does and overlaps with folder-note plugins.
+Optionally, clicking a folder in the file explorer opens that folder's hub note (`FolderName.md`) instead of just expanding it, and the note header breadcrumb becomes clickable. The chevron still expands and collapses. Turn it on in settings; it is off by default because it changes what a click does and overlaps with folder-note plugins.
 
 ## Editor tools
 

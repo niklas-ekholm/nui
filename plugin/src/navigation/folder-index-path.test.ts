@@ -7,7 +7,6 @@ import {
 	getFolderIndexPath,
 	isFolderIndexPath,
 	isHiddenNavFilePath,
-	isOkfSidecarPath,
 	resolveFolderPath,
 	resolveParentFolderPathFromFilePath,
 	setVaultRootName,
@@ -166,14 +165,6 @@ test("isFolderIndexPath accepts a folder's own hub note, or the root hub", () =>
 	assert.equal(isFolderIndexPath("Untitled.md"), false);
 });
 
-test("isOkfSidecarPath accepts the fixed index.md filename in any folder", () => {
-	assert.equal(isOkfSidecarPath("index.md"), true);
-	assert.equal(isOkfSidecarPath("NUI/index.md"), true);
-	assert.equal(isOkfSidecarPath("NUI/NUIdocs/index.md"), true);
-	assert.equal(isOkfSidecarPath("NUI/NUI.md"), false);
-	assert.equal(isOkfSidecarPath("NUI/my-index.md"), false);
-});
-
 test("displayBasenameForNotePath uses parent folder name for a hub note", () => {
 	assert.equal(displayBasenameForNotePath("NUI/NUIdocs/NUIdocs.md"), "NUIdocs");
 	assert.equal(displayBasenameForNotePath("NUI/project.md"), "project");
@@ -197,9 +188,6 @@ test("setVaultRootName names the root hub after the vault, like any other folder
 		assert.equal(getFolderIndexPathFromFolderPath(""), "My Vault.md");
 		assert.equal(isFolderIndexPath("My Vault.md"), true);
 		assert.equal(isFolderIndexPath("index.md"), false);
-		// the root's OKF sidecar, if the root is ever marked OKF, is a
-		// distinct file from its hub once the hub isn't named "index.md".
-		assert.equal(isOkfSidecarPath("index.md"), true);
 
 		setVaultRootName("  ");
 		assert.equal(getFolderIndexPathFromFolderPath(""), "index.md");
