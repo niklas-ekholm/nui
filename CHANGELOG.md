@@ -9,6 +9,10 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 
 ## [Unreleased]
 
+### Added
+
+- `scripts/install-remote.sh`: fetches, verifies, and installs a release into a vault you already have, in one command, without downloading a zip by hand first.
+
 ## [0.2.1] — 2026-07-30
 
 ### Added

@@ -27,8 +27,37 @@ you already have.
 
 ## Installing into a vault you already have
 
-Every zip contains the same `install.sh`, which installs whatever payload sits
-beside it:
+The fastest route, no manual download required:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
+  | bash -s -- /path/to/vault
+```
+
+This fetches the latest release, verifies the zips against that release's
+`SHA256SUMS`, and hands off to the same `install.sh` described below — nothing
+about how or what gets written is different. Options:
+
+- `--version v0.2.1` — install a specific release instead of the latest
+- `--plugin-only` / `--theme-only` — install just one half
+- `--no-verify` — skip checksum verification
+- `--force`, `--dry-run`, `--all` pass straight through to `install.sh`
+
+Requires **`bash`, not `sh`** — the script uses arrays, so `curl ... | sh` will
+fail. Use `bash -s --` as shown above, or download and run it with `bash`
+directly.
+
+Piping a script from a URL into a shell means trusting whatever is at that URL
+at the moment you run it. To read it first:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
+  -o install-remote.sh && less install-remote.sh
+bash install-remote.sh /path/to/vault
+```
+
+Every zip also contains the same `install.sh`, which installs whatever payload
+sits beside it, if you'd rather download a zip by hand:
 
 ```bash
 ./install.sh /path/to/vault
@@ -44,7 +73,9 @@ line in `~/.config/nui/vaults` and run:
 
 **Quit Obsidian first.** The installer refuses to run against a vault Obsidian
 has open. On iCloud Drive or Obsidian Sync, writing while a sync agent is
-watching the folder produces conflicted copies of `main.js`.
+watching the folder produces conflicted copies of `main.js`. This applies
+whether you install via `install-remote.sh` or `install.sh` directly — the
+underlying installer is the same either way.
 
 ### What the installer will and will not touch
 

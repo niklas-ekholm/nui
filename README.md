@@ -18,8 +18,18 @@ public.
 
 ## Install
 
-Download the latest [release](https://github.com/niklas-ekholm/nui/releases).
-Three zips, depending on what you already have:
+If you already have a vault, this installs the latest release into it:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
+  | bash -s -- /path/to/vault
+```
+
+Add `--version v0.2.1` to pin a specific release instead of the latest.
+
+Otherwise, download the latest [release](https://github.com/niklas-ekholm/nui/releases)
+by hand — for the demo vault, or a specific zip. Three zips, depending on what
+you already have:
 
 | Zip | Use it when |
 | --- | --- |
