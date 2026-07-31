@@ -190,6 +190,13 @@ Development happens on `main`. **`vault-example/` is public and is the shipped
 artifact, so every push to `main` publishes it.** Releases are cut by merging
 `main` into `prod` and pushing; see [CHANGELOG.md](CHANGELOG.md).
 
+## OKF knowledge refinery
+
+OKF (Open Knowledge Format) support lives in a separate project:
+[nui-okf](https://github.com/niklas-ekholm/nui-okf). Use it for triage,
+ingestion, and multi-wiki OKF vaults. NUI stays focused on hub-note navigation,
+Bases views, and the theme for life/project vaults.
+
 ## Licence
 
 [MIT](LICENSE).
