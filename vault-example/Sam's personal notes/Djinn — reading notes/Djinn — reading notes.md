@@ -15,7 +15,7 @@ date: 2026-06-14
 2. Victim reports "perfect" scenarios — deceased relatives, resolved guilt
 3. ~~Hallucination~~ **Shared hallucination** — Dean and I both saw the nursery
 
-- [ ] Cross-reference with [[okf-wiki/Creatures/Vampires|archive entries]]
+- [ ] Cross-reference with Dad's vampire file in the bunker
 - [x] Pull John's journal scan from the bunker
 - [ ] Ask Castiel whether djinn are *technically* angels' problem
 
