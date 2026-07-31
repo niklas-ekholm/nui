@@ -43,7 +43,7 @@ Fetch the NUI example vault.
 With no directory, unpacks into the current directory.
 
 Options:
-  --version <tag>  install a specific release, e.g. v0.2.1 (default: latest)
+  --version <tag>  install a specific release, e.g. v0.2.2 (default: latest)
   --no-verify      skip checksum verification
   -h, --help       this message
 EOF
@@ -54,7 +54,7 @@ EOF
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --version)
-            [[ $# -ge 2 ]] || die "--version needs a tag, e.g. --version v0.2.1"
+            [[ $# -ge 2 ]] || die "--version needs a tag, e.g. --version v0.2.2"
             VERSION="$2"; shift 2 ;;
         --version=*) VERSION="${1#*=}"; shift ;;
         --no-verify) VERIFY=0; shift ;;
@@ -100,7 +100,7 @@ if [[ -z "${VERSION}" ]]; then
         | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' \
         | head -1)" || true
     [[ -n "${VERSION}" ]] || die "could not resolve the latest release.
-       GitHub's API rate-limits unauthenticated requests; pass --version v0.2.1 instead."
+       GitHub's API rate-limits unauthenticated requests; pass --version v0.2.2 instead."
 fi
 
 # Tags carry a leading v, asset filenames do not.

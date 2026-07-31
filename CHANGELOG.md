@@ -9,6 +9,8 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 
 ## [Unreleased]
 
+## [0.2.2] — 2026-07-31
+
 ### Added
 
 - `scripts/install-remote.sh`: fetches, verifies, and installs a release into a vault you already have, in one command, without downloading a zip by hand first. With no vault path, installs into the current directory.
@@ -68,6 +70,7 @@ repository and start on a single version number, clearing the theme's earlier
 - The release-branch mirror workflow, which duplicated plugin and theme sources
   onto branches that were never merged back.
 
-[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.1...HEAD
+[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/niklas-ekholm/nui/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/niklas-ekholm/nui/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/niklas-ekholm/nui/releases/tag/v0.2.0
