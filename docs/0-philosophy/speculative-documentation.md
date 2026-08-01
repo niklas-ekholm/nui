@@ -7,7 +7,7 @@ generated: { by: okf-enforcer/0.5, at: 2026-07-25T00:00:00Z }
 
 # Speculative Documentation
 
-Most of NUIdocs is written after the fact: the code exists, the note describes it. A **speculative** note inverts that. It is written first, as the design, and the code is built to match it.
+Most of NUI docs is written after the fact: the code exists, the note describes it. A **speculative** note inverts that. It is written first, as the design, and the code is built to match it.
 
 ## Purpose
 
@@ -15,7 +15,7 @@ Design in prose before code, without ever letting an unbuilt spec be mistaken fo
 
 ## The default is descriptive
 
-Every note in NUIdocs is descriptive unless marked otherwise. A reader who sees no marker may treat the note as a claim about code that exists, and may cite it. That is the promise the marker protects.
+Every note in NUI docs is descriptive unless marked otherwise. A reader who sees no marker may treat the note as a claim about code that exists, and may cite it. That is the promise the marker protects.
 
 ## Marking a note
 
@@ -88,7 +88,7 @@ When the thing gets built, in this order:
 3. **Update the folder `index.md`** listings so they pick up the new description.
 4. **Log it** in the root `log.md` as a `**Built**` entry, naming the note and any place the implementation departed from the spec.
 
-Step 1 comes first and is not optional. Dropping the flag is what makes the note load-bearing — do it before the reconcile and NUIdocs has acquired a confident description of code nobody checked.
+Step 1 comes first and is not optional. Dropping the flag is what makes the note load-bearing — do it before the reconcile and NUI docs has acquired a confident description of code nobody checked.
 
 If a speculative note is abandoned rather than built, delete it and note that in `log.md`. A stale design left lying around marked is still noise, and the marker's value decays with every one that will never ship.
 

@@ -32,7 +32,7 @@ test("direct child index detection works at root and nested hosts", () => {
 	);
 	assert.equal(
 		isDirectChildFolderIndexPath(
-			entry("NUI/NUIdocs/NUIdocs.md"),
+			entry("NUI/docs/docs.md"),
 			"NUI",
 			isFolderIndexPath,
 		),
@@ -40,7 +40,7 @@ test("direct child index detection works at root and nested hosts", () => {
 	);
 	assert.equal(
 		isDirectChildFolderIndexPath(
-			entry("NUI/NUIdocs/Design/Design.md"),
+			entry("NUI/docs/Design/Design.md"),
 			"NUI",
 			isFolderIndexPath,
 		),
@@ -70,7 +70,7 @@ test("direct child index detection works at root and nested hosts", () => {
 
 test("folder entries display their parent folder name", () => {
 	assert.equal(folderNameForEntry(entry("NUI/NUI.md")), "NUI");
-	assert.equal(folderNameForEntry(entry("NUI/NUIdocs/NUIdocs.md")), "NUIdocs");
+	assert.equal(folderNameForEntry(entry("NUI/docs/docs.md")), "docs");
 });
 
 test("navigation partition keeps child folders and sibling files separate", () => {
@@ -78,7 +78,7 @@ test("navigation partition keeps child folders and sibling files separate", () =
 		entry("NUI/NUI.md"),
 		entry("NUI.md"),
 		entry("readme.md"),
-		entry("NUI/NUIdocs/NUIdocs.md"),
+		entry("NUI/docs/docs.md"),
 		entry("Habits/Walking/Walking.md"),
 	];
 	const result = partitionNavigationEntryPathsForHost(

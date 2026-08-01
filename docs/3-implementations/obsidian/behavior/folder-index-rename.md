@@ -23,7 +23,7 @@ The 0.1.x line kept `{Folder}/{Folder}.md` hub notes, so folder and hub names ha
 | ------------ | ---------- |
 | Renaming a folder renamed its hub note | Hub keeps the name `index.md` |
 | Renaming the hub note renamed its folder | Renaming `index.md` just makes an ordinary note, and the folder loses its hub |
-| Note names were coupled to folder names | Independent — which is what lets NUIdocs use lowercase-hyphen filenames |
+| Note names were coupled to folder names | Independent — which is what lets `docs/` use lowercase-hyphen filenames |
 
 Habit bundles are the exception that still cares about names, because their day notes carry the habit name in the filename: [[habit-rename-from-folder]].
 

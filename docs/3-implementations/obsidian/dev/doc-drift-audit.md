@@ -1,13 +1,13 @@
 ---
 type: Implementation
 title: Doc Drift Audit
-description: "Standing audit of NUIdocs against the shipped code — run 2026-07-25, closed except one path."
+description: "Standing audit of NUI docs against the shipped code — run 2026-07-25, closed except one path."
 generated: { by: okf-enforcer/0.5, at: 2026-07-25T00:00:00Z }
 ---
 
 # Doc Drift Audit
 
-Every checkable claim in NUIdocs compared against `plugin/src`, `vault-example/.obsidian/themes/NUI/theme.css`, `vault-example/.obsidian/plugins/nui/styles.css`, `vault-example/┼/Bases/*.base`, `hotkeys.json`, and `app.json`.
+Every checkable claim in NUI docs compared against `plugin/src`, `vault-example/.obsidian/themes/NUI/theme.css`, `vault-example/.obsidian/plugins/nui/styles.css`, `vault-example/┼/Bases/*.base`, `hotkeys.json`, and `app.json`.
 
 Every item is closed except one unverifiable script path. Most drift came from one event: the vault moved from NipaNotes (`index/…` bases, `{Folder}.md` hub notes, per-habit year bases, a habit tag registry) to N-docs (`┼/Bases/`, `index.md`, shared folder-scoped bases), and the behaviour and product docs did not follow. The code was taken as the source of truth and the docs rewritten to match, except for the habit bug in §3.
 
@@ -72,8 +72,8 @@ All 14 registered Bases views now appear in the registration table in [[nui-plug
 Re-checked after the sweep:
 
 - All 14 registered Bases view type ids, menu names, and source paths — every one now documented.
-- Every `src/…` path cited anywhere in NUIdocs exists on disk.
-- Every `--nui-*` custom property and `.nui-*` class cited in NUIdocs is present in `theme.css` or `styles.css`.
+- Every `src/…` path cited anywhere in `docs/` exists on disk.
+- Every `--nui-*` custom property and `.nui-*` class cited in NUI docs is present in `theme.css` or `styles.css`.
 - View counts per base: `Contents` 6, `Month` 24, `Tasks` 3, `Timeline` 1, `Tracker` 1, `Year` 10.
 - [[contents]]'s view table matches `Contents.base` exactly.
 - [[folder-index-v1-0]] matches the code, including the `# {FolderName}` seed.
@@ -106,9 +106,9 @@ While in there, seven more orphans from the tag design were removed: `buildHabit
 
 `no-base-mutation.test.ts` gained a case for base content built by string concatenation — the form that let `buildHabitYearBaseContent` slip past the first version of the guard.
 
-## 8. Resolved — NUIdocs relocation (2026-08-01)
+## 8. Resolved — NUI docs relocation (2026-08-01)
 
-NUIdocs moved from `ncyclopedia-local/triage/incoming/from-n-docs/NUI` into the nui monorepo (`NUIdocs/`, `references/`, `docs/index.md`). Commit `5a76749` — import unedited; path reconciliation in the same pass as this section.
+Product docs moved from `ncyclopedia-local/triage/incoming/from-n-docs/NUI` into the nui monorepo (`docs/`, `references/`). Commit `5a76749` — import unedited; path reconciliation in the same pass as this section. Consolidated under `docs/` only (2026-08-01).
 
 | Stale | Correct |
 | --- | --- |
@@ -118,7 +118,7 @@ NUIdocs moved from `ncyclopedia-local/triage/incoming/from-n-docs/NUI` into the 
 
 Rewrote [[nui-finance]] for one-plugin architecture (`nui-expense-*` view ids, `plugin/src/core/finance/`). Updated [[nui-plugin]] registration table and dropped the separate-plugin install section. Swept remaining build-path mentions in [[dev/index]], [[behavior/index]], [[mobile]], [[structure]], and this audit.
 
-Triage source marked ingested; canonical home is `https://github.com/niklas-ekholm/nui` → `NUIdocs/index.md`.
+Triage source marked ingested; canonical home is `https://github.com/niklas-ekholm/nui` → `nui/docs`.
 
 ## Roadmap
 

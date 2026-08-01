@@ -23,7 +23,7 @@ From [[3-implementations/obsidian/behavior/index|Behavior]] — update when ship
 
 ## Historical note
 
-`Old NUI Plugin-plan` content from the pre-NUIdocs tree was not migrated. Recover from iCloud version history if needed.
+`Old NUI Plugin-plan` content from the pre-`docs/` tree was not migrated. Recover from iCloud version history if needed.
 
 
 ## Shipped views

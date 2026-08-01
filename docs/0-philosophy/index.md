@@ -7,7 +7,7 @@ Note-taking philosophy: [[The best ways to take notes is physical, but the best 
 ## In this section
 
 - [[speculative-documentation|Speculative Documentation]] — Spec-first notes that describe what will be built, marked so they are never read as a record of shipped code.
-- [[writing-nuidocs|Writing NUIdocs]] — Editorial guide for NUIdocs spec notes — structure, cross-links, and when a See also section earns its place.
+- [[writing-nuidocs|Writing NUI docs]] — Editorial guide for NUI docs spec notes — structure, cross-links, and when a See also section earns its place.
 
 ## Purpose
 

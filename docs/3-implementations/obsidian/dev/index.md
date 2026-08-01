@@ -6,7 +6,7 @@ Plugin source lives in the monorepo at `plugin/src`; `npm run dev` writes the bu
 
 ## In this section
 
-- [[doc-drift-audit|Doc Drift Audit]] — Standing audit of NUIdocs against the shipped code — run 2026-07-25, mostly resolved.
+- [[doc-drift-audit|Doc Drift Audit]] — Standing audit of NUI docs against the shipped code — run 2026-07-25, mostly resolved.
 - [[nui-plugin-roadmap|NUI Plugin Roadmap]] — Implementation backlog — plugin features, refactors, and behaviour not yet shipped.
 - [[reference-plugins|Reference Plugins]] — Obsidian plugins worth studying while building NUI Plugin — not an install list.
 

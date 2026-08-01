@@ -161,7 +161,7 @@ Edit at the top: **§0** palette, **§1b** typography scale, **§1a** spacing
 
 ## Documentation
 
-The canonical NUI specification lives in [NUIdocs/index.md](NUIdocs/index.md) — foundations, UI elements, and the Obsidian implementation (Bases views, vault conventions, behaviour). [references/](references/) holds OKF and LLM-wiki conventions. Plugin developers: read [plugin/CLAUDE.md](plugin/CLAUDE.md) for the build loop, then NUIdocs §3 for shipped behaviour.
+The canonical NUI specification lives in [docs/index.md](docs/index.md) — foundations, UI elements, and the Obsidian implementation (Bases views, vault conventions, behaviour). [references/](references/) holds OKF and LLM-wiki conventions. Plugin developers: read [plugin/CLAUDE.md](plugin/CLAUDE.md) for the build loop, then docs §3 for shipped behaviour.
 
 ## Repository layout
 
@@ -171,8 +171,8 @@ The canonical NUI specification lives in [NUIdocs/index.md](NUIdocs/index.md) �
 | `vault-example/` | The example vault, and the development vault. |
 | `vault-example/.obsidian/themes/NUI/theme.css` | The theme. This file is the source of truth — there is no separate copy. |
 | `scripts/` | Release packaging, the installer, and vault checks. |
-| `NUIdocs/` | Product specification — design language, elements, Obsidian implementation notes. Start at [NUIdocs/index.md](NUIdocs/index.md). |
-| `references/` | OKF and LLM-wiki conventions referenced by NUIdocs. |
+| `docs/` | Product specification — design language, elements, Obsidian implementation notes. Start at [docs/index.md](docs/index.md). |
+| `references/` | OKF and LLM-wiki conventions referenced by the spec. |
 | `VERSION` | One version for the plugin, the theme, and the vault. |
 
 ## Development

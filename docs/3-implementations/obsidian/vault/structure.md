@@ -10,7 +10,7 @@ generated: { by: okf-enforcer/0.5, at: 2026-07-25T00:00:00Z }
 How NUI is used in **N-docs** — the live Obsidian vault (plain `.md` on iCloud).
 
 ```
-NUIdocs (NUI spec)           ← rules
+NUI docs (spec)              ← rules
 N-docs                       ← content, and the vault the plugin ships from
 NUI Plugin + NUI Theme       ← UI over vault files
 ```
@@ -38,7 +38,7 @@ Each folder's hub is **`index.md`** inside that folder — one name everywhere, 
 - Renaming a folder syncs nothing, because `index.md` never goes stale — [[folder-index-rename]]
 - Breadcrumbs and titles display a folder index under its parent folder's name (`displayBasenameForNotePath`)
 
-There are no `{FolderName}.md` hub notes. That coupling is what the v1.0 break removed, and dropping it is what lets a space like NUIdocs use lowercase-hyphen filenames freely.
+There are no `{FolderName}.md` hub notes. That coupling is what the v1.0 break removed, and dropping it is what lets a space like `docs/` use lowercase-hyphen filenames freely.
 
 ## Where NUI artefacts sit
 
@@ -49,7 +49,7 @@ There are no `{FolderName}.md` hub notes. That coupling is what the v1.0 break r
 | Theme | `vault-example/.obsidian/themes/NUI/` — `theme.css` is the source of truth |
 | Build tooling | `plugin/` — `npm run dev` writes into the example vault; `node_modules` stays outside iCloud |
 | Shared bases | `vault-example/┼/Bases/` — `Contents`, `Tasks`, `Timeline`, `Tracker`, `Year`, `Month` |
-| Product spec | `NUIdocs/` in the monorepo — canonical NUI design language |
+| Product spec | `docs/` in the monorepo — canonical NUI design language |
 | Vault schema for agents | `ai/index.md`, with `CLAUDE.md` / `AGENTS.md` pointing at it |
 
 The shared bases all filter on `file.inFolder(this.file.folder)`, so one file serves every folder that embeds it. That is the vault's central trick — see [[contents]].

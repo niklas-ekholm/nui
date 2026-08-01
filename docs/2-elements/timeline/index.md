@@ -18,7 +18,7 @@ Horizontal Gantt-style chart of dated items. Each row is one record; the bar spa
 
 ## Purpose
 
-Reference element folder for NUIdocs — visual index, technical child notes, Product recipe, and Implementation note. Use as the template when deepening other elements.
+Reference element folder for NUI docs — visual index, technical child notes, Product recipe, and Implementation note. Use as the template when deepening other elements.
 
 ## Uses foundations
 

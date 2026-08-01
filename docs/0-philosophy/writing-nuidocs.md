@@ -1,13 +1,13 @@
 ---
 type: Principle
-title: Writing NUIdocs
-description: Editorial guide for NUIdocs spec notes — structure, cross-links, and when a See also section earns its place.
+title: Writing NUI docs
+description: Editorial guide for NUI docs spec notes — structure, cross-links, and when a See also section earns its place.
 generated: { by: okf-enforcer/0.5, at: 2026-07-25T00:00:00Z }
 ---
 
-# Writing NUIdocs
+# Writing NUI docs
 
-Editorial guide for notes under [[NUIdocs/index|NUIdocs]].
+Editorial guide for notes under [[index|Documentation]].
 
 ## Purpose
 
@@ -17,7 +17,7 @@ How to write spec notes — structure, cross-links, and when **See also** earns 
 
 Follow [[Markdown style#See also]]: explained prerequisites only, 0–2 items, delete the section when nothing qualifies.
 
-**Hub and index notes** (`[[NUIdocs/index|NUIdocs]]`, `[[0-philosophy/index|0 Philosophy]]`, `[[1-foundations/index|1 Foundations]]`, etc.) use **In this section** for navigation — not **See also**.
+**Hub and index notes** (`[[index|Documentation]]`, `[[0-philosophy/index|0 Philosophy]]`, `[[1-foundations/index|1 Foundations]]`, etc.) use **In this section** for navigation — not **See also**.
 
 **Good examples in this tree:**
 
