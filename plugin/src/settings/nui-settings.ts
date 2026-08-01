@@ -49,6 +49,10 @@ export interface EditorSettings extends HtmlLivePreviewSettings {
 	collapsibleProperties: boolean;
 	/** When true, note properties stay folded until the title-bar toggle shows them. */
 	collapseProperties: boolean;
+	/** Render nested YAML frontmatter as a collapsible tree in Properties. */
+	nestedProperties: boolean;
+	/** Start nested property branches collapsed. */
+	nestedPropertiesDefaultCollapsed: boolean;
 	embedPipes: boolean;
 }
 
@@ -115,6 +119,8 @@ export const DEFAULT_SETTINGS: NuiSettings = {
 		alwaysRenderHtmlInLivePreview: true,
 		collapsibleProperties: true,
 		collapseProperties: true,
+		nestedProperties: true,
+		nestedPropertiesDefaultCollapsed: false,
 		embedPipes: true,
 	},
 	appearance: {
@@ -221,6 +227,14 @@ export function mergeSettings(loaded: Loaded): NuiSettings {
 			collapseProperties: bool(
 				editor.collapseProperties,
 				defaults.editor.collapseProperties,
+			),
+			nestedProperties: bool(
+				editor.nestedProperties,
+				defaults.editor.nestedProperties,
+			),
+			nestedPropertiesDefaultCollapsed: bool(
+				editor.nestedPropertiesDefaultCollapsed,
+				defaults.editor.nestedPropertiesDefaultCollapsed,
 			),
 			embedPipes: bool(editor.embedPipes, defaults.editor.embedPipes),
 		},

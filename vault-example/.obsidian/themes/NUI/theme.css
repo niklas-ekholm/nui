@@ -2044,10 +2044,77 @@ body.is-mobile.is-tablet
 		.metadata-property-key,
 		.metadata-property-key-input,
 		.metadata-property-value,
+		.metadata-input,
 		.metadata-input-longtext,
+		.nui-nested-scalar-input,
+		.nui-nested-summary,
 		.metadata-link-inner,
-		.multi-select-pill-content
+		.multi-select-pill,
+		.multi-select-pill-content,
+		.metadata-property-value input,
+		.metadata-property-value textarea,
+		.metadata-property-value select
 	) {
+	color: var(--nui-chrome);
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-date[type="date"],
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"] {
+	color: var(--nui-chrome);
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-date[type="date"]::-webkit-datetime-edit,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-date[type="date"]::-webkit-datetime-edit-fields-wrapper,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-date[type="date"]::-webkit-datetime-edit-text,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-date[type="date"]::-webkit-datetime-edit-month-field,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-date[type="date"]::-webkit-datetime-edit-day-field,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-date[type="date"]::-webkit-datetime-edit-year-field,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"]::-webkit-datetime-edit,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"]::-webkit-datetime-edit-fields-wrapper,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"]::-webkit-datetime-edit-text,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"]::-webkit-datetime-edit-month-field,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"]::-webkit-datetime-edit-day-field,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"]::-webkit-datetime-edit-year-field,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"]::-webkit-datetime-edit-hour-field,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"]::-webkit-datetime-edit-minute-field,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"]::-webkit-datetime-edit-second-field,
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-input.mod-datetime[type="datetime-local"]::-webkit-datetime-edit-ampm-field {
 	color: var(--nui-chrome);
 }
 
@@ -2057,8 +2124,12 @@ body.is-mobile.is-tablet
 			.metadata-property-key:hover,
 			.metadata-property-key-input:hover,
 			.metadata-property-value:hover,
+			.metadata-input:hover,
 			.metadata-input-longtext:hover,
-			.metadata-link-inner:hover
+			.nui-nested-scalar-input:hover,
+			.nui-nested-summary:hover,
+			.metadata-link-inner:hover,
+			.multi-select-pill-content:hover
 		) {
 		color: var(--n-light-ui-hover-color);
 	}
@@ -2075,30 +2146,13 @@ body.is-mobile.is-tablet
 }
 
 :is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
-	.metadata-container .metadata-content {
-	position: relative;
-}
-
-:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
-	.metadata-container .metadata-properties {
-	padding-inline-end: calc(var(--icon-size) + var(--size-2-2));
+	.metadata-container .metadata-add-button .text-button-label {
+	display: none;
 }
 
 :is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
 	.metadata-container .metadata-add-button {
-	position: absolute;
-	top: 0;
-	inset-inline-end: 0;
-	margin-top: 0;
-	padding: 0;
-	height: var(--metadata-input-height);
-	align-items: center;
 	color: var(--n-light-ui-color);
-}
-
-:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
-	.metadata-container .metadata-add-button .text-button-label {
-	display: none;
 }
 
 :is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
@@ -2113,6 +2167,11 @@ body.is-mobile.is-tablet
 		.metadata-container .metadata-add-button:hover :is(.svg-icon, svg) {
 		color: var(--n-light-ui-hover-color);
 	}
+}
+
+/* Nested YAML tree (NUI plugin `.nui-nested-*`; indent token only — typography inherits §4b metadata). */
+:root {
+	--nui-nested-indent: 8px;
 }
 
 /* ==========================================================================

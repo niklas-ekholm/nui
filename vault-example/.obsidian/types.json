@@ -13,6 +13,13 @@
     "coverimage": "text",
     "project": "text",
     "responsibility": "text",
-    "status": "text"
+    "status": "text",
+    "generated.by": "text",
+    "generated.at": "datetime",
+    "verified.by": "text",
+    "verified.at": "datetime",
+    "sources.id": "text",
+    "sources.resource": "text",
+    "sources.title": "text"
   }
 }

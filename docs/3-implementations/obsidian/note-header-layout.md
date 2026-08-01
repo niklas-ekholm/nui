@@ -30,7 +30,7 @@ When properties are shown in the note, Obsidian often places the inline title an
 
 Body blocks (`.cm-content`, `.cm-contentContainer`, preview sections) span **`grid-column: 1 / -1`** on row 2 so only the header row is split 50/50 — not the body text.
 
-**CSS:** `.obsidian/themes/NUI/theme.css` — section **§4b Properties**.
+**CSS:** `.obsidian/themes/NUI/theme.css` — section **§4b Properties**. Nested YAML trees use **§4b nested** styling; see [[nested-properties]].
 
 Gap below the header row uses `--n-inline-title-margin-bottom` (default `0.9em`). Body block spacing follows Obsidian defaults (`--p-spacing`, `--heading-spacing`) with one empty line between block elements in source — see [[spacing]].
 

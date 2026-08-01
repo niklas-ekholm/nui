@@ -3863,3 +3863,150 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	box-shadow: none;
 }
 
+/* Nested YAML frontmatter tree (layout/behavior; colors in theme §4b). */
+
+:root {
+	--nui-nested-indent: 8px;
+}
+
+.nui-nested-header-actions {
+	display: inline-flex;
+	margin-inline-start: 0.35rem;
+	vertical-align: middle;
+}
+
+.nui-nested-toggle-all {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.4rem;
+	height: 1.4rem;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: var(--text-muted);
+	cursor: pointer;
+	border-radius: var(--radius-s);
+}
+
+.nui-nested-toggle-all:hover {
+	color: var(--text-normal);
+	background: var(--background-modifier-hover);
+}
+
+.metadata-property.nui-nested-collapsible {
+	align-items: flex-start;
+}
+
+.metadata-property.nui-nested-collapsible > .metadata-property-key {
+	display: flex;
+	align-items: center;
+	align-self: flex-start;
+	gap: 0.2rem;
+	min-width: 0;
+}
+
+.nui-nested-collapse-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+	flex: 0 0 auto;
+	align-self: center;
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: transform 100ms ease-in-out;
+}
+
+.nui-nested-collapse-btn svg {
+	width: 10px;
+	height: 10px;
+}
+
+.nui-nested-collapsible.is-collapsed > .metadata-property-key > .nui-nested-collapse-btn {
+	transform: rotate(-90deg);
+}
+
+.metadata-property-value > .nui-nested-summary {
+	display: none;
+	color: var(--metadata-input-text-color);
+	font-size: var(--metadata-input-font-size);
+	cursor: pointer;
+	padding: 0.1rem 0;
+}
+
+.nui-nested-collapsible.is-collapsed > .metadata-property-value > .nui-nested-container {
+	display: none;
+}
+
+.nui-nested-collapsible.is-collapsed > .metadata-property-value > .nui-nested-summary {
+	display: block;
+}
+
+.nui-nested-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	width: 100%;
+	padding-inline: 0;
+	margin-block-start: 0.15rem;
+	overflow-x: auto;
+}
+
+.nui-nested-container > .metadata-property,
+.nui-nested-container > .metadata-add-button {
+	margin-inline-start: var(--nui-nested-indent, 8px);
+	padding-inline: 0;
+}
+
+.nui-nested-container .metadata-property {
+	min-width: 0;
+	padding-inline: 0;
+}
+
+.nui-nested-container .metadata-property-key,
+.nui-nested-container .metadata-property-value {
+	padding-inline: 0;
+}
+
+.nui-nested-container .metadata-property-key {
+	width: auto;
+	flex: 0 0 auto;
+}
+
+.nui-nested-container > .metadata-add-button {
+	align-self: flex-start;
+	margin-block-start: 0.05rem;
+}
+
+.nui-nested-container > .metadata-add-button .text-button-label {
+	display: none;
+}
+
+.nui-nested-scalar-input {
+	width: 100%;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	border-radius: 0;
+	background: transparent;
+	color: var(--metadata-input-text-color);
+	font-family: inherit;
+	font-size: var(--metadata-input-font-size);
+	line-height: var(--metadata-input-height);
+}
+
+.nui-nested-scalar-input:focus {
+	outline: none;
+	box-shadow: none;
+}
+
+.metadata-property.nui-nested-collapsible > .metadata-property-value {
+	flex: 1 1 auto;
+	min-width: 0;
+	align-self: flex-start;
+	padding-inline: 0;
+}
+
+

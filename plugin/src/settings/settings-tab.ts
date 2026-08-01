@@ -250,6 +250,28 @@ export class NuiSettingTab extends PluginSettingTab {
 		}
 
 		this.toggle(containerEl, {
+			name: "Nested properties",
+			desc: `Shows nested YAML frontmatter as a collapsible tree in the Properties block. ${RELOAD_NOTE}`,
+			get: () => this.settings.editor.nestedProperties,
+			set: (value) => {
+				this.settings.editor.nestedProperties = value;
+				this.plugin.refreshNestedProperties?.();
+			},
+		});
+
+		if (this.settings.editor.nestedProperties) {
+			this.toggle(containerEl, {
+				name: "Collapse nested properties",
+				desc: "When on, nested property branches start collapsed.",
+				get: () => this.settings.editor.nestedPropertiesDefaultCollapsed,
+				set: (value) => {
+					this.settings.editor.nestedPropertiesDefaultCollapsed = value;
+					this.plugin.refreshNestedProperties?.();
+				},
+			});
+		}
+
+		this.toggle(containerEl, {
 			name: "HTML in Live Preview",
 			desc: `Renders inline HTML in Live Preview. ${RELOAD_NOTE}`,
 			get: () => this.settings.editor.htmlLivePreview,

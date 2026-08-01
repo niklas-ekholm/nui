@@ -14,6 +14,7 @@ import {
 	selectAllOccurrences,
 } from "./editor/cursors";
 import { registerCollapsibleProperties } from "./editor/collapsible-properties";
+import { registerNestedProperties } from "./editor/nested-properties/register-nested-properties";
 import { MobileSourceToggle } from "./editor/mobile-source-toggle";
 import { registerNoteCoverImageSync } from "./editor/note-cover-image";
 import { registerNoteTextColorSync } from "./editor/note-text-color";
@@ -81,6 +82,7 @@ export default class NuiPlugin extends Plugin {
 	sidebarGraphNavigation: SidebarGraphNavigation | null = null;
 	mobileSourceToggle: MobileSourceToggle | null = null;
 	refreshCollapsibleProperties: (() => void) | null = null;
+	refreshNestedProperties: (() => void) | null = null;
 
 	/**
 	 * Every opinionated feature is gated here, and anything that overrides
@@ -138,6 +140,9 @@ export default class NuiPlugin extends Plugin {
 		}
 		if (editor.collapsibleProperties) {
 			this.refreshCollapsibleProperties = registerCollapsibleProperties(this);
+		}
+		if (editor.nestedProperties) {
+			this.refreshNestedProperties = registerNestedProperties(this);
 		}
 		if (editor.tableColumnLayout) registerTableColumnLayout(this);
 		if (editor.htmlLivePreview) {

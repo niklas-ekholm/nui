@@ -1,4 +1,11 @@
 import { MarkdownView, type Plugin } from "obsidian";
+import {
+	contentSizers,
+	findViewForElement,
+	isOwnElement,
+	isRawSourceView,
+	mainMetadataContainer,
+} from "./metadata-dom-utils";
 
 const COLLAPSED_CLASS = "nui-properties-collapsed";
 const ADD_CLASS = "nui-properties-add";
@@ -14,29 +21,6 @@ interface AppCommands {
 	commands: {
 		executeCommandById(commandId: string): boolean;
 	};
-}
-
-/** The view's own elements, never one belonging to an embedded note. */
-function isOwnElement(view: MarkdownView, el: Element): boolean {
-	return view.containerEl.contains(el) && !el.closest(".internal-embed");
-}
-
-function mainMetadataContainer(view: MarkdownView): HTMLElement | null {
-	return (
-		Array.from(
-			view.containerEl.querySelectorAll<HTMLElement>(".metadata-container"),
-		).find((el) => isOwnElement(view, el)) ?? null
-	);
-}
-
-/** Live-preview and reading-view content wrappers — the shared parent of
- * `.inline-title` and `.metadata-container` in each mode. */
-function contentSizers(view: MarkdownView): HTMLElement[] {
-	return Array.from(
-		view.containerEl.querySelectorAll<HTMLElement>(
-			".cm-sizer, .markdown-preview-sizer",
-		),
-	).filter((el) => isOwnElement(view, el));
 }
 
 /** Publish each sizer's inline-title height so the collapsed icon can be
@@ -57,13 +41,6 @@ function ownButtons(view: MarkdownView, className: string): HTMLElement[] {
 	return Array.from(
 		view.containerEl.querySelectorAll<HTMLElement>(`.${className}`),
 	).filter((el) => isOwnElement(view, el));
-}
-
-/** Strict Source mode (not live preview) shows frontmatter as plain text —
- * there is no properties widget to collapse, and nothing to hide. */
-function isRawSourceView(view: MarkdownView): boolean {
-	const state = view.getState() as { mode?: string; source?: boolean };
-	return state.mode === "source" && state.source === true;
 }
 
 export function registerCollapsibleProperties(
@@ -224,17 +201,8 @@ export function registerCollapsibleProperties(
 		}, 0);
 	};
 
-	const findViewForElement = (element: Element): MarkdownView | null => {
-		for (const leaf of plugin.app.workspace.getLeavesOfType("markdown")) {
-			if (
-				leaf.view instanceof MarkdownView &&
-				leaf.view.containerEl.contains(element)
-			) {
-				return leaf.view;
-			}
-		}
-		return null;
-	};
+	const findViewForElementLocal = (element: Element): MarkdownView | null =>
+		findViewForElement(plugin.app, element);
 
 	plugin.registerEvent(
 		plugin.app.workspace.on("active-leaf-change", scheduleSync),
@@ -253,7 +221,7 @@ export function registerCollapsibleProperties(
 		if (!container) {
 			return;
 		}
-		const view = findViewForElement(container);
+		const view = findViewForElementLocal(container);
 		if (view) {
 			setCollapsed(false);
 		}
@@ -272,7 +240,7 @@ export function registerCollapsibleProperties(
 			if (addButton) {
 				evt.preventDefault();
 				evt.stopPropagation();
-				const view = findViewForElement(addButton);
+				const view = findViewForElementLocal(addButton);
 				if (view) {
 					setCollapsed(false);
 					(plugin.app as unknown as AppCommands).commands.executeCommandById(
