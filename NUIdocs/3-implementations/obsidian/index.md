@@ -12,7 +12,7 @@ Obsidian is the first NUI platform. Load order: theme (NUI), then plugins (NUI P
 - [[hotkeys|Hotkeys]] — Obsidian keybindings in use — customised defaults plus NUI Plugin commands.
 - [[mobile|Mobile]] — Touch-specific overrides — grid sizing, embed margins, and the sync workflow.
 - [[note-header-layout|Note Header Layout]] — Live Preview note header — inline title left, properties right, body full width.
-- [[nui-finance|NUI Finance]] — A second Obsidian plugin rendering a financial dashboard from markdown notes and frontmatter alone. Speculative — not built.
+- [[nui-finance|NUI Finance]] — Finance Bases views inside NUI Plugin (expense tracking + planner). Speculative — not built.
 - [[nui-plugin|NUI Plugin]] — The Obsidian plugin — element registration table and cross-cutting code paths.
 - [[nui-theme|NUI Theme]] — The Obsidian theme — foundation tokens mapped to CSS variables and native chrome.
 - [[table-column-layout|Table Column Layout]] — Separator-row markers driving shrink-to-content and proportional table columns.

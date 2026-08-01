@@ -7,7 +7,7 @@ generated: { by: okf-enforcer/0.5, at: 2026-07-25T00:00:00Z }
 
 # Doc Drift Audit
 
-Every checkable claim in NUIdocs compared against `.obsidian/plugins/nui/src`, `theme.css`, `styles.css`, `┼/Bases/*.base`, `hotkeys.json`, and `app.json`.
+Every checkable claim in NUIdocs compared against `plugin/src`, `vault-example/.obsidian/themes/NUI/theme.css`, `vault-example/.obsidian/plugins/nui/styles.css`, `vault-example/┼/Bases/*.base`, `hotkeys.json`, and `app.json`.
 
 Every item is closed except one unverifiable script path. Most drift came from one event: the vault moved from NipaNotes (`index/…` bases, `{Folder}.md` hub notes, per-habit year bases, a habit tag registry) to N-docs (`┼/Bases/`, `index.md`, shared folder-scoped bases), and the behaviour and product docs did not follow. The code was taken as the source of truth and the docs rewritten to match, except for the habit bug in §3.
 
@@ -28,9 +28,9 @@ Each of these described behaviour that no longer existed. All now match the code
 
 ## 2. Resolved — stale paths swept
 
-The bases are `┼/Bases/{Contents,Tasks,Timeline,Tracker,Year,Month}.base`. Habits are `Habits/{Name}/` with day notes `{YYYY-MM-DD} {Name}.md` flat in the folder. Plugin source is in this vault at `.obsidian/plugins/nui/src`; build tooling is `~/Sites/nui-build`.
+The bases are `┼/Bases/{Contents,Tasks,Timeline,Tracker,Year,Month}.base`. Habits are `Habits/{Name}/` with day notes `{YYYY-MM-DD} {Name}.md` flat in the folder. Plugin source is `plugin/src` in the nui monorepo; build tooling is `plugin/` (`npm run dev` → `vault-example/.obsidian/plugins/nui/`).
 
-Corrected across 14 notes: `Weekly Habits.base` → `Tracker.base`; per-habit `{Habit}{Year}.base` → `Year.base#{year}`; the whole `index/Calendar/…` tree; `index/*.base` → `┼/Bases/*.base`; `Sites/NUIrepo/Obsidian/plugin` → `~/Sites/nui-build`; "sources live in NipaNotes".
+Corrected across 14 notes: `Weekly Habits.base` → `Tracker.base`; per-habit `{Habit}{Year}.base` → `Year.base#{year}`; the whole `index/Calendar/…` tree; `index/*.base` → `┼/Bases/*.base`; `Sites/NUIrepo/Obsidian/plugin` → `plugin/`; "sources live in NipaNotes".
 
 The one exception is the `normalize-vault-blank-lines.py` path — see **Still open** below.
 
@@ -47,7 +47,7 @@ Fixed by deleting the call and the module behind it — `habits/weekly-habits-ba
 
 Guarded by `src/habits/no-base-mutation.test.ts`: habit sources may not round-trip YAML, build a tag filter expression, reach into a base's `filters`, or reintroduce the module.
 
-`main.js` was rebuilt from `~/Sites/nui-build` after the fix — `tsc -noEmit` clean, 30/30 tests, and the shipped bundle no longer contains `renameTagInWeeklyHabitsBase` or any `file.tags.contains` expression. Reload the plugin in Obsidian to pick it up.
+`main.js` was rebuilt from `plugin/` after the fix — `tsc -noEmit` clean, 30/30 tests, and the shipped bundle no longer contains `renameTagInWeeklyHabitsBase` or any `file.tags.contains` expression. Reload the plugin in Obsidian to pick it up.
 
 ## 4. Resolved — undocumented views written up
 
@@ -84,7 +84,7 @@ Re-checked after the sweep:
 
 One fact I could not verify from inside the vault:
 
-- `normalize-vault-blank-lines.py` is not in `~/Sites/nui-build` or this vault, so it presumably stayed in NUIrepo. Flagged in [[normalize-blank-lines]]; confirm on disk.
+- `normalize-vault-blank-lines.py` is not in the nui monorepo or the example vault, so it presumably stayed in NUIrepo. Flagged in [[normalize-blank-lines]]; confirm on disk.
 
 ## 7. Fixed — nested habit renames
 
@@ -105,6 +105,20 @@ Path logic moved to `src/habits/habit-path.ts` — no Obsidian imports, so it is
 While in there, seven more orphans from the tag design were removed: `buildHabitYearBaseContent` (which authored a per-habit year base with a `file.hasTag()` filter), `habitBasePath`, `habitBaseFileName`, `habitYearFolderPath`, `habitDayFolderPath`, `buildHabitDayNoteContent`, `filterExistingHabitTags`, `habitFolderExists`, `resolveYearBasesInFolder`, `habitNameFromBaseBasename`, `isHabitFolderPath`, `listHabitFolderNames`, `resolveHabitNameFromPath`, and six dead tag helpers in `tracker-from-entries.ts`. The last three were themselves depth-1 traps.
 
 `no-base-mutation.test.ts` gained a case for base content built by string concatenation — the form that let `buildHabitYearBaseContent` slip past the first version of the guard.
+
+## 8. Resolved — NUIdocs relocation (2026-08-01)
+
+NUIdocs moved from `ncyclopedia-local/triage/incoming/from-n-docs/NUI` into the nui monorepo (`NUIdocs/`, `references/`, `docs/index.md`). Commit `5a76749` — import unedited; path reconciliation in the same pass as this section.
+
+| Stale | Correct |
+| --- | --- |
+| `~/Sites/nui-build` | `plugin/` |
+| Plugin source in N-docs `.obsidian/plugins/nui/src` | `plugin/src` |
+| Separate `nui-finance` plugin | Finance views inside NUI plugin — see [[nui-finance]] |
+
+Rewrote [[nui-finance]] for one-plugin architecture (`nui-expense-*` view ids, `plugin/src/core/finance/`). Updated [[nui-plugin]] registration table and dropped the separate-plugin install section. Swept remaining build-path mentions in [[dev/index]], [[behavior/index]], [[mobile]], [[structure]], and this audit.
+
+Triage source marked ingested; canonical home is `https://github.com/niklas-ekholm/nui` → `NUIdocs/index.md`.
 
 ## Roadmap
 

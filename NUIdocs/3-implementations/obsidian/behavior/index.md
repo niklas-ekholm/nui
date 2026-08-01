@@ -1,6 +1,6 @@
 # Behavior
 
-Create, rename, and delete behaviour in NUI Plugin. Source: `.obsidian/plugins/nui/src`; build tooling: `~/Sites/nui-build`.
+Create, rename, and delete behaviour in NUI Plugin. Source: `plugin/src` in the [nui monorepo](https://github.com/niklas-ekholm/nui); dev build targets `vault-example/.obsidian/plugins/nui/`.
 
 ## In this section
 

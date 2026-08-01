@@ -44,10 +44,12 @@ There are no `{FolderName}.md` hub notes. That coupling is what the v1.0 break r
 
 | Artefact | Path |
 | -------- | ---- |
-| Plugin | `.obsidian/plugins/nui/` — source in `src/`, bundled `main.js` |
-| Theme | `.obsidian/themes/NUI/` — `theme.css`, fonts |
-| Build tooling | `~/Sites/nui-build` — outside iCloud, so `node_modules` does not sync |
-| Shared bases | `┼/Bases/` — `Contents`, `Tasks`, `Timeline`, `Tracker`, `Year`, `Month` |
+| Plugin (dev vault) | `vault-example/.obsidian/plugins/nui/` — bundled `main.js`, `styles.css`, `manifest.json` |
+| Plugin source | `plugin/src/` in the [nui monorepo](https://github.com/niklas-ekholm/nui) |
+| Theme | `vault-example/.obsidian/themes/NUI/` — `theme.css` is the source of truth |
+| Build tooling | `plugin/` — `npm run dev` writes into the example vault; `node_modules` stays outside iCloud |
+| Shared bases | `vault-example/┼/Bases/` — `Contents`, `Tasks`, `Timeline`, `Tracker`, `Year`, `Month` |
+| Product spec | `NUIdocs/` in the monorepo — canonical NUI design language |
 | Vault schema for agents | `ai/index.md`, with `CLAUDE.md` / `AGENTS.md` pointing at it |
 
 The shared bases all filter on `file.inFolder(this.file.folder)`, so one file serves every folder that embeds it. That is the vault's central trick — see [[contents]].

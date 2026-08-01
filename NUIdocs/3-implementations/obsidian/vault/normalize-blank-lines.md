@@ -26,7 +26,7 @@ Skipped: binary files (`.png`, `.DS_Store`, etc.) and non-UTF-8 files.
 
 ## Script
 
-Path: `Sites/NUIrepo/Obsidian/scripts/normalize-vault-blank-lines.py` — **needs confirming.** NUIrepo now targets the legacy NipaNotes 0.1.x line and plugin build tooling moved to `~/Sites/nui-build`; the script may have moved with it. Pass the vault path explicitly either way.
+Path: not in the nui monorepo — **needs confirming.** The script may still live in NUIrepo (legacy NipaNotes 0.1.x line). Pass the vault path explicitly either way.
 
 Requires Python 3. Its built-in default is the old NipaNotes path, so pass this vault's path explicitly.
 

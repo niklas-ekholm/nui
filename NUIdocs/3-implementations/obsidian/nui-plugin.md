@@ -7,7 +7,7 @@ generated: { by: okf-enforcer/0.5, at: 2026-07-25T00:00:00Z }
 
 # NUI Plugin
 
-NUI Plugin is the Obsidian plugin for NUI layouts and behaviour. Source lives in `.obsidian/plugins/nui` (iCloud-synced). Build tooling: `~/Sites/nui-build`.
+NUI Plugin is the Obsidian plugin for NUI layouts and behaviour. Source lives in **`plugin/`** in this monorepo. `npm run dev` writes the build to `vault-example/.obsidian/plugins/nui/`.
 
 ## Purpose
 
@@ -70,9 +70,9 @@ Markdown pipe table column layout (separator-row shrink/fill ratios, separator d
 
 > [!warning] Speculative — not built.
 
-[[nui-finance|NUI Finance]] is a designed-but-unbuilt **second plugin** that renders a financial dashboard from markdown and frontmatter. It registers its own `nui-finance-*` Bases views rather than adding to the table above, and depends on this plugin for embed chrome and on [[nui-theme]] for tokens.
+[[nui-finance|NUI Finance]] is finance **Bases views inside this plugin** — expense tracking first (`nui-expense-ledger`, `nui-expense-breakdown`), then a personal finance planner (`nui-finance-*`). Not a separate plugin or manifest.
 
-It has one prerequisite here: bundle detection and rename are rooted at `Habits/` and must be generalised before an obligation folder can rename its payment notes correctly. Until that lands, nothing in NUI Finance can be built.
+Prerequisite: bundle detection and rename must generalise beyond `Habits/` before `Finance/` obligation folders are safe. Expense trackers can ship before the planner slice.
 
 ## See also
 

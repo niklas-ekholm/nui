@@ -2,7 +2,7 @@
 type: Implementation
 status: speculative
 title: NUI Finance
-description: "A second Obsidian plugin rendering a financial dashboard from markdown notes and frontmatter alone. Speculative — not built."
+description: "Finance Bases views inside the NUI plugin — expense tracking and personal finance planner. Speculative — not built."
 generated: { by: okf-enforcer/0.5, at: 2026-07-25T00:00:00Z }
 ---
 
@@ -11,7 +11,7 @@ generated: { by: okf-enforcer/0.5, at: 2026-07-25T00:00:00Z }
 > [!warning] Speculative — not built.
 > This note is the design, written to be built against. Nothing here describes shipped code.
 
-A second Obsidian plugin, separate from [[nui-plugin]]. It renders a financial dashboard — bills due, cashflow, spending by category, account balances — from markdown notes and their frontmatter. No database, no import format, no state outside the vault.
+A **feature area inside [[nui-plugin|NUI Plugin]]**, not a separate plugin. It renders financial dashboards from markdown notes and frontmatter — expense trackers first, then a personal finance planner. No database, no import format, no state outside the vault.
 
 ## Purpose
 
@@ -142,7 +142,22 @@ Free lowercase-hyphen strings — `housing`, `utilities`, `groceries`. No regist
 
 ## Views
 
-Four Bases view types, registered by NUI Finance rather than NUI Plugin.
+Finance views register in the same `plugin/src/main.ts` as every other NUI Bases view. Two tracks:
+
+### Expense tracking (Phase 1 — build first)
+
+Ad-hoc dated notes in `Finance/{Tracker}/` folders (e.g. Auto). Reuses the habit **tracker** for day-click create/open; adds finance-specific views:
+
+| Menu name | Type id | Answers |
+| --------- | ------- | ------- |
+| Expense: Ledger | `nui-expense-ledger` | Table of entries, amount total |
+| Expense: Breakdown | `nui-expense-breakdown` | Category totals, horizontal bars |
+
+Schema on expense notes: `amount`, `category` (free lowercase-hyphen string). Day notes: `{YYYY-MM-DD} {Tracker}.md`.
+
+### Personal finance planner (deferred)
+
+Recurring obligations, accounts, cashflow, and balance snapshots — the model below. View ids reserved for a later slice:
 
 | Menu name | Type id | Answers |
 | --------- | ------- | ------- |
@@ -209,34 +224,19 @@ Amounts align on the decimal separator. A column of money that does not align is
 
 ## Implementation
 
-Separate plugin at `.obsidian/plugins/nui-finance`, its own `manifest.json` and build in `~/Sites/nui-build`.
+All code lives in **`plugin/`** in this monorepo — same build and release as NUI Plugin (`npm run dev` writes to `vault-example/.obsidian/plugins/nui/`).
 
 | Area | Path |
 | ---- | ---- |
-| View registration | `src/main.ts` |
-| Occurrence generation | `src/core/schedule.ts` |
-| Payment matching | `src/core/settle.ts` |
-| Money parsing and arithmetic | `src/core/money.ts` |
-| Ledger render | `src/core/ledger/render-ledger.ts` |
-| Cashflow render | `src/core/cashflow/render-cashflow.ts` |
-| Breakdown render | `src/core/breakdown/render-breakdown.ts` |
-| Balance render | `src/core/balance/render-balance.ts` |
-| Entry reading | `src/bases/finance-from-entries.ts` |
+| View registration | `plugin/src/main.ts` |
+| Expense entry reading | `plugin/src/bases/expense-from-entries.ts` |
+| Money parsing | `plugin/src/core/finance/money.ts` |
+| Expense ledger render | `plugin/src/core/finance/render-expense-ledger.ts` |
+| Expense breakdown render | `plugin/src/core/finance/render-expense-breakdown.ts` |
+| Occurrence generation (planner) | `plugin/src/core/finance/schedule.ts` |
+| Payment matching (planner) | `plugin/src/core/finance/settle.ts` |
 
-`schedule.ts`, `settle.ts`, and `money.ts` take no Obsidian imports, so they are unit tested directly — the same discipline that made `habit-path.ts` testable. Month-end clamping (`dueDay: 31` in February), the settle window at cadence boundaries, and cent rounding are the cases that will break.
-
-### What it borrows from NUI Plugin
-
-Being a separate plugin means duplicating infrastructure that already exists. Named honestly:
-
-| Needed | Exists at | Plan |
-| ------- | --------- | ---- |
-| Date resolution from filename/frontmatter | `src/bases/entry-date.ts` | Copy for v1; extract to a shared module if a third plugin appears |
-| Bundle detection and rename | `src/habits/habit-bundle.ts`, `habit-path.ts` | Generalise from "habit" to "bundle" in NUI Plugin, then depend on it |
-| Text-scope tokens | [[nui-theme]] | Depend on the theme; no duplication |
-| Embed chrome | NUI Plugin | Depend on NUI Plugin being installed |
-
-The rename generalisation is a prerequisite, not a nice-to-have: without it, renaming an obligation leaves its payment notes behind, which is the exact bug [[doc-drift-audit]] §7 fixed for habits.
+Core finance modules take no Obsidian imports where possible — unit tested directly, same discipline as `habit-path.ts`. Bundle rename must generalise beyond `Habits/` before planner obligation folders are safe — see [[doc-drift-audit]] §7.
 
 ## Privacy
 
@@ -254,12 +254,12 @@ Named rather than papered over, per [[speculative-documentation|Speculative Docu
 
 ## See also
 
-- [[nui-plugin]] — the plugin this one sits beside and borrows from
+- [[nui-plugin]] — hosts finance views alongside all other Bases views
 - [[speculative-documentation|Speculative Documentation]] — why this note is marked and what promoting it requires
 
 ## Roadmap
 
-- Settle open question 1 — nothing can be built before the file layout is fixed
-- Generalise bundle detection and rename in NUI Plugin as a prerequisite
-- Build Ledger first and alone; it is the view that replaces `finance tasks.md`, and the other three are worth nothing until there is data to draw
+- **Phase 1:** `nui-expense-ledger` + `nui-expense-breakdown` for `Finance/{Tracker}/` expense notes; reuse habit tracker for day-click create/open
+- Generalise bundle rename beyond `Habits/` for `Finance/` trackers
+- **Planner slice:** settle open question 1, then obligation ledger and related views
 - Write a Product recipe under [[3-implementations/obsidian/product/index|Product]] once a `.base` uses any of these views

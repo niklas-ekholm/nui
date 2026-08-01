@@ -12,7 +12,7 @@ NUI on Obsidian Mobile — sync, touch behaviour, and embed layout fixes.
 
 Touch-specific overrides for NUI layouts — rolling week grid, year tracker grid, embed margin fixes, and folder-link chips. Desktop behaviour stays in element notes; this doc covers deltas only.
 
-Plugin and theme files live in `.obsidian/` inside this vault (N-docs) and sync via iCloud. Build `main.js` on the Mac (`~/Sites/nui-build`), wait for sync, then reload the plugin on iPhone (Settings → Community plugins, or restart Obsidian).
+Plugin and theme files live in `.obsidian/` inside the vault and sync via iCloud. Build `main.js` on the Mac (`cd plugin && npm run build`, or `npm run dev` with the vault path set via `NUI_VAULT_PLUGIN_DIR`), wait for sync, then reload the plugin on iPhone (Settings → Community plugins, or restart Obsidian).
 
 `manifest.json` sets `isDesktopOnly: false`. Editor commands that need a hardware keyboard are gated behind `Platform.isDesktopApp` and are not registered on mobile.
 

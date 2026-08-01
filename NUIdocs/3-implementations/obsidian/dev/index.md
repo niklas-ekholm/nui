@@ -2,7 +2,7 @@
 
 Developer reference for the Obsidian implementation — study material, roadmaps, and plugin ecosystem notes.
 
-Plugin source lives in this vault at `.obsidian/plugins/nui/src`; build tooling is outside iCloud at `~/Sites/nui-build` (`npm run build` / `npm run dev` / `npm test`).
+Plugin source lives in the monorepo at `plugin/src`; `npm run dev` writes the bundle into `vault-example/.obsidian/plugins/nui/` (`npm run build` / `npm test` from `plugin/`).
 
 ## In this section
 
