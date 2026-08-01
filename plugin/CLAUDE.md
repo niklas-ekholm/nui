@@ -2,6 +2,8 @@
 
 Obsidian plugin (id `nui`) providing Bases views, folder-index navigation, and editor tools. Public repository; the 0.x line runs before a real 1.0.0.
 
+**Product spec:** [NUIdocs/index.md](../NUIdocs/index.md) — canonical design language and Obsidian implementation notes. Behaviour docs, view registration, and the standing [doc drift audit](../NUIdocs/3-implementations/obsidian/dev/doc-drift-audit.md) live there; reconcile code changes against NUIdocs before release.
+
 ## Build & reload loop
 
 `src/` is the TypeScript source. Obsidian loads the bundled `main.js`. All tooling lives in this directory, and `node_modules` is safe here because the repository is outside iCloud.

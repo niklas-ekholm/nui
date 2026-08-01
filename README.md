@@ -159,6 +159,10 @@ Edit at the top: **§0** palette, **§1b** typography scale, **§1a** spacing
 | 9 | Backlinks — simple list |
 | 10 | NUI plugin views — inert without the plugin |
 
+## Documentation
+
+The canonical NUI specification lives in [NUIdocs/index.md](NUIdocs/index.md) — foundations, UI elements, and the Obsidian implementation (Bases views, vault conventions, behaviour). [references/](references/) holds OKF and LLM-wiki conventions. Plugin developers: read [plugin/CLAUDE.md](plugin/CLAUDE.md) for the build loop, then NUIdocs §3 for shipped behaviour.
+
 ## Repository layout
 
 | Path | Role |
@@ -167,6 +171,8 @@ Edit at the top: **§0** palette, **§1b** typography scale, **§1a** spacing
 | `vault-example/` | The example vault, and the development vault. |
 | `vault-example/.obsidian/themes/NUI/theme.css` | The theme. This file is the source of truth — there is no separate copy. |
 | `scripts/` | Release packaging, the installer, and vault checks. |
+| `NUIdocs/` | Product specification — design language, elements, Obsidian implementation notes. Start at [NUIdocs/index.md](NUIdocs/index.md). |
+| `references/` | OKF and LLM-wiki conventions referenced by NUIdocs. |
 | `VERSION` | One version for the plugin, the theme, and the vault. |
 
 ## Development
