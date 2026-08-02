@@ -3781,13 +3781,17 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	align-items: center;
 	justify-content: center;
 	box-sizing: border-box;
-	border: none;
-	background: transparent;
-	box-shadow: none;
+	border: none !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+	outline: none;
 	color: var(--text-faint);
 	cursor: pointer;
 	appearance: none;
 	-webkit-appearance: none;
+	-moz-appearance: none;
 	user-select: none;
 	-webkit-user-select: none;
 	touch-action: manipulation;
@@ -3852,15 +3856,20 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 .nui-properties-add:hover,
 .nui-properties-toggle:hover {
 	color: var(--text-normal);
+	background: transparent !important;
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
 }
 
 .metadata-container.nui-properties-collapsed:is(:focus, :focus-visible),
 .nui-properties-add:is(:focus, :focus-visible, :active),
 .nui-properties-toggle:is(:focus, :focus-visible, :active) {
-	border: none;
-	outline: none;
-	background: transparent;
-	box-shadow: none;
+	border: none !important;
+	outline: none !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
 }
 
 /* Nested YAML frontmatter tree (layout/behavior; colors in theme §4b). */

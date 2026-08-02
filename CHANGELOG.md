@@ -9,6 +9,19 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 
 ## [Unreleased]
 
+### Fixed
+
+- Properties info button beside the note title no longer shows Obsidian's default button border or shadow (#12).
+- Fenced code blocks in Live Preview no longer inherit heading or link typography; only syntax highlighting colours apply (#14).
+
+### Changed
+
+- Blockquotes use h3-scale body type and a thin left rule (`--nui-border-color`) instead of oversized serif pull-quote styling — partial; Live Preview first-line alignment and source-mode interaction remain open (#15).
+
+### Added
+
+- `vault-example`: [[Archive search patterns]] — longer fenced code sample for Live Preview code-block checks.
+
 ## [0.2.2] — 2026-07-31
 
 ### Added

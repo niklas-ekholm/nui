@@ -91,11 +91,11 @@ This heading level is also used as label, table header and sometimes as kicker (
 
 > The blockquote lede
 
-Used for opening ledes and pull quotes. Bookish Grades upright (`GRAD` axis); italic uses Bookish Italic. Size tracks the prose column (`6.5cqw`), not rem. No left rule or indent.
+Matches h3 on the type ladder — same typeface as body. Thin left rule (`1px`, `--nui-border-color`) and `--nui-blockquote-indent`. In Live Preview, the first line gets extra padding (`--nui-blockquote-marker`, `1.5em`) so its text aligns with continuation lines — no negative text-indent.
 
-| Element    | Size    | Leading | Grade | Tracking |
-| ---------- | ------- | ------- | ----- | -------- |
-| blockquote | 6.1cqw  | 110%    | 350   | 0        |
+| Element    | Size   | Leading | Weight | Tracking |
+| ---------- | ------ | ------- | ------ | -------- |
+| blockquote | = h3   | = h3    | = h3   | = h3     |
 
 ###### Supporting roles
 

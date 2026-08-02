@@ -117,9 +117,8 @@ rather than turning the feature on behind your back.
 
 Select **NUI** under Settings → Appearance → Themes.
 
-The theme bundles no typefaces — blockquotes fall back to a Georgia system
-stack, and everything else inherits Obsidian's own text font. Settings →
-Appearance → Font overrides all of it.
+The theme bundles no typefaces — blockquotes inherit the same text font as
+body copy. Settings → Appearance → Font overrides all of it.
 
 ### Palette
 

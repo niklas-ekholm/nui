@@ -166,14 +166,14 @@ body {
 		transparent
 	);
 
-	/* blockquote */
-	--nui-font-blockquote: Georgia, "Times New Roman", serif;
-	--nui-font-blockquote-italic: Georgia, "Times New Roman", serif;
-	--nui-blockquote: 6.1cqw;
-	--nui-leading-blockquote: 1.1;
-	--nui-grade-blockquote: 350;
-	--nui-tracking-blockquote: 0;
+	/* blockquote — h3 scale; same typeface as body */
+	--nui-blockquote: var(--nui-h3);
+	--nui-leading-blockquote: var(--nui-leading-h3);
+	--nui-weight-blockquote: var(--nui-weight-h3);
+	--nui-tracking-blockquote: var(--nui-tracking-h3);
 	--nui-blockquote-link-underline-thickness: 0.5px;
+	--nui-blockquote-indent: var(--size-4-3);
+	--nui-blockquote-marker: 1.5em;
 
 	/* presentation (not in Typography.md ladder) */
 	--n-inline-title-margin-bottom: 0.9em;
@@ -187,8 +187,8 @@ body {
 	--n-bold-weight: var(--nui-weight-bold);
 	--n-italic-style: italic;
 
-	--blockquote-border-thickness: 0;
-	--blockquote-border-color: transparent;
+	--blockquote-border-thickness: 1px;
+	--blockquote-border-color: var(--nui-border-color);
 	--blockquote-background-color: transparent;
 	--blockquote-color: var(--nui-content);
 	--blockquote-font-style: normal;
@@ -316,6 +316,8 @@ body {
 	--link-unresolved-decoration-style: none;
 	--link-external-decoration: none;
 	--link-external-decoration-hover: none;
+	--blockquote-border-thickness: 0;
+	--blockquote-border-color: transparent;
 }
 
 .markdown-source-view.mod-cm6:not(.is-live-preview) .inline-title {
@@ -413,6 +415,16 @@ body {
 	vertical-align: baseline !important;
 	box-decoration-break: initial !important;
 	-webkit-box-decoration-break: initial !important;
+}
+
+/* Source mode — quote lines are plain monospace rows, no blockquote chrome. */
+.markdown-source-view.mod-cm6:not(.is-live-preview) .cm-line.HyperMD-quote {
+	border: none !important;
+	border-inline-start: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	text-indent: 0 !important;
+	background: transparent !important;
 }
 
 /* Inline note title — NUI ladder in reading + Live Preview only */
@@ -594,42 +606,52 @@ body {
 	margin-inline: 0;
 }
 
-/* Blockquote */
-:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) :is(blockquote, blockquote p),
-:is(.bases-embed, .bases-view) .bases-td :is(blockquote, blockquote p),
-.popover .markdown-preview-view :is(blockquote, blockquote p),
-.nui-text-scope :is(blockquote, blockquote p),
-.markdown-source-view.mod-cm6.is-live-preview :is(blockquote, blockquote p) {
-	font-family: var(--nui-font-blockquote) !important;
+/* Blockquote — h3 typography; box model aligned across reading view and LP. */
+:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered)
+	blockquote
+	:is(p, ul, ol, li),
+:is(.bases-embed, .bases-view) .bases-td blockquote :is(p, ul, ol, li),
+.popover .markdown-preview-view blockquote :is(p, ul, ol, li),
+.nui-text-scope blockquote :is(p, ul, ol, li),
+.markdown-source-view.mod-cm6.is-live-preview .cm-line.HyperMD-quote {
 	font-size: var(--nui-blockquote) !important;
 	line-height: var(--nui-leading-blockquote) !important;
-	font-weight: normal !important;
-	font-variation-settings: "GRAD" var(--nui-grade-blockquote) !important;
+	font-weight: var(--nui-weight-blockquote) !important;
 	letter-spacing: var(--nui-tracking-blockquote) !important;
 	font-style: normal;
-	font-synthesis: none;
 	color: var(--nui-content);
 }
 
 :is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote,
-:is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) div:has(> blockquote),
 :is(.bases-embed, .bases-view) .bases-td blockquote,
 .popover .markdown-preview-view blockquote,
-.nui-text-scope blockquote,
+.nui-text-scope blockquote {
+	--link-decoration-thickness: var(--nui-blockquote-link-underline-thickness);
+	--n-body-link-underline-thickness: var(--nui-blockquote-link-underline-thickness);
+	--n-body-link-underline-offset: 0.12rem;
+	color: var(--blockquote-color);
+	border: none;
+	border-inline-start: var(--blockquote-border-thickness) solid var(--blockquote-border-color);
+	margin-block: var(--p-spacing);
+	margin-inline: 0;
+	padding-block: 0;
+	padding-inline-start: var(--nui-blockquote-indent);
+	padding-inline-end: 0;
+	background: var(--blockquote-background-color);
+}
+
 .markdown-source-view.mod-cm6.is-live-preview blockquote {
 	--link-decoration-thickness: var(--nui-blockquote-link-underline-thickness);
 	--n-body-link-underline-thickness: var(--nui-blockquote-link-underline-thickness);
 	--n-body-link-underline-offset: 0.12rem;
-	border: none !important;
-	border-inline-start: none !important;
+	color: var(--blockquote-color);
+	border: none;
+	border-inline-start: var(--blockquote-border-thickness) solid var(--blockquote-border-color);
 	margin: 0 !important;
-	margin-inline: 0 !important;
-	margin-inline-start: 0 !important;
-	padding: 0 !important;
-	padding-inline: 0 !important;
-	padding-inline-start: 0 !important;
-	padding-inline-end: 0 !important;
-	background: transparent !important;
+	padding-block: 0 !important;
+	padding-inline-start: var(--nui-blockquote-indent);
+	padding-inline-end: 0;
+	background: var(--blockquote-background-color);
 }
 
 :is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote :is(p, ul, ol),
@@ -637,13 +659,9 @@ body {
 .popover .markdown-preview-view blockquote :is(p, ul, ol),
 .nui-text-scope blockquote :is(p, ul, ol),
 .markdown-source-view.mod-cm6.is-live-preview blockquote :is(p, ul, ol) {
-	margin: 0 !important;
-	margin-inline: 0 !important;
-	margin-inline-start: 0 !important;
-	padding: 0 !important;
-	padding-inline: 0 !important;
-	padding-inline-start: 0 !important;
-	padding-inline-end: 0 !important;
+	margin-block: 0;
+	margin-inline: 0;
+	padding: 0;
 }
 
 :is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered) blockquote :is(em, i),
@@ -651,25 +669,51 @@ body {
 .popover .markdown-preview-view blockquote :is(em, i),
 .nui-text-scope blockquote :is(em, i),
 .markdown-source-view.mod-cm6.is-live-preview blockquote :is(em, i) {
-	font-family: var(--nui-font-blockquote-italic) !important;
-	font-weight: normal !important;
-	font-variation-settings: "wght" clamp(400, var(--nui-grade-blockquote), 700) !important;
-	font-style: italic !important;
+	font-style: var(--italic-style);
 }
 
-.markdown-source-view.mod-cm6.is-live-preview :is(.cm-line.cm-quote, .cm-line.HyperMD-quote) {
-	font-family: var(--nui-font-blockquote) !important;
-	font-size: var(--nui-blockquote) !important;
-	line-height: var(--nui-leading-blockquote) !important;
-	font-weight: normal !important;
-	font-variation-settings: "GRAD" var(--nui-grade-blockquote) !important;
-	letter-spacing: var(--nui-tracking-blockquote) !important;
-	--link-decoration-thickness: var(--nui-blockquote-link-underline-thickness);
-	--n-body-link-underline-thickness: var(--nui-blockquote-link-underline-thickness);
-	font-synthesis: none;
-	margin-inline: 0 !important;
-	padding-inline: 0 !important;
-	padding-inline-start: 0 !important;
+/* LP quote lines — one inset for all lines. Continuation lines get Obsidian's
+   quote gutter; lines with a `> ` marker need the same gutter as padding (not
+   negative text-indent, which pulls the first line ~1.5em too far left). */
+.markdown-source-view.mod-cm6.is-live-preview .cm-line.HyperMD-quote {
+	padding-block: 0 !important;
+	margin-block: 0 !important;
+	padding-inline-start: calc(
+		var(--nui-blockquote-indent) + var(--blockquote-border-thickness)
+	) !important;
+	border-inline-start: var(--blockquote-border-thickness) solid
+		var(--blockquote-border-color) !important;
+	text-indent: 0 !important;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.cm-line.HyperMD-quote:has(.cm-formatting-quote) {
+	padding-inline-start: calc(
+		var(--nui-blockquote-indent) + var(--blockquote-border-thickness) +
+			var(--nui-blockquote-marker)
+	) !important;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.cm-line.HyperMD-quote:has(.cm-formatting-quote)
+	.cm-formatting-quote {
+	display: inline-block !important;
+	width: 0 !important;
+	overflow: hidden !important;
+	vertical-align: bottom;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.cm-line.HyperMD-quote
+	+ .cm-line.HyperMD-quote {
+	border-inline-start-color: transparent !important;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	:is(.HyperMD-quote-bg, .HyperMD-quote-begin-bg, .HyperMD-quote-end-bg) {
+	padding-block: 0 !important;
+	margin-block: 0 !important;
+	min-height: 0 !important;
 }
 
 /* Inline code */
@@ -706,6 +750,130 @@ body {
 	border-radius: var(--code-radius);
 	padding: var(--code-padding-y) var(--code-padding-x);
 	background-color: transparent;
+}
+
+/* Fenced code blocks — Live Preview: plain monospace; syntax colours only.
+   NUI heading/link typography must not apply to markdown-looking tokens inside ```. */
+.markdown-source-view.mod-cm6.is-live-preview .cm-line:is(
+	.HyperMD-codeblock,
+	.HyperMD-codeblock-begin,
+	.HyperMD-codeblock-end
+) {
+	font-family: var(--font-monospace) !important;
+	font-size: var(--nui-code) !important;
+	line-height: var(--nui-leading-code) !important;
+	font-weight: var(--nui-weight-code) !important;
+	letter-spacing: var(--nui-tracking-code) !important;
+	font-style: normal !important;
+	text-transform: none !important;
+	color: var(--code-normal, var(--text-normal));
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .cm-line:is(
+	.HyperMD-codeblock,
+	.HyperMD-codeblock-begin,
+	.HyperMD-codeblock-end
+) :is(
+	.cm-header-1,
+	.cm-header-2,
+	.cm-header-3,
+	.cm-header-4,
+	.cm-header-5,
+	.cm-header-6,
+	.HyperMD-header-1,
+	.HyperMD-header-2,
+	.HyperMD-header-3,
+	.HyperMD-header-4,
+	.HyperMD-header-5,
+	.HyperMD-header-6,
+	.cm-formatting,
+	.cm-formatting-header,
+	.cm-formatting-strong,
+	.cm-formatting-em,
+	.cm-formatting-link,
+	.cm-formatting-link-string,
+	.cm-formatting-code,
+	.cm-formatting-code-block,
+	.cm-formatting-quote,
+	.cm-formatting-list,
+	.cm-formatting-list-ul,
+	.cm-formatting-list-ol,
+	.cm-formatting-task,
+	.cm-strong,
+	.cm-em,
+	.cm-link,
+	.cm-url,
+	.cm-footref,
+	.cm-hmd-internal-link,
+	.cm-inline-code,
+	.cm-hashtag,
+	.cm-quote,
+	.cm-meta,
+	.cm-hmd-footnote
+) {
+	color: inherit !important;
+	font-size: inherit !important;
+	line-height: inherit !important;
+	font-weight: inherit !important;
+	font-style: normal !important;
+	font-family: inherit !important;
+	letter-spacing: inherit !important;
+	text-transform: none !important;
+	text-decoration: none !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	border: none !important;
+	border-radius: 0 !important;
+	padding: 0 !important;
+	transform: none !important;
+	vertical-align: baseline !important;
+	box-decoration-break: initial !important;
+	-webkit-box-decoration-break: initial !important;
+	opacity: 1 !important;
+	filter: none !important;
+}
+
+/* Syntax tokens — flatten typography only; keep token colours. */
+.markdown-source-view.mod-cm6.is-live-preview .cm-line:is(
+	.HyperMD-codeblock,
+	.HyperMD-codeblock-begin,
+	.HyperMD-codeblock-end
+) :is(
+	.cm-hmd-codeblock,
+	.cm-def,
+	.cm-qualifier,
+	.cm-attribute,
+	.cm-property,
+	.cm-variable,
+	.cm-variable-2,
+	.cm-variable-3,
+	.cm-keyword,
+	.cm-operator,
+	.cm-string,
+	.cm-string-2,
+	.cm-number,
+	.cm-comment,
+	.cm-tag,
+	.cm-builtin,
+	.cm-type
+) {
+	font-size: inherit !important;
+	line-height: inherit !important;
+	font-weight: inherit !important;
+	font-style: normal !important;
+	font-family: inherit !important;
+	letter-spacing: inherit !important;
+	text-transform: none !important;
+	text-decoration: none !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	border: none !important;
+	border-radius: 0 !important;
+	padding: 0 !important;
+	transform: none !important;
+	vertical-align: baseline !important;
+	box-decoration-break: initial !important;
+	-webkit-box-decoration-break: initial !important;
 }
 
 /* Math blocks — left-align display math (MathJax default is centered) */
