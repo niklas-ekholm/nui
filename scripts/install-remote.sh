@@ -93,9 +93,12 @@ done
 
 # No positional vault path and no --all: default to the current directory, so
 # the script can be run from inside the vault to update.
+#
+# ${ARGS[@]+"${ARGS[@]}"} (not "${ARGS[@]}") is required: macOS ships bash 3.2,
+# and with set -u an empty "${ARGS[@]}" is an unbound-variable error.
 if [[ -z "${HAVE_TARGET:-}" ]]; then
     have_all=0
-    for a in "${ARGS[@]}"; do [[ "${a}" == "--all" ]] && have_all=1; done
+    for a in ${ARGS[@]+"${ARGS[@]}"}; do [[ "${a}" == "--all" ]] && have_all=1; done
     (( have_all )) || ARGS+=(".")
 fi
 
@@ -185,5 +188,5 @@ for component in "${COMPONENTS[@]}"; do
 
     # Invoked through bash rather than executed, so a lost exec bit — zips
     # unpacked by some tools drop it — does not break the install.
-    bash "${dir}/install.sh" "${ARGS[@]}"
+    bash "${dir}/install.sh" ${ARGS[@]+"${ARGS[@]}"}
 done
