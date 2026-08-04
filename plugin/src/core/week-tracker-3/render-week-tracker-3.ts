@@ -2,7 +2,6 @@
 import { HabitDayEntry } from "../models/habit-day";
 import {
 	formatDayNumber,
-	formatTooltipDate,
 	isSameDay,
 	todayStart,
 } from "../year-tracker/year-grid";
@@ -44,7 +43,7 @@ export interface WeekTracker3RenderOptions {
 	onAddHabit?: (anchorEl: HTMLElement) => void;
 	/** Single row of N days (mobile rolling window). */
 	rollingDayCount?: number;
-	/** Restore horizontal scroll after re-render (desktop week strip). */
+	/** Restore horizontal scroll after re-render. */
 	initialScrollLeft?: number;
 	/** Called when the user scrolls the week strip. */
 	onScrollLeftChange?: (scrollLeft: number) => void;
@@ -53,6 +52,7 @@ export interface WeekTracker3RenderOptions {
 function renderWeekBlocksHeader(
 	parent: HTMLElement,
 	weekBlocks: WeekTracker3Block[],
+	today: Date,
 ): void {
 	const blocksEl = parent.createDiv("nui-week-tracker-3-blocks");
 	for (const block of weekBlocks) {
@@ -63,9 +63,18 @@ function renderWeekBlocksHeader(
 		}
 		const daysEl = blockEl.createDiv("nui-week-tracker-3-days");
 		for (const cell of block.cells) {
-			daysEl.createDiv({
-				cls: "nui-week-tracker-3-weekday-label",
+			const headEl = daysEl.createDiv("nui-week-tracker-3-day-head");
+			headEl.dataset.dateKey = cell.dateKey;
+			if (isSameDay(cell.date, today)) {
+				headEl.dataset.isToday = "true";
+			}
+			headEl.createSpan({
+				cls: "nui-week-tracker-3-weekday",
 				text: formatWeekdayShort(cell.date),
+			});
+			headEl.createSpan({
+				cls: "nui-week-tracker-3-date",
+				text: formatDayNumber(cell.date),
 			});
 		}
 	}
@@ -124,7 +133,6 @@ function renderWeekTrackerTopbar(
 			cls: "nui-week-tracker-3-today-btn",
 			text: "Today",
 		});
-		todayBtn.title = "Scroll to the current week";
 		todayBtn.addEventListener("click", (evt) => {
 			evt.preventDefault();
 			evt.stopPropagation();
@@ -140,8 +148,6 @@ function renderWeekTrackerTopbar(
 	});
 	addBtn.setAttr("role", "button");
 	addBtn.setAttr("tabindex", "0");
-	addBtn.title = "Add habit";
-	addBtn.setAttr("aria-label", "Add habit");
 	addBtn.addEventListener("click", (evt) => {
 		evt.preventDefault();
 		evt.stopPropagation();
@@ -149,82 +155,118 @@ function renderWeekTrackerTopbar(
 	});
 }
 
-function isWeekTrackerScrolledToToday(scrollEl: HTMLElement): boolean {
-	const target = initialScrollLeftForCurrentWeek(scrollEl);
+function getWeekTrackerScrollEl(grid: HTMLElement): HTMLElement | null {
+	return grid.querySelector<HTMLElement>(".nui-week-tracker-3-scroll");
+}
+
+function isWeekTrackerScrolledToToday(
+	scrollEl: HTMLElement,
+	rolling: boolean,
+): boolean {
+	const target = rolling
+		? initialScrollLeftForRollingEnd(scrollEl)
+		: initialScrollLeftForCurrentWeek(scrollEl);
 	return Math.abs(scrollEl.scrollLeft - target) < 2;
 }
 
-function syncWeekTrackerTodayButton(grid: HTMLElement): void {
-	const scrollEl = grid.querySelector<HTMLElement>(".nui-week-tracker-3-scroll");
+function syncWeekTrackerTodayButton(grid: HTMLElement, rolling: boolean): void {
+	const scrollEl = getWeekTrackerScrollEl(grid);
 	const todayBtn = grid.querySelector<HTMLElement>(".nui-week-tracker-3-today-btn");
 	if (!scrollEl || !todayBtn) return;
 	todayBtn.classList.toggle(
 		"is-visible",
-		!isWeekTrackerScrolledToToday(scrollEl),
+		!isWeekTrackerScrolledToToday(scrollEl, rolling),
 	);
+}
+
+export function syncWeekTrackerTodayLine(grid: HTMLElement): void {
+	const line = grid.querySelector<HTMLElement>(".nui-week-tracker-3-today-line");
+	const body = grid.querySelector<HTMLElement>(".nui-week-tracker-3-body");
+	const todayHead = grid.querySelector<HTMLElement>(
+		'.nui-week-tracker-3-day-head[data-is-today="true"]',
+	);
+	if (!line || !body) return;
+
+	if (!todayHead) {
+		line.classList.add("is-hidden");
+		return;
+	}
+
+	const bodyRect = body.getBoundingClientRect();
+	const headRect = todayHead.getBoundingClientRect();
+	const centerX = headRect.left + headRect.width / 2 - bodyRect.left;
+
+	line.classList.remove("is-hidden");
+	line.style.left = `${centerX}px`;
+}
+
+function syncWeekTrackerChrome(
+	grid: HTMLElement,
+	rolling: boolean,
+): void {
+	syncWeekTrackerTodayLine(grid);
+	syncWeekTrackerTodayButton(grid, rolling);
 }
 
 function scrollWeekTrackerToToday(
 	grid: HTMLElement,
 	onScrollLeftChange?: (scrollLeft: number) => void,
 ): void {
-	const scrollEls = Array.from(
-		grid.querySelectorAll<HTMLElement>(".nui-week-tracker-3-scroll"),
-	);
-	if (!scrollEls.length) return;
+	const scrollEl = getWeekTrackerScrollEl(grid);
+	if (!scrollEl) return;
 
-	const target = initialScrollLeftForCurrentWeek(scrollEls[0]);
-	for (const el of scrollEls) {
-		el.scrollLeft = target;
-	}
+	const rolling = grid.classList.contains("nui-week-tracker-3--rolling");
+	const target = rolling
+		? initialScrollLeftForRollingEnd(scrollEl)
+		: initialScrollLeftForCurrentWeek(scrollEl);
+	scrollEl.scrollLeft = target;
 	onScrollLeftChange?.(target);
-	syncWeekTrackerTodayButton(grid);
+	syncWeekTrackerChrome(grid, rolling);
 }
 
-function attachWeekTrackerScrollSync(
+function attachWeekTrackerScroll(
 	grid: HTMLElement,
-	options: Pick<WeekTracker3RenderOptions, "initialScrollLeft" | "onScrollLeftChange">,
+	options: Pick<
+		WeekTracker3RenderOptions,
+		"initialScrollLeft" | "onScrollLeftChange" | "rollingDayCount"
+	>,
 ): void {
-	const scrollEls = Array.from(
-		grid.querySelectorAll<HTMLElement>(".nui-week-tracker-3-scroll"),
-	);
-	if (!scrollEls.length) return;
+	const scrollEl = getWeekTrackerScrollEl(grid);
+	if (!scrollEl) return;
 
-	let syncing = false;
-	const applyScrollLeft = (scrollLeft: number) => {
-		syncing = true;
-		for (const el of scrollEls) {
-			el.scrollLeft = scrollLeft;
-		}
-		syncing = false;
-	};
+	const rolling = !!options.rollingDayCount;
 
-	requestAnimationFrame(() => {
+	const applyInitialScroll = () => {
 		const resolvedInitial =
 			options.initialScrollLeft && options.initialScrollLeft > 0
 				? options.initialScrollLeft
-				: initialScrollLeftForCurrentWeek(scrollEls[0]);
-		applyScrollLeft(resolvedInitial);
+				: rolling
+					? initialScrollLeftForRollingEnd(scrollEl)
+					: initialScrollLeftForCurrentWeek(scrollEl);
+		scrollEl.scrollLeft = resolvedInitial;
 		options.onScrollLeftChange?.(resolvedInitial);
-		syncWeekTrackerTodayButton(grid);
-	});
+		syncWeekTrackerChrome(grid, rolling);
+	};
 
-	for (const el of scrollEls) {
-		el.addEventListener(
-			"scroll",
-			() => {
-				if (syncing) return;
-				const { scrollLeft } = el;
-				syncing = true;
-				for (const other of scrollEls) {
-					if (other !== el) other.scrollLeft = scrollLeft;
-				}
-				syncing = false;
-				options.onScrollLeftChange?.(scrollLeft);
-				syncWeekTrackerTodayButton(grid);
-			},
-			{ passive: true },
-		);
+	requestAnimationFrame(applyInitialScroll);
+
+	scrollEl.addEventListener(
+		"scroll",
+		() => {
+			options.onScrollLeftChange?.(scrollEl.scrollLeft);
+			syncWeekTrackerChrome(grid, rolling);
+		},
+		{ passive: true },
+	);
+
+	const scrollInner = scrollEl.querySelector<HTMLElement>(
+		".nui-week-tracker-3-scroll-inner",
+	);
+	if (scrollInner) {
+		const observer = new ResizeObserver(() => {
+			syncWeekTrackerChrome(grid, rolling);
+		});
+		observer.observe(scrollInner);
 	}
 }
 
@@ -242,6 +284,11 @@ export function initialScrollLeftForCurrentWeek(
 		currentBlock.offsetWidth -
 		scrollEl.clientWidth;
 	return Math.max(0, target);
+}
+
+/** Rolling mobile: today is the rightmost column. */
+export function initialScrollLeftForRollingEnd(scrollEl: HTMLElement): number {
+	return Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth);
 }
 
 export function renderWeekTracker3(
@@ -272,30 +319,24 @@ export function renderWeekTracker3(
 		);
 	}
 	renderWeekTrackerTopbar(grid, adoptedTitle, options);
-	const layout = grid.createDiv("nui-week-tracker-3-layout");
 
-	layout.createDiv({ cls: "nui-week-tracker-3-tag-spacer" });
-	const headerRow = layout.createDiv("nui-week-tracker-3-header");
-	const headerScroll = headerRow.createDiv("nui-week-tracker-3-scroll");
-	renderWeekBlocksHeader(headerScroll, options.weekBlocks);
+	const layout = grid.createDiv("nui-week-tracker-3-layout");
+	const scrollEl = layout.createDiv("nui-week-tracker-3-scroll");
+	const scrollInner = scrollEl.createDiv("nui-week-tracker-3-scroll-inner");
+
+	const header = scrollInner.createDiv("nui-week-tracker-3-header");
+	renderWeekBlocksHeader(header, options.weekBlocks, today);
+
+	const body = scrollInner.createDiv("nui-week-tracker-3-body");
+	body.createDiv("nui-week-tracker-3-today-line");
 
 	for (const row of options.rows) {
-		options.tagHost.createTag(layout, row.tag);
-		const dataRow = layout.createDiv("nui-week-tracker-3-data-row");
-		const rowScroll = dataRow.createDiv("nui-week-tracker-3-scroll");
-		renderWeekBlocksDays(
-			rowScroll,
-			options.weekBlocks,
-			row,
-			today,
-			options.host,
-		);
+		const dataRow = body.createDiv("nui-week-tracker-3-data-row");
+		options.tagHost.createTag(dataRow, row.tag);
+		renderWeekBlocksDays(dataRow, options.weekBlocks, row, today, options.host);
 	}
 
-	if (!options.rollingDayCount) {
-		attachWeekTrackerScrollSync(grid, options);
-	}
+	attachWeekTrackerScroll(grid, options);
 }
 
-export { formatDayNumber, formatTooltipDate };
-
+export { formatDayNumber };

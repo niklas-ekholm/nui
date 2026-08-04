@@ -15,7 +15,6 @@ import { parseIsoDate } from "../core/parse/dates";
 import { buildEmbedDayNote } from "../core/year-tracker/resolve-year-create-context";
 import {
 	formatDayNumber,
-	formatTooltipDate,
 	renderWeekTracker3,
 } from "../core/week-tracker-3/render-week-tracker-3";
 import {
@@ -144,7 +143,6 @@ export class WeekTracker3BasesView extends BasesView {
 						text: tag,
 						href: "#",
 					});
-					link.title = folderPath;
 
 					this.registerDomEvent(
 						link,
@@ -162,39 +160,36 @@ export class WeekTracker3BasesView extends BasesView {
 			},
 			host: {
 				createDay: (daysEl, cell, state, tag) => {
-					const label = formatDayNumber(cell.date);
-					const tooltip = formatTooltipDate(cell.date);
-					const cellEl = daysEl.createDiv("nui-tracker-day-cell");
-					cellEl.dataset.tag = tag;
+					const dayEl = daysEl.createDiv("nui-week-tracker-3-day");
+					if (state.isDone) {
+						dayEl.classList.add("is-done");
+					}
+					dayEl.dataset.dateKey = cell.dateKey;
+					dayEl.dataset.tag = tag;
 
 					if (state.isDone) {
-						const markEl = cellEl.createDiv({
-							cls: "nui-tracker-day-mark is-done",
+						const markEl = dayEl.createDiv({
+							cls: "nui-week-tracker-3-day-mark is-done",
 						});
 						if (state.rating) {
 							markEl.dataset.rating = String(state.rating);
 						}
-					} else if (state.isToday) {
-						cellEl.createDiv({ cls: "nui-tracker-day-mark is-today" });
 					}
 
-					const labelClasses = ["nui-tracker-day-label"];
-					if (state.isDone) labelClasses.push("is-done");
-					if (state.isToday) labelClasses.push("is-today");
+					const numClasses = ["nui-week-tracker-3-day-num"];
+					if (state.isDone) numClasses.push("is-done");
 
-					const labelEl = cellEl.createSpan({
-						cls: labelClasses.join(" "),
-						text: label,
+					const numEl = dayEl.createSpan({
+						cls: numClasses.join(" "),
+						text: formatDayNumber(cell.date),
 					});
-					labelEl.setAttr("role", "button");
-					labelEl.setAttr("tabindex", "0");
-					labelEl.title = tooltip;
-					labelEl.setAttr("aria-label", tooltip);
-					labelEl.dataset.dateKey = cell.dateKey;
-					labelEl.dataset.tag = tag;
+					numEl.setAttr("aria-hidden", "true");
+
+					dayEl.setAttr("role", "button");
+					dayEl.setAttr("tabindex", "0");
 
 					this.registerDomEvent(
-						labelEl,
+						dayEl,
 						"click",
 						(evt) => {
 							if (evt.button !== 0 && evt.button !== 1) return;
@@ -208,14 +203,14 @@ export class WeekTracker3BasesView extends BasesView {
 								);
 								if (file instanceof TFile) {
 									void openFileInWorkspace(this.app, file, {
-										anchorEl: labelEl,
+										anchorEl: dayEl,
 										evt,
 									});
 								}
 								return;
 							}
 
-							void this.createDayNote(hostFolder, cell.dateKey, tag, labelEl);
+							void this.createDayNote(hostFolder, cell.dateKey, tag, dayEl);
 						},
 						{ capture: true },
 					);

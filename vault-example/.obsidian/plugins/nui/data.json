@@ -11,8 +11,8 @@
   "timeline": {
     "rowSize": 10,
     "timespan": "3w",
-    "rangeStart": "2026-06-15",
-    "rangeEnd": "2026-08-26"
+    "rangeStart": "2026-08-04",
+    "rangeEnd": "2026-08-25"
   },
   "editor": {
     "multiCursorCommands": true,
@@ -22,7 +22,7 @@
     "htmlLivePreview": true,
     "alwaysRenderHtmlInLivePreview": true,
     "collapsibleProperties": true,
-    "collapseProperties": true,
+    "collapseProperties": false,
     "nestedProperties": true,
     "nestedPropertiesDefaultCollapsed": true,
     "embedPipes": true

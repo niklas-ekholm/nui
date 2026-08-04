@@ -3271,12 +3271,26 @@ body {
 	color: var(--n-accent) !important;
 }
 
-.nui-text-scope .nui-tracker-day-label.is-done {
+.nui-text-scope :is(
+	.nui-tracker-day-label.is-done,
+	.nui-week-tracker-3-day-num.is-done
+) {
 	color: var(--n-surface) !important;
+}
+
+.nui-text-scope .nui-week-tracker-3-tag-link {
+	background: var(--n-surface) !important;
 }
 
 .nui-text-scope .nui-week-tracker-3-tag-link:hover {
 	text-decoration: underline;
+}
+
+.nui-text-scope
+	.nui-week-tracker-3-day:not(.is-done):hover
+	.nui-week-tracker-3-day-num {
+	color: var(--nui-content) !important;
+	background: var(--n-surface) !important;
 }
 
 .nui-text-scope :is(

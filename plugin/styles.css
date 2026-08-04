@@ -1908,7 +1908,7 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	height: auto;
 	padding: 0;
 	margin: 0;
-	overflow: visible;
+	overflow: hidden;
 }
 
 :is(.bases-embed, .bases-view):has(.nui-week-tracker-3) {
@@ -1951,12 +1951,18 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 }
 
 .nui-week-tracker-3 {
-	--n-week-tracker-3-row-gap: 4px;
+	--n-week-tracker-col-width: 20px;
+	--n-week-tracker-day-size: 18px;
+	--n-week-tracker-header-height: 28px;
+	--n-week-tracker-row-height: 18px;
+	--n-week-tracker-week-gap: 6px;
+	--n-week-tracker-line-color: color-mix(in srgb, var(--text-faint) 55%, transparent);
+	--n-week-tracker-3-row-gap: 6px;
 	width: 100%;
 	height: auto;
 	margin: 0;
 	padding: 0;
-	overflow: visible;
+	overflow: hidden;
 }
 
 .nui-week-tracker-3-topbar,
@@ -2001,39 +2007,18 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 }
 
 .nui-week-tracker-3-layout {
-	display: grid;
-	grid-template-columns: max-content minmax(0, 1fr);
-	column-gap: 12px;
-	row-gap: var(--n-week-tracker-3-row-gap);
-	align-items: center;
-	align-content: start;
 	width: 100%;
 	height: auto;
 	margin: 0;
 	padding: 0;
-	overflow: visible;
-}
-
-.nui-week-tracker-3-tag-spacer {
-	grid-column: 1;
-	margin: 0;
-	padding: 0;
-}
-
-.nui-week-tracker-3-header,
-.nui-week-tracker-3-data-row {
-	grid-column: 2;
-	min-width: 0;
-	margin: 0;
-	padding: 0;
-	overflow: visible;
+	overflow: hidden;
 }
 
 .nui-week-tracker-3-scroll {
 	overflow-x: auto;
-	overflow-y: visible;
-	min-width: 0;
+	overflow-y: hidden;
 	width: 100%;
+	max-width: 100%;
 	-webkit-overflow-scrolling: touch;
 	overscroll-behavior-x: contain;
 	scrollbar-width: none;
@@ -2044,10 +2029,67 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	display: none;
 }
 
+.nui-week-tracker-3-scroll-inner {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	row-gap: var(--n-week-tracker-3-row-gap);
+	width: max-content;
+	min-width: 100%;
+	overflow: visible;
+}
+
+.nui-week-tracker-3-body {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	row-gap: var(--n-week-tracker-3-row-gap);
+	overflow: visible;
+}
+
+.nui-week-tracker-3-today-line {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+	opacity: 0.85;
+	pointer-events: none;
+	z-index: 2;
+	transform: translateX(-1px);
+}
+
+.nui-week-tracker-3-today-line.is-hidden {
+	display: none;
+}
+
+.nui-week-tracker-3-header,
+.nui-week-tracker-3-data-row {
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	overflow: visible;
+}
+
+.nui-week-tracker-3-data-row {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(100%, max-content);
+	grid-template-rows: minmax(0, 1fr);
+	height: var(--n-week-tracker-row-height);
+	overflow: visible;
+}
+
+.nui-week-tracker-3-data-row > .nui-week-tracker-3-blocks {
+	grid-row: 1;
+	grid-column: 1;
+	min-width: 100%;
+}
+
 .nui-week-tracker-3-blocks {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	column-gap: var(--n-year-tracker-month-gap-x);
+	column-gap: var(--n-week-tracker-week-gap, var(--n-year-tracker-month-gap-x));
 	width: 100%;
 	margin: 0;
 	padding: 0;
@@ -2061,56 +2103,188 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 }
 
 .nui-week-tracker-3:not(.nui-week-tracker-3--rolling) .nui-week-tracker-3-block {
-	width: calc(7 * var(--n-tracker-day-size));
+	width: calc(7 * var(--n-week-tracker-col-width));
 	flex-shrink: 0;
 }
 
 .nui-week-tracker-3-tag-link {
+	grid-row: 1;
 	grid-column: 1;
-	display: block;
-	margin: 0;
-	padding: 0;
-	justify-self: start;
+	position: sticky;
+	left: 0;
+	z-index: 3;
+	display: flex;
+	align-items: center;
 	align-self: center;
+	justify-self: start;
+	height: var(--n-week-tracker-row-height);
+	margin: 0;
+	padding: 0 6px 0 0;
 	font-size: var(--font-text-size);
-	line-height: var(--line-height-normal);
+	line-height: 1;
 	font-weight: inherit;
 	cursor: pointer;
+	background: var(--n-surface, var(--background-primary));
+	white-space: nowrap;
 }
 
 .nui-week-tracker-3-block {
+	position: relative;
 	min-width: 0;
 	margin: 0;
 	padding: 0;
 	overflow: visible;
 }
 
+.nui-week-tracker-3-data-row .nui-week-tracker-3-block::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 50%;
+	height: 1px;
+	background: var(--n-week-tracker-line-color);
+	transform: translateY(-50%);
+	pointer-events: none;
+	z-index: 0;
+}
+
 .nui-week-tracker-3-days {
 	display: grid;
-	grid-template-columns: repeat(7, minmax(0, 1fr));
-	align-content: start;
+	grid-template-columns: repeat(7, var(--n-week-tracker-col-width));
+	align-content: center;
 	width: 100%;
-	height: auto;
 	margin: 0;
 	padding: 0;
 	border: none;
 	box-shadow: none;
 	background: none;
-	overflow: visible;
+	overflow: hidden;
 }
 
-.nui-week-tracker-3 .nui-tracker-day-cell {
-	width: var(--n-tracker-day-size);
-	height: var(--n-tracker-day-size);
+.nui-week-tracker-3-header .nui-week-tracker-3-days {
+	height: var(--n-week-tracker-header-height);
+}
+
+.nui-week-tracker-3-data-row .nui-week-tracker-3-days {
+	height: var(--n-week-tracker-row-height);
+}
+
+.nui-week-tracker-3-day-head {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 2px;
+	box-sizing: border-box;
+	width: var(--n-week-tracker-col-width);
+	height: var(--n-week-tracker-header-height);
 	justify-self: center;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
 }
 
-.nui-week-tracker-3 .nui-tracker-day-label {
-	width: var(--n-tracker-day-size);
-	height: var(--n-tracker-day-size);
-	min-width: 0;
-	line-height: var(--n-tracker-day-size);
-	display: block;
+.nui-week-tracker-3-weekday {
+	font-size: 9px;
+	line-height: 1;
+	text-align: center;
+	color: var(--nui-chrome, var(--text-muted));
+}
+
+.nui-week-tracker-3-date {
+	font-size: 10px;
+	line-height: 1;
+	text-align: center;
+	color: var(--nui-chrome, var(--text-muted));
+}
+
+.nui-week-tracker-3-day {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: var(--n-week-tracker-col-width);
+	height: var(--n-week-tracker-row-height);
+	justify-self: center;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.nui-week-tracker-3-day-mark {
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	width: var(--n-week-tracker-day-size);
+	height: var(--n-week-tracker-day-size);
+	border-radius: 50%;
+	pointer-events: none;
+}
+
+.nui-week-tracker-3-day-mark.is-done {
+	background-color: var(--text-normal);
+}
+
+.nui-week-tracker-3-day-mark.is-done[data-rating="1"] {
+	background-color: var(--nui-rating-1, #c56b61);
+}
+
+.nui-week-tracker-3-day-mark.is-done[data-rating="2"] {
+	background-color: var(--nui-rating-2, #de9e43);
+}
+
+.nui-week-tracker-3-day-mark.is-done[data-rating="3"] {
+	background-color: var(--nui-rating-3, #dbce76);
+}
+
+.nui-week-tracker-3-day-mark.is-done[data-rating="4"] {
+	background-color: var(--nui-rating-4, #9bb472);
+}
+
+.nui-week-tracker-3-day-mark.is-done[data-rating="5"] {
+	background-color: var(--nui-rating-5, #4a956b);
+}
+
+.nui-week-tracker-3-day-num {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--n-week-tracker-day-size);
+	height: var(--n-week-tracker-day-size);
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	font-family: inherit;
+	font-size: 10px;
+	font-weight: 400;
+	line-height: 1;
+	text-align: center;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.nui-week-tracker-3-day.is-done .nui-week-tracker-3-day-num,
+.nui-week-tracker-3-day-num.is-done {
+	opacity: 1;
+}
+
+@media (hover: hover) {
+	.nui-week-tracker-3-day:not(.is-done):hover .nui-week-tracker-3-day-num {
+		opacity: 1;
+		z-index: 2;
+		background: var(--n-surface, var(--background-primary));
+		color: var(--nui-content, var(--text-normal));
+	}
+}
+
+.nui-week-tracker-3-day-num.is-done {
+	color: var(--background-primary);
 }
 
 .nui-week-tracker-3--rolling .nui-week-tracker-3-blocks {
@@ -2118,18 +2292,16 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 }
 
 .nui-week-tracker-3--rolling .nui-week-tracker-3-days {
-	grid-template-columns: repeat(var(--n-week-tracker-rolling-days, 10), minmax(0, 1fr));
+	grid-template-columns: repeat(
+		var(--n-week-tracker-rolling-days, 10),
+		var(--n-week-tracker-col-width)
+	);
 }
 
-.nui-week-tracker-3-weekday-label {
-	width: var(--n-tracker-day-size);
-	height: var(--n-tracker-day-size);
-	justify-self: center;
-	font-size: 10px;
-	line-height: var(--n-tracker-day-size);
-	text-align: center;
-	margin: 0;
-	padding: 0;
+.nui-week-tracker-3--rolling .nui-week-tracker-3-block {
+	width: calc(
+		var(--n-week-tracker-rolling-days, 10) * var(--n-week-tracker-col-width)
+	);
 }
 
 /* Hide duplicate folder name when viewing a folder index note (FolderName.md). */
@@ -2774,10 +2946,6 @@ body.nui-fade-bases-chrome
 		margin: 0 !important;
 		padding-inline: 0 !important;
 		border-radius: inherit !important;
-	}
-
-	.nui-week-tracker-3--rolling .nui-week-tracker-3-layout {
-		column-gap: 8px;
 	}
 
 	.nui-year-tracker {

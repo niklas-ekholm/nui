@@ -154,7 +154,7 @@ export function beginTimelineTitleRename(
 	titleTextEl.classList.add(EDITING_CLASS);
 	titleTextEl.dataset.nuiTitleEditing = "true";
 	titleTextEl.spellcheck = false;
-	titleTextEl.focus();
+	titleTextEl.focus({ preventScroll: true });
 	selectContents(titleTextEl);
 	return true;
 }

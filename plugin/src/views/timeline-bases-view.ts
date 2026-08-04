@@ -12,8 +12,6 @@ import { tasksFromFile } from "../bases/tasks-from-entries";
 import {
 	formatIsoDate,
 	parseIsoDate,
-	shiftRangeStartToDate,
-	startOfDay,
 } from "../core/parse/dates";
 import {
 	buildDatedNoteContent,
@@ -36,6 +34,7 @@ import {
 	beginTimelineTitleRename,
 	isTimelineTitleEditing,
 } from "../core/timeline/timeline-title-rename";
+import { scrollTimelineRowToCenter } from "../core/timeline/timeline-scroll-to-row";
 import { filterTimelineItems } from "../core/timeline/timeline-search";
 import { filterTimelineItemsByResponsibility } from "../core/timeline/timeline-responsibility-filter";
 import { resolveProjectLabelFromIndexNotes } from "../core/timeline/project-label";
@@ -86,6 +85,10 @@ export class TimelineBasesView extends BasesView {
 	private trackedPaths = new Set<string>();
 	private updateGeneration = 0;
 	private suppressDataUpdate = false;
+	private pendingRenameItemId: string | null = null;
+	private pendingScrollToItemId: string | null = null;
+	private createFollowUpInProgress = false;
+	private createFollowUpRetryTimer: number | null = null;
 
 	constructor(
 		controller: QueryController,
@@ -107,8 +110,23 @@ export class TimelineBasesView extends BasesView {
 		applyTimelineBasesChrome(this.containerEl, this.app);
 		this.registerEvent(
 			this.app.metadataCache.on("changed", (file) => {
+				const pending =
+					this.pendingScrollToItemId ?? this.pendingRenameItemId;
+				if (pending && file.path === pending) {
+					this.onDataUpdated();
+					return;
+				}
 				if (!this.trackedPaths.has(file.path)) return;
 				this.onDataUpdated();
+			}),
+		);
+		this.registerEvent(
+			this.app.vault.on("create", (file) => {
+				const pending =
+					this.pendingScrollToItemId ?? this.pendingRenameItemId;
+				if (pending && file.path === pending) {
+					this.onDataUpdated();
+				}
 			}),
 		);
 		this.registerEvent(
@@ -137,11 +155,13 @@ export class TimelineBasesView extends BasesView {
 				EMBED_PIPES_CHANGED_EVENT,
 				onEmbedPipesChanged,
 			);
+			this.clearCreateFollowUpRetryTimer();
 		});
 	}
 
 	onDataUpdated(): void {
 		if (this.suppressDataUpdate) return;
+		if (this.createFollowUpInProgress) return;
 		void this.renderTimelineView();
 	}
 
@@ -312,6 +332,8 @@ export class TimelineBasesView extends BasesView {
 				this.onDataUpdated();
 			},
 		});
+
+		this.schedulePendingCreateFollowUp();
 	}
 
 	private async loadTasksByFilePath(
@@ -475,29 +497,15 @@ export class TimelineBasesView extends BasesView {
 	}
 
 	private async createNoteAtDate(date: Date): Promise<void> {
-		await this.shiftTimelineRangeToStartDate(date);
-		await this.createNote(date);
-	}
-
-	private async shiftTimelineRangeToStartDate(date: Date): Promise<void> {
-		const current =
-			this.resolveRangeOverride() ??
-			defaultTimelineRange(this.plugin.timelineTimespan);
-		const next = shiftRangeStartToDate(current.start, current.end, date);
-		const nextStart = startOfDay(next.start);
-
-		if (nextStart.getTime() === startOfDay(current.start).getTime()) {
-			return;
+		const createdPath = await this.createNote(date);
+		if (createdPath) {
+			this.pendingRenameItemId = createdPath;
+			this.pendingScrollToItemId = createdPath;
+			this.onDataUpdated();
 		}
-
-		this.rangePreview = undefined;
-		this.plugin.timelineRangeStart = formatIsoDate(next.start);
-		this.plugin.timelineRangeEnd = formatIsoDate(next.end);
-		await this.plugin.saveTimelineSettings();
-		await this.renderTimelineView();
 	}
 
-	private async createNote(date = new Date()): Promise<void> {
+	private async createNote(date = new Date()): Promise<string | null> {
 		const folder = resolveNoteCreateFolder(
 			this.app,
 			this.containerEl,
@@ -505,7 +513,7 @@ export class TimelineBasesView extends BasesView {
 		);
 		if (folder === null) {
 			new Notice("Timeline: could not resolve folder for new note.");
-			return;
+			return null;
 		}
 		const startKey = this.resolveConfiguredFieldKey("startField", "Start Date");
 		const endKey = this.resolveConfiguredFieldKey("endField", "End Date");
@@ -516,11 +524,103 @@ export class TimelineBasesView extends BasesView {
 		try {
 			const content = buildDatedNoteContent(startKey, endKey, noteDate);
 			await this.app.vault.create(filePath, content);
+			return filePath;
 		} catch (error) {
 			const message =
 				error instanceof Error ? error.message : "Could not create note";
 			new Notice(`Timeline: ${message}`);
+			return null;
 		}
+	}
+
+	private schedulePendingCreateFollowUp(): void {
+		if (!this.pendingScrollToItemId && !this.pendingRenameItemId) return;
+		if (this.createFollowUpInProgress) return;
+
+		this.clearCreateFollowUpRetryTimer();
+
+		let attempts = 0;
+		const maxAttempts = 40;
+
+		const tick = (): void => {
+			attempts += 1;
+			const scrollItemId = this.pendingScrollToItemId;
+			const renameItemId = this.pendingRenameItemId;
+			const itemId = scrollItemId ?? renameItemId;
+
+			if (!itemId) {
+				this.clearCreateFollowUpRetryTimer();
+				this.createFollowUpInProgress = false;
+				return;
+			}
+
+			const row = this.containerEl.querySelector<HTMLElement>(
+				`.nui-timeline-row[data-item-id="${CSS.escape(itemId)}"]`,
+			);
+
+			if (!row) {
+				if (attempts < maxAttempts) {
+					this.createFollowUpRetryTimer = window.setTimeout(tick, 50);
+				} else {
+					this.pendingScrollToItemId = null;
+					this.pendingRenameItemId = null;
+					this.clearCreateFollowUpRetryTimer();
+					this.createFollowUpInProgress = false;
+				}
+				return;
+			}
+
+			this.clearCreateFollowUpRetryTimer();
+			this.createFollowUpInProgress = true;
+
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					const finishIfDone = (): void => {
+						if (!this.pendingScrollToItemId && !this.pendingRenameItemId) {
+							this.createFollowUpInProgress = false;
+						}
+					};
+
+					const tryRename = (): void => {
+						if (!renameItemId) {
+							finishIfDone();
+							return;
+						}
+						if (beginTimelineTitleRename(this.containerEl, renameItemId)) {
+							this.pendingRenameItemId = null;
+						}
+						finishIfDone();
+					};
+
+					if (scrollItemId) {
+						if (
+							scrollTimelineRowToCenter(
+								this.containerEl,
+								scrollItemId,
+								300,
+								() => {
+									this.pendingScrollToItemId = null;
+									tryRename();
+								},
+							)
+						) {
+							return;
+						}
+						this.pendingScrollToItemId = null;
+					}
+
+					tryRename();
+				});
+			});
+		};
+
+		tick();
+	}
+
+	private clearCreateFollowUpRetryTimer(): void {
+		if (this.createFollowUpRetryTimer === null) return;
+		window.clearTimeout(this.createFollowUpRetryTimer);
+		this.createFollowUpRetryTimer = null;
 	}
 
 	private openItem(item: TimelineItem): void {
