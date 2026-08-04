@@ -2,14 +2,12 @@
 #
 # Fetch a NUI release and install it into an Obsidian vault, in one command.
 #
-#   curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
-#     | bash -s -- /path/to/vault
+#   curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh | bash -s -- /path/to/vault
 #
 # With no vault path, installs into the current directory — run this from
 # inside the vault you want updated:
 #
-#   curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
-#     | bash -s --
+#   curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh | bash -s --
 #
 # This script downloads the plugin and theme zips for a release, verifies them
 # against that release's SHA256SUMS, unpacks them into a temporary directory,

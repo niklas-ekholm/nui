@@ -18,8 +18,7 @@ shasum -a 256 -c SHA256SUMS --ignore-missing
 ## Trying NUI without touching an existing vault
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote-vault.sh \
-  | bash -s --
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote-vault.sh | bash -s --
 ```
 
 Downloads the latest release's vault zip, verifies it against that release's
@@ -46,8 +45,7 @@ The fastest route, no manual download required. Run it from inside the vault —
 with no path, it installs into the current directory:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
-  | bash -s --
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh | bash -s --
 ```
 
 Pass a path to target a different vault instead: `bash -s -- /path/to/vault`.
@@ -69,8 +67,7 @@ Piping a script from a URL into a shell means trusting whatever is at that URL
 at the moment you run it. To read it first:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
-  -o install-remote.sh && less install-remote.sh
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh -o install-remote.sh && less install-remote.sh
 bash install-remote.sh /path/to/vault
 ```
 

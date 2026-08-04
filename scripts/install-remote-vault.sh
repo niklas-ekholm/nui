@@ -3,8 +3,7 @@
 # Fetch the NUI example vault — plugin and theme already installed, ~40 notes
 # of demo content — without downloading a zip by hand first.
 #
-#   curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote-vault.sh \
-#     | bash -s --
+#   curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote-vault.sh | bash -s --
 #
 # Downloads the release's vault zip, verifies it against that release's
 # SHA256SUMS, and unpacks it. With no directory argument, unpacks into the

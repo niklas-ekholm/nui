@@ -19,8 +19,7 @@ public.
 To update an existing vault, run this script in terminal inside the vault folder. It installs into the current directory:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
-  | bash -s --
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh | bash -s --
 ```
 
 ## Install example
