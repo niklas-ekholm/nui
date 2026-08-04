@@ -13,12 +13,10 @@ import {
 import {
 	getFolderIndexPath,
 	isFolderIndexPath,
-	OKF_SIDECAR_FILENAME,
 	resolveFolderPath,
 	resolveParentFolderPathFromFilePath,
 	shouldHideNavFilePath,
 } from "./folder-index-path";
-import { isOkfSpaceFolder } from "./okf-space";
 import { isFolderIndexCreateSuppressed } from "./folder-index-suppress";
 import { DEFAULT_CALENDAR_FOLDER, isInsideHabitsRoot } from "../habits/habit-bundle";
 import type { FolderIndexSettings } from "../settings/nui-settings";
@@ -98,10 +96,6 @@ export class FolderIndexManager {
 			if (!indexFile) {
 				return false;
 			}
-		} else {
-			// Backfills the OKF sidecar if the space was marked OKF after this
-			// folder's hub note already existed.
-			await this.maybeCreateOkfSidecar(folder);
 		}
 
 		await openFileInWorkspace(this.plugin.app, indexFile);
@@ -120,7 +114,6 @@ export class FolderIndexManager {
 
 		const existing = await this.resolveFolderIndexFile(folder);
 		if (existing) {
-			await this.maybeCreateOkfSidecar(folder);
 			await openFileInWorkspace(this.plugin.app, existing);
 			return existing;
 		}
@@ -130,7 +123,6 @@ export class FolderIndexManager {
 			indexPath,
 			buildFolderIndexContent(),
 		);
-		await this.maybeCreateOkfSidecar(folder);
 		await openFileInWorkspace(this.plugin.app, file);
 		if (!options.silent) {
 			new Notice(`Created ${indexPath}`);
@@ -193,35 +185,6 @@ export class FolderIndexManager {
 		const indexPath = getFolderIndexPath(folder);
 		const indexFile = this.plugin.app.vault.getAbstractFileByPath(indexPath);
 		return indexFile instanceof TFile ? indexFile : null;
-	}
-
-	/**
-	 * Creates the folder's `index.md` OKF sidecar (spec §3.1) alongside its
-	 * `{FolderName}.md` hub, but only inside a space marked OKF (an ancestor
-	 * hub note's frontmatter declares `okf_version`). Created empty — the
-	 * listing content itself is curated by a human or an LLM, not generated
-	 * here.
-	 */
-	private async maybeCreateOkfSidecar(folder: TFolder): Promise<void> {
-		if (!isOkfSpaceFolder(this.plugin.app, folder)) {
-			return;
-		}
-
-		const sidecarPath = folder.path
-			? `${folder.path}/${OKF_SIDECAR_FILENAME}`
-			: OKF_SIDECAR_FILENAME;
-		if (this.plugin.app.vault.getAbstractFileByPath(sidecarPath)) {
-			return;
-		}
-
-		try {
-			await this.plugin.app.vault.create(
-				sidecarPath,
-				buildFolderIndexContent(),
-			);
-		} catch {
-			// Lost a create race (e.g. two rapid opens); the sidecar exists either way.
-		}
 	}
 
 	private isHabitFolder(folder: TFolder): boolean {
@@ -372,17 +335,13 @@ export class FolderIndexManager {
 					indexPath,
 					buildFolderIndexContent(),
 				);
-				await this.maybeCreateOkfSidecar(folder);
 				await openFileInWorkspace(this.plugin.app, file);
 			} catch (error) {
 				const message =
 					error instanceof Error ? error.message : "Could not create folder index";
 				new Notice(`Folder index: ${message}`);
 			}
-			return;
 		}
-
-		await this.maybeCreateOkfSidecar(folder);
 	}
 
 	private registerCreateHandler(): void {

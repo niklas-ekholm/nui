@@ -139,7 +139,7 @@ export class NuiSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Open hub note on folder click")
 			.setDesc(
-				"Clicking a folder in the file explorer, or a folder in the note header breadcrumb, opens that folder's hub note, FolderName.md. If it doesn't exist yet, clicking creates it. Folders inside a space marked okf_version in its hub note's frontmatter also get an index.md sidecar alongside the hub. The chevron still expands and collapses.",
+				"Clicking a folder in the file explorer, or a folder in the note header breadcrumb, opens that folder's hub note, FolderName.md. If it doesn't exist yet, clicking creates it. The chevron still expands and collapses.",
 			)
 			.addToggle((toggle) =>
 				toggle

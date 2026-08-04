@@ -109,9 +109,9 @@ test("navigation partition keeps child folders and sibling files separate", () =
 	);
 });
 
-test("an OKF sidecar index.md is an ordinary sibling file, not a folder entry", () => {
-	// index.md is generated alongside a folder's hub note in OKF-marked
-	// spaces, but it is never itself the folder's click target.
+test("an ordinary index.md sibling is not a folder entry", () => {
+	// A file named index.md next to a hub note is just another sibling —
+	// never itself the folder's click target.
 	const entries = [entry("NUI/NUI.md"), entry("NUI/index.md")];
 	const result = partitionNavigationEntryPathsForHost(
 		entries,
