@@ -1,5 +1,10 @@
 
 import { addDays } from "../parse/dates";
+import {
+	timelineEdgeInsetDays,
+	timelineTrackFractionToDayOffset,
+	timelineLayoutSpanDays,
+} from "./timeline-layout-coords";
 
 export function trackWidthPx(track: HTMLElement): number {
 	return track.getBoundingClientRect().width;
@@ -51,7 +56,10 @@ export function dateFromTrackX(
 ): Date {
 	const rect = track.getBoundingClientRect();
 	const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-	let dayOffset = Math.round(fraction * totalDays);
+	const edgeInsetDays = timelineEdgeInsetDays(totalDays, rect.width);
+	let dayOffset = Math.round(
+		timelineTrackFractionToDayOffset(fraction, totalDays, edgeInsetDays),
+	);
 	if (edge === "end") {
 		dayOffset = Math.max(0, dayOffset - 1);
 	}
@@ -64,7 +72,9 @@ export function dayDeltaFromPixelDelta(
 	totalDays: number,
 ): number {
 	const width = Math.max(trackWidth, 1);
-	return Math.round((pixelDelta / width) * totalDays);
+	const edgeInsetDays = timelineEdgeInsetDays(totalDays, width);
+	const layoutSpan = timelineLayoutSpanDays(totalDays, edgeInsetDays);
+	return Math.round((pixelDelta / width) * layoutSpan);
 }
 
 export interface ClientRect {

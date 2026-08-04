@@ -18,6 +18,29 @@ export interface TimelineRowElements {
 	endDateEl: HTMLElement;
 }
 
+export function createTimelineDateMarker(
+	classes: string,
+	dayText: string,
+): HTMLSpanElement {
+	const dateEl = document.createElement("span");
+	dateEl.className = classes;
+	const numEl = document.createElement("span");
+	numEl.className = "nui-timeline-date-num";
+	numEl.textContent = dayText;
+	dateEl.appendChild(numEl);
+	return dateEl;
+}
+
+function setTimelineDateMarkerText(
+	dateEl: HTMLElement,
+	dayText: string,
+): void {
+	const numEl = dateEl.querySelector<HTMLElement>(".nui-timeline-date-num");
+	if (numEl) {
+		numEl.textContent = dayText;
+	}
+}
+
 export function getTimelineRowElements(
 	row: HTMLElement,
 ): TimelineRowElements | null {
@@ -70,8 +93,8 @@ export function writeTimelineRowDates(
 		start,
 		end,
 	);
-	elements.startDateEl.textContent = formatDayOfMonth(start);
-	elements.endDateEl.textContent = formatDayOfMonth(end);
+	setTimelineDateMarkerText(elements.startDateEl, formatDayOfMonth(start));
+	setTimelineDateMarkerText(elements.endDateEl, formatDayOfMonth(end));
 	elements.bar.title = `${formatDisplayDate(start)} → ${formatDisplayDate(end)}`;
 	syncTimelineEventFrame(elements);
 }

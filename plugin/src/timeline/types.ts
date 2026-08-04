@@ -56,26 +56,12 @@ export const TIMELINE_ROW_GAP_MAX_PX = 24;
 export const TIMELINE_TITLE_SIZE_MIN_EM = 0.75;
 export const TIMELINE_TITLE_WEIGHT_MIN = 500;
 
-/** Bar title at Size 10 — reads as a heading rather than UI chrome. */
-export const TIMELINE_TITLE_SIZE_MAX_EM = 1.25;
-export const TIMELINE_TITLE_WEIGHT_MAX = 350;
+/** Bar title at Size 10 (XL) — matches theme h1 (`--nui-h1`, 2rem). */
+export const TIMELINE_TITLE_SIZE_MAX_EM = 2;
+export const TIMELINE_TITLE_WEIGHT_MAX = 200;
 
 /** Matches `--nui-leading-timeline-bar-title` / `--nui-leading-h6`. */
 export const TIMELINE_TITLE_LINE_HEIGHT = 1.2;
-
-/** Gap between title band and bar centerline (`bottom: calc(50% + 4px)`). */
-export const TIMELINE_TITLE_BAND_GAP_PX = 4;
-
-/** Distance from track top to title bottom edge. */
-export const TIMELINE_TITLE_BOTTOM_OFFSET_PX =
-	TIMELINE_TRACK_HEIGHT / 2 - TIMELINE_TITLE_BAND_GAP_PX;
-
-/**
- * Title-band anchor used for event-frame vertical layout and row gap.
- * Includes 1px so adjacent event borders share a single seam.
- */
-export const TIMELINE_EVENT_BORDER_SEAM_PX =
-	TIMELINE_TITLE_BOTTOM_OFFSET_PX + TIMELINE_TITLE_BAND_GAP_PX + 1;
 
 const TIMELINE_ROOT_EM_PX = 16;
 
@@ -84,12 +70,17 @@ function rowSizeProgress(size: number): number {
 	return (s - MIN_TIMELINE_ROW_SIZE) / (MAX_TIMELINE_ROW_SIZE - MIN_TIMELINE_ROW_SIZE);
 }
 
-export function timelineTitleFontSizeEm(size: number): number {
+export function timelineTitleFontSizeRem(size: number): number {
 	const t = rowSizeProgress(size);
 	return (
 		TIMELINE_TITLE_SIZE_MIN_EM +
 		t * (TIMELINE_TITLE_SIZE_MAX_EM - TIMELINE_TITLE_SIZE_MIN_EM)
 	);
+}
+
+/** @deprecated Use timelineTitleFontSizeRem — kept as alias for call sites. */
+export function timelineTitleFontSizeEm(size: number): number {
+	return timelineTitleFontSizeRem(size);
 }
 
 export function timelineTitleFontWeight(size: number): number {
@@ -100,30 +91,54 @@ export function timelineTitleFontWeight(size: number): number {
 	);
 }
 
-export function timelineTitleBandHeightPx(size: number): number {
-	const fontSizePx = timelineTitleFontSizeEm(size) * TIMELINE_ROOT_EM_PX;
-	return Math.ceil(
-		fontSizePx * TIMELINE_TITLE_LINE_HEIGHT + TIMELINE_TITLE_BAND_GAP_PX,
-	);
+export function timelineTitleLineHeightPx(size: number): number {
+	if (clampTimelineRowSize(size) === MAX_TIMELINE_ROW_SIZE) {
+		return Math.ceil(
+			TIMELINE_TITLE_SIZE_MAX_EM * TIMELINE_ROOT_EM_PX * 1.1,
+		);
+	}
+	const fontSizePx = timelineTitleFontSizeRem(size) * TIMELINE_ROOT_EM_PX;
+	return Math.ceil(fontSizePx * TIMELINE_TITLE_LINE_HEIGHT);
+}
+
+/** Row box height — fits the title line and matches tracker row sizing at minimum. */
+export function timelineRowHeightPx(size: number): number {
+	return Math.max(TIMELINE_TRACK_HEIGHT, timelineTitleLineHeightPx(size));
 }
 
 export function applyTimelineRowSizeStyles(element: HTMLElement, size: number): void {
 	const rowSize = clampTimelineRowSize(size);
 	element.style.setProperty("--nui-row-gap", `${rowGapPxFromSize(rowSize)}px`);
 	element.style.setProperty(
-		"--nui-bar-title-size",
-		`${timelineTitleFontSizeEm(rowSize)}em`,
+		"--nui-row-height",
+		`${timelineRowHeightPx(rowSize)}px`,
 	);
+	if (rowSize === MAX_TIMELINE_ROW_SIZE) {
+		element.style.setProperty("--nui-bar-title-size", "var(--nui-h1, 2rem)");
+		element.style.setProperty(
+			"--nui-bar-title-weight",
+			"var(--nui-weight-h1, 200)",
+		);
+		element.style.setProperty(
+			"--nui-bar-title-line-height",
+			"var(--nui-leading-h1, 1.1)",
+		);
+	} else {
+		element.style.setProperty(
+			"--nui-bar-title-size",
+			`${timelineTitleFontSizeRem(rowSize)}rem`,
+		);
+		element.style.setProperty(
+			"--nui-bar-title-weight",
+			String(timelineTitleFontWeight(rowSize)),
+		);
+		element.style.removeProperty("--nui-bar-title-line-height");
+	}
+	element.style.setProperty("--nui-title-band-height", "0px");
 	element.style.setProperty(
-		"--nui-bar-title-weight",
-		String(timelineTitleFontWeight(rowSize)),
+		"--nui-event-seam-anchor",
+		`${TIMELINE_TRACK_HEIGHT / 2}px`,
 	);
-	element.style.setProperty(
-		"--nui-title-band-height",
-		`${timelineTitleBandHeightPx(rowSize)}px`,
-	);
-	const seamAnchor = TIMELINE_EVENT_BORDER_SEAM_PX - 1;
-	element.style.setProperty("--nui-event-seam-anchor", `${seamAnchor}px`);
 }
 
 export function formatTimelineTimespanShort(timespan: TimelineTimespan): string {
@@ -224,7 +239,11 @@ export function rowSizeFromPresetIndex(index: number): number {
 }
 
 export function rowGapPxFromSize(size: number): number {
-	return Math.max(0, timelineTitleBandHeightPx(size) - TIMELINE_EVENT_BORDER_SEAM_PX);
+	const t = rowSizeProgress(size);
+	return Math.round(
+		TIMELINE_ROW_GAP_MIN_PX +
+			t * (TIMELINE_ROW_GAP_MAX_PX - TIMELINE_ROW_GAP_MIN_PX),
+	);
 }
 
 export function sizeFromRowGapPx(gapPx: number): number {
@@ -233,13 +252,7 @@ export function sizeFromRowGapPx(gapPx: number): number {
 	if (gapPx <= minGap) return MIN_TIMELINE_ROW_SIZE;
 	if (gapPx >= maxGap) return MAX_TIMELINE_ROW_SIZE;
 
-	const targetBand = gapPx + TIMELINE_EVENT_BORDER_SEAM_PX;
-	const targetTextHeight = targetBand - TIMELINE_TITLE_BAND_GAP_PX;
-	const targetEm =
-		targetTextHeight / (TIMELINE_ROOT_EM_PX * TIMELINE_TITLE_LINE_HEIGHT);
-	const t =
-		(targetEm - TIMELINE_TITLE_SIZE_MIN_EM) /
-		(TIMELINE_TITLE_SIZE_MAX_EM - TIMELINE_TITLE_SIZE_MIN_EM);
+	const t = (gapPx - minGap) / (maxGap - minGap);
 	return clampTimelineRowSize(
 		Math.round(
 			MIN_TIMELINE_ROW_SIZE +

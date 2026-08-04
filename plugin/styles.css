@@ -98,14 +98,17 @@
 	--nui-bar-title-size: var(--font-ui-smaller);
 	--nui-bar-title-weight: var(--font-weight);
 	--nui-track-height: 18px;
-	--nui-title-band-height: 19px;
+	--nui-row-height: 18px;
+	--nui-date-marker-size: 18px;
+	--nui-bar-title-pad: 8px;
+	--nui-bar-title-line-inset: 8px;
+	--nui-title-band-height: 0px;
 	--nui-event-seam-anchor: 9px;
 	--nui-bar-hit-height: 14px;
 	--nui-axis-height: 24px;
-	--nui-date-gutter: 34px;
 	min-width: 100%;
 	width: 100%;
-	padding: 0 var(--nui-date-gutter);
+	padding: 0;
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
@@ -181,7 +184,6 @@
 }
 
 .nui-timeline-sticky-header .nui-timeline-axis-row {
-	padding-inline: var(--nui-date-gutter);
 	box-sizing: border-box;
 }
 
@@ -534,8 +536,10 @@
 	display: flex;
 	flex-direction: column;
 	min-height: calc(100% - var(--nui-axis-height) - 4px);
+	box-sizing: border-box;
 	cursor: default;
 	z-index: 0;
+	overflow-x: visible;
 }
 .nui-timeline:has(.nui-timeline-chart.is-panning) .nui-timeline-axis-row,
 .nui-timeline-chart.is-panning .nui-timeline-body {
@@ -670,16 +674,23 @@ body.nui-timeline-panning .nui-timeline-handle {
 
 .nui-timeline-row {
 	position: relative;
-	height: var(--nui-track-height);
+	box-sizing: border-box;
+	height: var(--nui-row-height, var(--nui-track-height));
+	min-height: var(--nui-row-height, var(--nui-track-height));
+	max-height: var(--nui-row-height, var(--nui-track-height));
 	margin-top: var(--nui-row-gap);
 	flex-shrink: 0;
 	z-index: 1;
 	will-change: transform;
+	overflow: visible;
 }
 
 .nui-timeline-track {
 	position: relative;
-	height: var(--nui-track-height);
+	box-sizing: border-box;
+	height: var(--nui-row-height, var(--nui-track-height));
+	min-height: var(--nui-row-height, var(--nui-track-height));
+	max-height: var(--nui-row-height, var(--nui-track-height));
 	border-radius: 2px;
 	background: transparent;
 	overflow: visible;
@@ -691,11 +702,6 @@ body.nui-timeline-panning .nui-timeline-handle {
 	pointer-events: auto;
 	z-index: 1;
 	user-select: none;
-	top: calc(var(--nui-event-seam-anchor, 9px) - var(--nui-title-band-height));
-	height: calc(
-		var(--nui-track-height) + var(--nui-title-band-height) -
-			var(--nui-event-seam-anchor, 9px)
-	);
 }
 
 .nui-timeline-event::before {
@@ -732,6 +738,12 @@ body.nui-timeline-panning .nui-timeline-handle {
 	border-color: var(--nui-timeline-selection-color, hsl(var(--accent-h), var(--accent-s), var(--accent-l)));
 }
 
+.nui-timeline-row:is(.is-selected, .nui-timeline-drop-target, .is-marquee-preview)
+	+ .nui-timeline-row:is(.is-selected, .nui-timeline-drop-target, .is-marquee-preview)
+	.nui-timeline-event::before {
+	border-top-color: transparent;
+}
+
 .nui-timeline-row:has(.nui-timeline-bar-title-text-editing)
 	.nui-timeline-event::before {
 	border-color: transparent;
@@ -751,7 +763,7 @@ body.nui-timeline-panning .nui-timeline-handle {
 	padding: 0;
 	overflow: visible;
 	box-shadow: none;
-	z-index: 2;
+	z-index: 1;
 	pointer-events: none;
 }
 
@@ -772,29 +784,11 @@ body.nui-timeline-panning .nui-timeline-handle {
 .nui-timeline-bar-line {
 	display: block;
 	position: relative;
+	z-index: 0;
 	height: 1px;
 	background: var(--nui-event-color, var(--text-normal));
 	flex-shrink: 0;
 	pointer-events: none;
-}
-
-.nui-timeline-bar-line::before,
-.nui-timeline-bar-line::after {
-	content: "";
-	position: absolute;
-	top: 50%;
-	width: 1px;
-	height: 5px;
-	background: var(--nui-event-color, var(--text-normal));
-	transform: translateY(-50%);
-}
-
-.nui-timeline-bar-line::before {
-	left: 0;
-}
-
-.nui-timeline-bar-line::after {
-	right: 0;
 }
 
 .nui-timeline-bar-editable {
@@ -852,23 +846,30 @@ body.nui-timeline-dragging * {
 .nui-timeline-bar-title {
 	--title-bar-left: 0%;
 	position: absolute;
-	bottom: calc(50% + 4px);
+	top: 50%;
 	left: max(var(--nui-title-edge-inset), var(--title-bar-left));
 	display: inline-flex;
-	align-items: baseline;
+	align-items: center;
 	gap: 0.35em;
 	max-width: calc(
 		100% - var(--nui-title-edge-inset) -
-			max(var(--nui-title-edge-inset), var(--title-bar-left))
+			max(var(--nui-title-edge-inset), var(--title-bar-left)) -
+			(var(--nui-date-marker-size) / 2 + var(--nui-bar-title-line-inset))
 	);
+	padding: var(--nui-bar-title-pad);
 	font-size: var(--nui-bar-title-size);
-	line-height: normal;
+	line-height: var(--nui-bar-title-line-height, 1);
 	font-weight: var(--nui-bar-title-weight);
 	letter-spacing: normal;
 	white-space: nowrap;
 	overflow: hidden;
 	pointer-events: none;
-	z-index: 2;
+	background: var(--n-surface, var(--background-primary));
+	transform: translate(
+		calc(var(--nui-date-marker-size) / 2 + var(--nui-bar-title-line-inset)),
+		-50%
+	);
+	z-index: 3;
 	user-select: none;
 }
 
@@ -913,13 +914,13 @@ body.nui-timeline-dragging * {
 .nui-timeline-superproject-toggle.collapse-icon {
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
+	justify-content: flex-start;
 	flex: 0 0 var(--size-4-5);
 	width: var(--size-4-5);
 	height: var(--size-4-5);
 	min-width: var(--size-4-5);
 	min-height: var(--size-4-5);
-	margin: 0 var(--size-2-1) 0 0;
+	margin: 0;
 	padding: 0;
 	border: none;
 	outline: none;
@@ -984,32 +985,46 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	color: var(--nui-chrome, var(--text-muted)) !important;
 }
 
+.nui-text-scope .nui-timeline-date-num {
+	color: var(--n-surface, var(--background-primary)) !important;
+	background: var(--text-normal) !important;
+}
+
 .nui-timeline-bar-title.nui-timeline-bar-title-clickable {
 	pointer-events: auto;
 	cursor: pointer;
-	padding-block: 2px;
-	margin-block: -2px;
 }
 
 .nui-timeline-date {
 	position: absolute;
 	top: 50%;
-	font-size: 10px;
-	line-height: 1;
-	white-space: nowrap;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--nui-date-marker-size);
+	height: var(--nui-date-marker-size);
+	transform: translate(-50%, -50%);
 	pointer-events: none;
 	z-index: 2;
 	user-select: none;
 }
 
-.nui-timeline-date-start {
-	transform: translate(-100%, -50%);
-	padding-right: 4px;
-}
-
-.nui-timeline-date-end {
-	transform: translateY(-50%);
-	padding-left: 4px;
+.nui-timeline-date-num {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--nui-date-marker-size);
+	height: var(--nui-date-marker-size);
+	border: none;
+	border-radius: 50%;
+	background: var(--text-normal);
+	font-size: 10px;
+	line-height: 1;
+	color: var(--background-primary);
+	box-shadow: none;
+	pointer-events: none;
 }
 
 /* Live preview (primary): full embedded timeline scrolls on cm-scroller, not inside embed. */
@@ -1233,8 +1248,21 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	--bases-embed-transform: none;
 }
 
-:is(.bases-embed, .bases-view):has(.nui-timeline) .nui-timeline-chart {
+:is(.bases-embed, .bases-view):has(.nui-timeline) :is(
+	.nui-timeline-bases-container,
+	.nui-timeline,
+	.nui-timeline-scroll,
+	.nui-timeline-chart
+) {
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+:is(.bases-embed, .bases-view):has(.nui-timeline) .nui-timeline {
 	--nui-date-gutter: 0;
+}
+
+:is(.bases-embed, .bases-view):has(.nui-timeline) .nui-timeline-chart {
 	padding: 0;
 }
 
@@ -1339,16 +1367,6 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	transform: none !important;
 }
 
-:is(.bases-embed, .bases-view):has(.nui-timeline) :is(
-	.nui-timeline-bases-container,
-	.nui-timeline,
-	.nui-timeline-scroll,
-	.nui-timeline-chart
-) {
-	padding: 0 !important;
-	margin: 0 !important;
-}
-
 .markdown-source-view.mod-cm6.is-readable-line-width .cm-embed-block:has(:is(.nui-timeline--full, .nui-timeline--full-tasks)) {
 	overflow-x: hidden !important;
 	overflow-y: visible !important;
@@ -1361,8 +1379,7 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	overflow-x: hidden;
 }
 
-.nui-timeline-chart,
-.nui-timeline-body {
+.nui-timeline-chart {
 	max-width: 100%;
 	overflow-x: hidden;
 }

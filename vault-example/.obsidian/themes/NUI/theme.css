@@ -3273,7 +3273,8 @@ body {
 
 .nui-text-scope :is(
 	.nui-tracker-day-label.is-done,
-	.nui-week-tracker-3-day-num.is-done
+	.nui-week-tracker-3-day-num.is-done,
+	.nui-timeline-date-num
 ) {
 	color: var(--n-surface) !important;
 }

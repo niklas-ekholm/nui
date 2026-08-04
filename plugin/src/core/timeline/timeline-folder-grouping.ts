@@ -218,10 +218,14 @@ export function folderHubIdForGroupedItem(
 	itemId: string,
 	items: TimelineItem[],
 ): string | undefined {
+	const byId = itemsMap(items);
+	const parentHub = parentFolderHubOnTimeline(itemId, byId);
+	if (parentHub) return parentHub;
+
 	const hubPath = hubNotePathForItem(itemId);
 	if (!hubPath) return undefined;
 
-	return itemsMap(items).has(hubPath) ? hubPath : undefined;
+	return byId.has(hubPath) ? hubPath : undefined;
 }
 
 function appendFolderSubtree(

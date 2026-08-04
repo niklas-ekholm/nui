@@ -5,6 +5,7 @@ import { TimelineItem } from "../models/timeline-item";
 import { TaskItem } from "../tasks/types";
 import { renderInlineTaskRows } from "../task-list/render-task-list";
 import { attachBarDrag } from "./bar-drag";
+import { createTimelineDateMarker } from "./timeline-row-dom";
 import {
 	buildTimelineTicks,
 	chooseGranularity,
@@ -12,6 +13,7 @@ import {
 	TimelineTick,
 } from "./timeline-scale";
 import { syncTimelineAxis } from "./timeline-axis";
+import { syncTimelineBodyGeometry } from "./timeline-range-preview";
 import {
 	applyTimelineRowSizeStyles,
 	DEFAULT_TIMELINE_ROW_SIZE,
@@ -35,7 +37,6 @@ import { shouldDeferTimelineDropRender } from "./post-drop-visibility";
 import { applyBarGeometry } from "./bar-geometry";
 import {
 	ensureTimelineEventFrame,
-	syncAllTimelineEventFrames,
 } from "./event-frame";
 import { findBasesRoot } from "../../bases/bases-view-title";
 import {
@@ -522,13 +523,11 @@ function renderTimelineContent(
 
 		const track = el("div", "nui-timeline-track");
 		ensureTimelineEventFrame(track);
-		const startDateEl = el(
-			"span",
+		const startDateEl = createTimelineDateMarker(
 			"nui-timeline-date nui-timeline-date-start",
 			formatDayOfMonth(row.item.start),
 		);
-		const endDateEl = el(
-			"span",
+		const endDateEl = createTimelineDateMarker(
 			"nui-timeline-date nui-timeline-date-end",
 			formatDayOfMonth(row.item.end),
 		);
@@ -694,11 +693,12 @@ function renderTimelineContent(
 	syncTimelineAxis(container, layout.rangeStart, layout.rangeEnd);
 	requestAnimationFrame(() => {
 		syncTimelineAxis(container, layout.rangeStart, layout.rangeEnd);
-		syncAllTimelineEventFrames(body);
+		syncTimelineBodyGeometry(container, layout.rangeStart, layout.rangeEnd);
 	});
 
 	const eventFrameObserver = new ResizeObserver(() => {
-		syncAllTimelineEventFrames(body);
+		syncTimelineAxis(container, layout.rangeStart, layout.rangeEnd);
+		syncTimelineBodyGeometry(container, layout.rangeStart, layout.rangeEnd);
 	});
 	eventFrameObserver.observe(body);
 	eventFrameObserver.observe(chart);

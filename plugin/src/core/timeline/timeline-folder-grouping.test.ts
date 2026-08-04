@@ -3,6 +3,7 @@ import test from "node:test";
 import type { TimelineItem } from "../models/timeline-item.ts";
 import {
 	filterCollapsedFolderGroups,
+	folderHubIdForGroupedItem,
 	getChildTimelineItemIds,
 	groupTimelineItemsByFolder,
 	parentFolderHubOnTimeline,
@@ -120,5 +121,22 @@ test("parentFolderHubOnTimeline finds parent folder hub on timeline", () => {
 	assert.equal(
 		parentFolderHubOnTimeline("Projects/Outer/Inner/Inner.md", byId),
 		"Projects/Outer/Outer.md",
+	);
+});
+
+test("folderHubIdForGroupedItem marks nested folder hubs as subprojects", () => {
+	const items = [
+		item("Projects/Test1/Test1.md", "2026-08-04", "2026-08-11"),
+		item("Projects/Test1/subtest/subtest.md", "2026-08-08", "2026-08-11"),
+		item("Projects/Test1/subtest/test.md", "2026-08-07", "2026-08-09"),
+	];
+
+	assert.equal(
+		folderHubIdForGroupedItem("Projects/Test1/subtest/subtest.md", items),
+		"Projects/Test1/Test1.md",
+	);
+	assert.equal(
+		folderHubIdForGroupedItem("Projects/Test1/subtest/test.md", items),
+		"Projects/Test1/subtest/subtest.md",
 	);
 });

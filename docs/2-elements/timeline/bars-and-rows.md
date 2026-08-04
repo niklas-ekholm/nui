@@ -11,12 +11,12 @@ Parent: [[2-elements/timeline/index|Timeline]]
 
 ## Row
 
-- Left: title label (opens note on click).
-- Right: horizontal bar from start date to end date.
+- Title label on the bar centerline (opens note on click); long titles may extend past the bar and cover the end date.
+- Horizontal bar from start date to end date, with circled day-of-month markers at each endpoint.
 
 ## Row size
 
-**XS** through **XL** adjust row gap and bar title size/weight via layout tokens. The folder hub [[collapse-chevron]] does not scale with row size.
+**XS** through **XL** adjust row gap and bar title size/weight via layout tokens. **XL** matches theme **h1** (`--nui-h1`). The folder hub [[collapse-chevron]] does not scale with row size.
 
 ## Project folders
 

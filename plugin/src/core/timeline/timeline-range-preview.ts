@@ -2,7 +2,7 @@
 import { daysBetween, formatDisplayDate, parseIsoDate, startOfDay } from "../parse/dates";
 import { applyBarGeometry } from "./bar-geometry";
 import { syncAllTimelineEventFrames } from "./event-frame";
-import { syncTimelineAxis } from "./timeline-axis";
+import { syncTimelineAxis, timelineChartWidthPx } from "./timeline-axis";
 import { computeTodayLineOffsetPercent } from "./timeline-today-offset";
 
 function syncTodayLine(body: HTMLElement, todayOffset: number | null): void {
@@ -89,7 +89,13 @@ export function updateTimelineRangePreview(
 	rangeEnd: Date,
 ): void {
 	const totalDays = Math.max(1, daysBetween(rangeStart, rangeEnd));
-	const todayOffset = computeTodayLineOffsetPercent(rangeStart, totalDays);
+	const chartWidth = timelineChartWidthPx(container);
+	const todayOffset = computeTodayLineOffsetPercent(
+		rangeStart,
+		totalDays,
+		new Date(),
+		chartWidth,
+	);
 
 	syncTimelineAxis(container, rangeStart, rangeEnd);
 
@@ -103,5 +109,26 @@ export function updateTimelineRangePreview(
 
 	syncHeaderRangeLabels(container, rangeStart, rangeEnd);
 	syncTodayButton(container, rangeStart);
+}
+
+export function syncTimelineBodyGeometry(
+	container: HTMLElement,
+	rangeStart: Date,
+	rangeEnd: Date,
+): void {
+	const totalDays = Math.max(1, daysBetween(rangeStart, rangeEnd));
+	const chartWidth = timelineChartWidthPx(container);
+	const todayOffset = computeTodayLineOffsetPercent(
+		rangeStart,
+		totalDays,
+		new Date(),
+		chartWidth,
+	);
+	const body = container.querySelector<HTMLElement>(".nui-timeline-body");
+	if (!body) return;
+
+	syncTodayLine(body, todayOffset);
+	syncRowBars(body, rangeStart, totalDays);
+	syncAllTimelineEventFrames(body);
 }
 

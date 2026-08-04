@@ -1,5 +1,6 @@
 
 import { daysBetween } from "../parse/dates";
+import { timelineEdgeInsetDays } from "./timeline-layout-coords";
 import {
 	buildDayGridTicks,
 	buildGridTicks,
@@ -14,8 +15,37 @@ import {
 	TIMELINE_WEEKDAY_AXIS_HEIGHT,
 	TimelineTick,
 } from "./timeline-scale";
+import { remapTimelineTickPercentsForLayoutInset } from "./timeline-today-offset";
 
 export const TIMELINE_DATE_GUTTER_PX = 34;
+export {
+	TIMELINE_DATE_EDGE_INSET_PX,
+	TIMELINE_DATE_MARKER_SIZE_PX,
+} from "./timeline-layout-coords";
+
+function remapTicksForLayoutInset(
+	ticks: TimelineTick[],
+	totalDays: number,
+	edgeInsetDays: number,
+): TimelineTick[] {
+	if (edgeInsetDays <= 0) return ticks;
+	return ticks.map((tick) => ({
+		...tick,
+		offsetPercent: remapTimelineTickPercentsForLayoutInset(
+			tick.offsetPercent,
+			totalDays,
+			edgeInsetDays,
+		),
+	}));
+}
+
+function timelineScrollPadPx(timeline: HTMLElement | null): number {
+	if (!timeline) return TIMELINE_DATE_GUTTER_PX;
+	const gutter = parseFloat(
+		getComputedStyle(timeline).getPropertyValue("--nui-date-gutter"),
+	);
+	return Number.isFinite(gutter) && gutter > 0 ? gutter : TIMELINE_DATE_GUTTER_PX;
+}
 
 export function timelineChartWidthPx(container: HTMLElement): number {
 	const body = container.querySelector<HTMLElement>(".nui-timeline-body");
@@ -23,8 +53,10 @@ export function timelineChartWidthPx(container: HTMLElement): number {
 	if (width > 0) return width;
 
 	const scroll = container.querySelector<HTMLElement>(".nui-timeline-scroll");
+	const timeline = container.querySelector<HTMLElement>(".nui-timeline");
 	if (!scroll) return 0;
-	return Math.max(0, scroll.clientWidth - TIMELINE_DATE_GUTTER_PX * 2);
+	const pad = timelineScrollPadPx(timeline);
+	return Math.max(0, scroll.clientWidth - pad * 2);
 }
 
 function createMainAxisTickElement(tick: TimelineTick): HTMLElement {
@@ -183,20 +215,45 @@ export function syncTimelineAxis(
 
 	const totalDays = Math.max(1, daysBetween(rangeStart, rangeEnd));
 	const chartWidth = timelineChartWidthPx(container);
+	const edgeInsetDays = timelineEdgeInsetDays(totalDays, chartWidth);
 	const showWeekdays = shouldShowWeekdayLabels(totalDays, chartWidth);
 	const showMondayDates = shouldShowMondayDateLabels(totalDays, chartWidth);
-	const ticks = buildTimelineTicks(rangeStart, rangeEnd, totalDays, {
-		showMondayDates,
-	});
-	const monthTicks = buildMonthTicks(rangeStart, totalDays);
+	const ticks = remapTicksForLayoutInset(
+		buildTimelineTicks(rangeStart, rangeEnd, totalDays, {
+			showMondayDates,
+		}),
+		totalDays,
+		edgeInsetDays,
+	);
+	const monthTicks = remapTicksForLayoutInset(
+		buildMonthTicks(rangeStart, totalDays),
+		totalDays,
+		edgeInsetDays,
+	);
 	const weekdayTicks = showWeekdays
-		? buildWeekdayTicks(rangeStart, totalDays, chartWidth)
+		? remapTicksForLayoutInset(
+				buildWeekdayTicks(rangeStart, totalDays, chartWidth),
+				totalDays,
+				edgeInsetDays,
+			)
 		: [];
-	const gridTicks = buildGridTicks(rangeStart, totalDays);
+	const gridTicks = remapTicksForLayoutInset(
+		buildGridTicks(rangeStart, totalDays),
+		totalDays,
+		edgeInsetDays,
+	);
 	const dayGridTicks = shouldShowDayGridLines(totalDays, chartWidth)
-		? buildDayGridTicks(rangeStart, totalDays)
+		? remapTicksForLayoutInset(
+				buildDayGridTicks(rangeStart, totalDays),
+				totalDays,
+				edgeInsetDays,
+			)
 		: [];
-	const monthGridTicks = buildMonthTicks(rangeStart, totalDays);
+	const monthGridTicks = remapTicksForLayoutInset(
+		buildMonthTicks(rangeStart, totalDays),
+		totalDays,
+		edgeInsetDays,
+	);
 
 	if (chart) {
 		setAxisHeights(timelineAxisHeightRoot(container), showWeekdays, showMondayDates);

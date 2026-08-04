@@ -19,6 +19,7 @@ import {
 import { trackPointerDrag } from "./pointer-drag";
 import { trackTimelineDrops } from "./post-drop-visibility";
 import { showTimelineItemMenu } from "./timeline-item-menu";
+import { syncAllTimelineEventFrames } from "./event-frame";
 import {
 	collapseSelectionWithoutFolderChildren,
 	expandMoveIdsWithSubtree,
@@ -80,6 +81,9 @@ export function applySelectionVisuals(
 		const selected = selectedIds.has(id);
 		row.classList.toggle("is-selected", selected);
 	}
+
+	const body = root.querySelector<HTMLElement>(".nui-timeline-body");
+	if (body) syncAllTimelineEventFrames(body);
 }
 
 function cloneSelection(ids: Set<string>): Set<string> {
@@ -134,6 +138,7 @@ function clearMarqueePreview(body: HTMLElement): void {
 	)) {
 		row.classList.remove(MARQUEE_PREVIEW_CLASS);
 	}
+	syncAllTimelineEventFrames(body);
 }
 
 function updateMarqueePreview(
@@ -147,6 +152,7 @@ function updateMarqueePreview(
 		const id = row.dataset.itemId ?? "";
 		row.classList.toggle(MARQUEE_PREVIEW_CLASS, hits.has(id));
 	}
+	syncAllTimelineEventFrames(body);
 }
 
 function barFromTarget(target: EventTarget | null): HTMLElement | null {
