@@ -10,6 +10,7 @@ import { clearEmbeddedBasesChrome, syncEmbeddedBasesChrome } from "../bases/embe
 import {
 	BasesViewAddAction,
 	createBasesViewAddButton,
+	createNoteInEmbedHostFolder,
 	createSubfolderInEmbedHostFolder,
 	resolveEmbedHostFolderPath,
 	syncBasesViewTopbar,
@@ -108,12 +109,19 @@ export class NavigationBasesView extends BasesView {
 			const filesEl = this.containerEl.createDiv({
 				cls: "nui-navigation-section nui-navigation-section--files",
 			});
-			renderCards(filesEl, {
+			const { linksEl } = this.createFilesRow(filesEl);
+			renderCards(linksEl, {
 				...renderOptions,
 				entries: files,
 				titleMode: "list-files",
 				cardSize: folderCardSize,
 			});
+		} else {
+			this.createFilesRow(
+				this.containerEl.createDiv({
+					cls: "nui-navigation-section nui-navigation-section--files nui-navigation-section--files-empty",
+				}),
+			);
 		}
 
 		this.syncChrome();
@@ -131,12 +139,34 @@ export class NavigationBasesView extends BasesView {
 		return { linksEl };
 	}
 
+	private createFilesRow(sectionEl: HTMLElement): {
+		linksEl: HTMLElement;
+	} {
+		const rowEl = sectionEl.createDiv({ cls: "nui-navigation-files-row" });
+		const linksEl = rowEl.createDiv({ cls: "nui-navigation-files-links" });
+		const addSlot = rowEl.createDiv({ cls: "nui-navigation-files-add-slot" });
+		createBasesViewAddButton(addSlot, this.getFileAddAction(), {
+			className: "nui-week-tracker-3-add nui-navigation-files-add",
+		});
+		return { linksEl };
+	}
+
 	private getAddAction(): BasesViewAddAction {
 		return {
 			title: "New folder",
 			ariaLabel: "New folder",
 			onClick: (anchorEl) => {
 				void this.addFolder(anchorEl);
+			},
+		};
+	}
+
+	private getFileAddAction(): BasesViewAddAction {
+		return {
+			title: "New note",
+			ariaLabel: "New note",
+			onClick: (anchorEl) => {
+				void this.addNote(anchorEl);
 			},
 		};
 	}
@@ -149,6 +179,18 @@ export class NavigationBasesView extends BasesView {
 
 	private async addFolder(anchorEl: HTMLElement): Promise<void> {
 		const created = await createSubfolderInEmbedHostFolder(
+			this.app,
+			this.containerEl,
+			anchorEl,
+		);
+		if (created) {
+			this.renderedSignature = "";
+			this.onDataUpdated();
+		}
+	}
+
+	private async addNote(anchorEl: HTMLElement): Promise<void> {
+		const created = await createNoteInEmbedHostFolder(
 			this.app,
 			this.containerEl,
 			anchorEl,

@@ -6,12 +6,10 @@ import { shouldEmbedBeWide } from "../embed/apply-embed-pipes";
 import { syncPaneWidthInElement } from "../embed/sync-pane-width";
 import {
 	findHostFileWithFallback,
-	openFileInWorkspace,
 } from "../navigation/folder-index";
 import { readEmbedLinkFromDom } from "../embed/embed-dom";
 
 const TITLE_CLASS = "nui-bases-view-title";
-const TITLE_CLICKABLE_CLASS = "nui-bases-view-title-clickable";
 const TITLE_EDITABLE_CLASS = "nui-bases-view-title-editable";
 const TITLE_FILE_PATH_ATTR = "nuiTitleFilePath";
 const TIMELINE_BASES_ROOT_CLASS = "nui-timeline-bases-root";
@@ -307,34 +305,6 @@ function bindBasesTitleRename(app: App, titleEl: HTMLElement, file: TFile): void
 	);
 }
 
-function bindBasesTitleClick(
-	app: App,
-	titleEl: HTMLElement,
-	file: TFile,
-): void {
-	if (titleEl.dataset.nuiTitleBound === "true") return;
-
-	titleEl.dataset.nuiTitleBound = "true";
-	titleEl.classList.add(TITLE_CLICKABLE_CLASS);
-	titleEl.setAttribute("role", "button");
-	titleEl.setAttribute("tabindex", "0");
-	titleEl.title = `Open ${file.basename}`;
-
-	titleEl.addEventListener(
-		"click",
-		(evt) => {
-			if (evt.button !== 0 && evt.button !== 1) return;
-			evt.preventDefault();
-			evt.stopPropagation();
-			void openFileInWorkspace(app, file, {
-				anchorEl: titleEl,
-				evt,
-			});
-		},
-		{ capture: true },
-	);
-}
-
 function findTimelineBasesContainer(el: HTMLElement): HTMLElement | null {
 	if (el.classList.contains("nui-timeline-bases-container")) return el;
 	return el.closest(".nui-timeline-bases-container");
@@ -397,9 +367,7 @@ export function mountBasesTitle(
 	syncTitleText(titleEl, file, displayTitle);
 	titleEl.dataset[TITLE_FILE_PATH_ATTR] = file.path;
 
-	if (isEmbed) {
-		bindBasesTitleClick(app, titleEl, file);
-	} else if (file.extension === "base") {
+	if (file.extension === "base" && !isEmbed) {
 		bindBasesTitleRename(app, titleEl, file);
 	}
 }

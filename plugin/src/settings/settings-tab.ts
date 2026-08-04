@@ -363,6 +363,7 @@ export class NuiSettingTab extends PluginSettingTab {
 					.onChange((value) => {
 						this.settings.appearance.hideEmbedEditButtons = value;
 						this.save();
+						this.plugin.applyAppearance();
 					}),
 			);
 	}

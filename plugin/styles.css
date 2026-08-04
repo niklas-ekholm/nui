@@ -323,6 +323,7 @@
 
 .nui-timeline-timespan-select,
 .nui-timeline-today-btn,
+.nui-week-tracker-3-today-btn,
 .nui-timeline-range-restore {
 	appearance: none;
 	-webkit-appearance: none;
@@ -350,6 +351,8 @@
 .nui-timeline-timespan-select:is(:hover, :focus, :focus-visible, :active),
 .nui-timeline-today-btn:is(:hover, :focus, :focus-visible, :active),
 .nui-timeline-today-btn.is-visible:is(:hover, :focus, :focus-visible, :active),
+.nui-week-tracker-3-today-btn:is(:hover, :focus, :focus-visible, :active),
+.nui-week-tracker-3-today-btn.is-visible:is(:hover, :focus, :focus-visible, :active),
 .nui-timeline-range-restore:is(:hover, :focus, :focus-visible, :active) {
 	border: none !important;
 	outline: none !important;
@@ -363,6 +366,7 @@
 
 .nui-timeline-timespan-select:hover,
 .nui-timeline-today-btn:hover,
+.nui-week-tracker-3-today-btn:hover,
 .nui-timeline-range-restore:hover {
 	color: var(--text-accent);
 }
@@ -1978,6 +1982,14 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	display: none;
 }
 
+.nui-week-tracker-3-topbar-controls {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--nui-timeline-control-gap);
+	flex: 0 0 auto;
+}
+
 .nui-week-tracker-3-topbar .nui-bases-view-title.inline-title,
 .nui-bases-view-topbar .nui-bases-view-title.inline-title {
 	width: auto;
@@ -2017,6 +2029,42 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	overflow: visible;
 }
 
+.nui-week-tracker-3-scroll {
+	overflow-x: auto;
+	overflow-y: visible;
+	min-width: 0;
+	width: 100%;
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior-x: contain;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.nui-week-tracker-3-scroll::-webkit-scrollbar {
+	display: none;
+}
+
+.nui-week-tracker-3-blocks {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	column-gap: var(--n-year-tracker-month-gap-x);
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: visible;
+}
+
+.nui-week-tracker-3:not(.nui-week-tracker-3--rolling) .nui-week-tracker-3-blocks {
+	grid-template-columns: repeat(var(--n-week-tracker-3-week-count, 3), max-content);
+	width: max-content;
+	min-width: 100%;
+}
+
+.nui-week-tracker-3:not(.nui-week-tracker-3--rolling) .nui-week-tracker-3-block {
+	width: calc(7 * var(--n-tracker-day-size));
+	flex-shrink: 0;
+}
+
 .nui-week-tracker-3-tag-link {
 	grid-column: 1;
 	display: block;
@@ -2028,16 +2076,6 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	line-height: var(--line-height-normal);
 	font-weight: inherit;
 	cursor: pointer;
-}
-
-.nui-week-tracker-3-blocks {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	column-gap: var(--n-year-tracker-month-gap-x);
-	width: 100%;
-	margin: 0;
-	padding: 0;
-	overflow: visible;
 }
 
 .nui-week-tracker-3-block {
@@ -2252,7 +2290,8 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 .nui-cards-bases-container:has(.nui-cards--list-folders),
 .nui-cards-bases-container:has(.nui-cards--none),
 .nui-folders-links.nui-cards-bases-container,
-.nui-navigation-folders-links.nui-cards-bases-container {
+.nui-navigation-folders-links.nui-cards-bases-container,
+.nui-navigation-files-links.nui-cards-bases-container {
 	padding: 0;
 	overflow: visible;
 }
@@ -2312,7 +2351,7 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 .nui-navigation {
 	display: flex;
 	flex-direction: column;
-	gap: 0;
+	gap: 4px;
 }
 
 .nui-navigation .nui-cards--list-folders,
@@ -2370,6 +2409,7 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 }
 
 .nui-navigation-folders-row,
+.nui-navigation-files-row,
 .nui-folders-row {
 	display: flex;
 	align-items: flex-start;
@@ -2379,6 +2419,7 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 }
 
 .nui-navigation-folders-links,
+.nui-navigation-files-links,
 .nui-folders-links {
 	flex: 1 1 auto;
 	min-width: 0;
@@ -2403,7 +2444,18 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	min-height: calc(var(--h1-size) * var(--h1-line-height));
 }
 
+.nui-navigation-files-add-slot {
+	flex: 0 0 auto;
+	align-self: flex-start;
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	padding-top: 0;
+	min-height: 0;
+}
+
 .nui-navigation-add-slot .nui-navigation-add,
+.nui-navigation-files-add-slot .nui-navigation-files-add,
 .nui-folders-add-slot .nui-folders-add {
 	align-self: auto;
 	line-height: 1;
@@ -2539,10 +2591,6 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	margin: 0 0 0.5em !important;
 	padding: 0;
 	line-height: 1;
-}
-
-.nui-bases-view-title-clickable {
-	cursor: pointer;
 }
 
 .nui-bases-view-title-editable {
@@ -2853,13 +2901,20 @@ body.nui-mobile-source-toggle.is-mobile
 }
 
 /* Hide "Edit this block" on all embeds. Opt-in: it removes a built-in
-   affordance from every embed, not only this plugin's views. */
-body.nui-hide-embed-edit-buttons .mod-cm6 .cm-embed-block > :is(.edit-block-button, .cm-edit-block-button),
-body.nui-hide-embed-edit-buttons .mod-cm6 .internal-embed > :is(.edit-block-button, .cm-edit-block-button),
-body.nui-hide-embed-edit-buttons .mod-cm6 .cm-embed-block :is(.edit-block-button, .cm-edit-block-button),
-body.nui-hide-embed-edit-buttons .mod-cm6 .internal-embed ~ :is(.edit-block-button, .cm-edit-block-button),
-body.nui-hide-embed-edit-buttons .mod-cm6 .block-language-base ~ :is(.edit-block-button, .cm-edit-block-button) {
+   affordance from every embed, not only this plugin's views. Theme rules for
+   embedded bases force opacity: 1, so match their specificity here. */
+body.nui-hide-embed-edit-buttons .markdown-source-view.mod-cm6
+	:is(.cm-embed-block, .internal-embed, .block-language-base)
+	> :is(.edit-block-button, .cm-edit-block-button),
+body.nui-hide-embed-edit-buttons .markdown-source-view.mod-cm6
+	:is(.cm-embed-block, .internal-embed, .block-language-base)
+	:is(.edit-block-button, .cm-edit-block-button),
+body.nui-hide-embed-edit-buttons .markdown-source-view.mod-cm6
+	:is(.cm-embed-block, .internal-embed, .block-language-base)
+	~ :is(.edit-block-button, .cm-edit-block-button) {
 	display: none !important;
+	visibility: hidden !important;
+	opacity: 0 !important;
 	pointer-events: none !important;
 }
 

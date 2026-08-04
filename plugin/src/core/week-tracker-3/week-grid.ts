@@ -10,10 +10,16 @@ export type WeekTracker3BlockId = "older" | "previous" | "current" | "rolling";
 
 export interface WeekTracker3Block {
 	id: WeekTracker3BlockId;
+	/** Monday offset from the current week: 0 = this week, -1 = last week, etc. */
+	weekOffset?: number;
 	cells: WeekTracker3Cell[];
 }
 
 export const MOBILE_WEEK_TRACKER_DAY_COUNT = 10;
+
+/** Desktop scroll range: weeks before/after the current week (inclusive). */
+export const SCROLLABLE_WEEKS_BEFORE = 26;
+export const SCROLLABLE_WEEKS_AFTER = 26;
 
 function weekStartMonday(date: Date): Date {
 	const day = startOfDay(date);
@@ -47,9 +53,46 @@ export function buildThreeWeekGrid(
 		const monday = addDays(currentMonday, offset);
 		return {
 			id,
+			weekOffset: offset / 7,
 			cells: buildWeekCells(monday),
 		};
 	});
+}
+
+export function buildScrollableWeekGrid(
+	weeksBefore: number = SCROLLABLE_WEEKS_BEFORE,
+	weeksAfter: number = SCROLLABLE_WEEKS_AFTER,
+	referenceDate: Date = new Date(),
+): WeekTracker3Block[] {
+	const currentMonday = weekStartMonday(referenceDate);
+	const blocks: WeekTracker3Block[] = [];
+
+	for (let weekOffset = -weeksBefore; weekOffset <= weeksAfter; weekOffset++) {
+		const monday = addDays(currentMonday, weekOffset * 7);
+		let id: WeekTracker3BlockId;
+		if (weekOffset === 0) id = "current";
+		else if (weekOffset === -1) id = "previous";
+		else if (weekOffset === -2) id = "older";
+		else id = "rolling";
+
+		blocks.push({
+			id,
+			weekOffset,
+			cells: buildWeekCells(monday),
+		});
+	}
+
+	return blocks;
+}
+
+export function scrollableWeekDateKeys(
+	weeksBefore: number = SCROLLABLE_WEEKS_BEFORE,
+	weeksAfter: number = SCROLLABLE_WEEKS_AFTER,
+	referenceDate: Date = new Date(),
+): Set<string> {
+	return dateKeysFromBlocks(
+		buildScrollableWeekGrid(weeksBefore, weeksAfter, referenceDate),
+	);
 }
 
 /** Consecutive days ending on referenceDate (today last). */

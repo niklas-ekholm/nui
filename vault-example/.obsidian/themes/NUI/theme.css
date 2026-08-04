@@ -1810,8 +1810,9 @@ body {
 	box-shadow: 0 0 0 1px var(--n-light-ui-border-color) !important;
 }
 
-/* Edit block button on embedded bases (Live Preview) */
-.markdown-source-view.mod-cm6 :is(
+/* Edit block button on embedded bases (Live Preview). Skipped when the plugin
+   setting hides embed edit buttons — that body class is set in appearance-settings.ts. */
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 :is(
 	.internal-embed.bases-embed,
 	.cm-embed-block.bases-embed,
 	.block-language-base.bases-embed,
@@ -1819,7 +1820,7 @@ body {
 	.cm-embed-block:has(.bases-view),
 	.block-language-base:has(.bases-view)
 ) > :is(.edit-block-button, .cm-edit-block-button),
-.markdown-source-view.mod-cm6 :is(
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 :is(
 	.internal-embed.bases-embed,
 	.cm-embed-block.bases-embed,
 	.block-language-base.bases-embed,
@@ -1827,8 +1828,8 @@ body {
 	.cm-embed-block:has(.bases-view),
 	.block-language-base:has(.bases-view)
 ) :is(.edit-block-button, .cm-edit-block-button),
-.mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button),
-.mod-cm6 .internal-embed.bases-embed ~ :is(.edit-block-button, .cm-edit-block-button) {
+body:not(.nui-hide-embed-edit-buttons) .mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button),
+body:not(.nui-hide-embed-edit-buttons) .mod-cm6 .internal-embed.bases-embed ~ :is(.edit-block-button, .cm-edit-block-button) {
 	--icon-color: var(--n-light-ui-color) !important;
 	--icon-color-hover: var(--n-light-ui-hover-color) !important;
 	color: var(--n-light-ui-color) !important;
@@ -1837,7 +1838,7 @@ body {
 	background-color: transparent !important;
 }
 
-.markdown-source-view.mod-cm6 :is(
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 :is(
 	.internal-embed.bases-embed,
 	.cm-embed-block.bases-embed,
 	.block-language-base.bases-embed,
@@ -1845,13 +1846,13 @@ body {
 	.cm-embed-block:has(.bases-view),
 	.block-language-base:has(.bases-view)
 ) :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path),
-.mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path) {
+body:not(.nui-hide-embed-edit-buttons) .mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path) {
 	color: var(--n-light-ui-color) !important;
 	stroke: currentColor !important;
 	fill: none !important;
 }
 
-.markdown-source-view.mod-cm6 :is(
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 :is(
 	.internal-embed.bases-embed,
 	.cm-embed-block.bases-embed,
 	.block-language-base.bases-embed,
@@ -1859,14 +1860,14 @@ body {
 	.cm-embed-block:has(.bases-view),
 	.block-language-base:has(.bases-view)
 ) :is(.edit-block-button, .cm-edit-block-button):hover,
-.mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button):hover {
+body:not(.nui-hide-embed-edit-buttons) .mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button):hover {
 	--icon-color: var(--n-light-ui-hover-color) !important;
 	color: var(--n-light-ui-hover-color) !important;
 	background: none !important;
 	background-color: transparent !important;
 }
 
-.markdown-source-view.mod-cm6 :is(
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 :is(
 	.internal-embed.bases-embed,
 	.cm-embed-block.bases-embed,
 	.block-language-base.bases-embed,
@@ -1874,24 +1875,24 @@ body {
 	.cm-embed-block:has(.bases-view),
 	.block-language-base:has(.bases-view)
 ) :is(.edit-block-button, .cm-edit-block-button):hover :is(.svg-icon, svg, path),
-.mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button):hover :is(.svg-icon, svg, path) {
+body:not(.nui-hide-embed-edit-buttons) .mod-cm6 .cm-embed-block:has(.bases-header) :is(.edit-block-button, .cm-edit-block-button):hover :is(.svg-icon, svg, path) {
 	color: var(--n-light-ui-hover-color) !important;
 	stroke: currentColor !important;
 }
 
 /* Override default embed hover making edit button black/opaque */
-.markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-header):hover > :is(.edit-block-button, .cm-edit-block-button),
-.markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-view):hover > :is(.edit-block-button, .cm-edit-block-button),
-.markdown-source-view.mod-cm6 .internal-embed.bases-embed:hover > :is(.edit-block-button, .cm-edit-block-button) {
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-header):hover > :is(.edit-block-button, .cm-edit-block-button),
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-view):hover > :is(.edit-block-button, .cm-edit-block-button),
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 .internal-embed.bases-embed:hover > :is(.edit-block-button, .cm-edit-block-button) {
 	--icon-color: var(--n-light-ui-color) !important;
 	color: var(--n-light-ui-color) !important;
 	background: none !important;
 	background-color: transparent !important;
 }
 
-.markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-header):hover > :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path),
-.markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-view):hover > :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path),
-	.markdown-source-view.mod-cm6 .internal-embed.bases-embed:hover > :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path) {
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-header):hover > :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path),
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 .cm-embed-block:has(.bases-view):hover > :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path),
+body:not(.nui-hide-embed-edit-buttons) .markdown-source-view.mod-cm6 .internal-embed.bases-embed:hover > :is(.edit-block-button, .cm-edit-block-button) :is(.svg-icon, svg, path) {
 	color: var(--n-light-ui-color) !important;
 	stroke: currentColor !important;
 }
@@ -3243,6 +3244,8 @@ body {
 	.nui-timeline-row-gap-label.is-scrubbing,
 	.nui-timeline-today-btn:hover,
 	.nui-timeline-today-btn.is-visible:hover,
+	.nui-week-tracker-3-today-btn:hover,
+	.nui-week-tracker-3-today-btn.is-visible:hover,
 	.nui-timeline-range-restore:hover
 ) {
 	color: var(--nui-content) !important;
@@ -3279,6 +3282,7 @@ body {
 .nui-text-scope :is(
 	.nui-timeline-timespan-select,
 	.nui-timeline-today-btn,
+	.nui-week-tracker-3-today-btn,
 	.nui-timeline-range-restore
 ) {
 	border: none !important;
@@ -3294,6 +3298,7 @@ body {
 .nui-text-scope :is(
 	.nui-timeline-timespan-select,
 	.nui-timeline-today-btn,
+	.nui-week-tracker-3-today-btn,
 	.nui-timeline-range-restore
 ):is(:hover, :focus, :focus-visible, :active) {
 	border: none !important;

@@ -11,8 +11,8 @@
   "timeline": {
     "rowSize": 10,
     "timespan": "3w",
-    "rangeStart": "2026-06-26",
-    "rangeEnd": "2026-09-06"
+    "rangeStart": "2026-06-15",
+    "rangeEnd": "2026-08-26"
   },
   "editor": {
     "multiCursorCommands": true,
@@ -24,7 +24,7 @@
     "collapsibleProperties": true,
     "collapseProperties": true,
     "nestedProperties": true,
-    "nestedPropertiesDefaultCollapsed": false,
+    "nestedPropertiesDefaultCollapsed": true,
     "embedPipes": true
   },
   "appearance": {
@@ -37,7 +37,7 @@
   },
   "workspace": {
     "sidebarGraphNavigation": false,
-    "mobileSourceToggle": false
+    "mobileSourceToggle": true
   },
   "firstRunNoticeShown": true
 }

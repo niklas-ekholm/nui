@@ -20,10 +20,10 @@ import {
 } from "../core/week-tracker-3/render-week-tracker-3";
 import {
 	buildRollingDayGrid,
-	buildThreeWeekGrid,
+	buildScrollableWeekGrid,
 	MOBILE_WEEK_TRACKER_DAY_COUNT,
 	rollingDayDateKeys,
-	threeWeekDateKeys,
+	scrollableWeekDateKeys,
 	WeekTracker3Block,
 } from "../core/week-tracker-3/week-grid";
 import {
@@ -55,6 +55,7 @@ export class WeekTracker3BasesView extends BasesView {
 	readonly type = WEEK_TRACKER_3_BASES_VIEW_TYPE;
 	private containerEl: HTMLElement;
 	private renderedSignature = "";
+	private savedScrollLeft = 0;
 
 	constructor(
 		controller: QueryController,
@@ -116,10 +117,21 @@ export class WeekTracker3BasesView extends BasesView {
 
 		this.renderedSignature = signature;
 
+		const existingScroll = this.containerEl.querySelector<HTMLElement>(
+			".nui-week-tracker-3-scroll",
+		);
+		if (existingScroll) {
+			this.savedScrollLeft = existingScroll.scrollLeft;
+		}
+
 		renderWeekTracker3(this.containerEl, {
 			weekBlocks,
 			rows,
 			rollingDayCount: Platform.isMobile ? MOBILE_WEEK_TRACKER_DAY_COUNT : undefined,
+			initialScrollLeft: this.savedScrollLeft,
+			onScrollLeftChange: (scrollLeft) => {
+				this.savedScrollLeft = scrollLeft;
+			},
 			onAddHabit: (anchorEl) => {
 				void this.addHabit(anchorEl);
 			},
@@ -237,14 +249,14 @@ export class WeekTracker3BasesView extends BasesView {
 		if (Platform.isMobile) {
 			return buildRollingDayGrid(MOBILE_WEEK_TRACKER_DAY_COUNT);
 		}
-		return buildThreeWeekGrid();
+		return buildScrollableWeekGrid();
 	}
 
 	private resolveAllowedDateKeys(): Set<string> {
 		if (Platform.isMobile) {
 			return rollingDayDateKeys(MOBILE_WEEK_TRACKER_DAY_COUNT);
 		}
-		return threeWeekDateKeys();
+		return scrollableWeekDateKeys();
 	}
 
 	private resolveHostFolder(): string {
