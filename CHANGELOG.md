@@ -9,6 +9,26 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 
 ## [Unreleased]
 
+## [0.2.5] — 2026-08-04
+
+### Added
+
+- **Navigation new-note control**: the Navigation embed's files row gets a **+** button for creating notes in the current folder.
+- **Week tracker 3**: scrolls across a year of weeks with a **Today** control; unified scroll layout with a today line and sticky habit tags.
+- **Timeline nested project folders**: folder hubs with dates group on the timeline at any nesting depth — replaces the old superproject grouping.
+- New timeline notes scroll into view and open rename without shifting the visible date range.
+- Live Preview embed source selection can be dismissed via margin click or **Escape**.
+
+### Changed
+
+- Timeline bar rows align with week tracker styling — circled date markers on the centerline, endpoint insets, selection seams, nested folder subproject rows, and XL h1 row sizing.
+- Timeline chrome is scoped more tightly.
+- **Hide embed edit buttons** wins over theme rules and applies immediately from settings.
+
+### Fixed
+
+- `install-remote.sh` on macOS bash 3.2 with empty arguments under `set -u`.
+
 ## [0.2.4] — 2026-08-04
 
 ### Added
@@ -105,7 +125,8 @@ repository and start on a single version number, clearing the theme's earlier
 - The release-branch mirror workflow, which duplicated plugin and theme sources
   onto branches that were never merged back.
 
-[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.4...HEAD
+[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.5...HEAD
+[0.2.5]: https://github.com/niklas-ekholm/nui/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/niklas-ekholm/nui/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/niklas-ekholm/nui/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/niklas-ekholm/nui/compare/v0.2.1...v0.2.2

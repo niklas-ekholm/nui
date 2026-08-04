@@ -61,7 +61,7 @@ Fetch a NUI release and install it into an Obsidian vault.
 With no vault path (and without --all), installs into the current directory.
 
 Options:
-  --version <tag>  install a specific release, e.g. v0.2.4 (default: latest)
+  --version <tag>  install a specific release, e.g. v0.2.5 (default: latest)
   --plugin-only    install the plugin, skip the theme
   --theme-only     install the theme, skip the plugin
   --no-verify      skip checksum verification
@@ -79,7 +79,7 @@ EOF
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --version)
-            [[ $# -ge 2 ]] || die "--version needs a tag, e.g. --version v0.2.4"
+            [[ $# -ge 2 ]] || die "--version needs a tag, e.g. --version v0.2.5"
             VERSION="$2"; shift 2 ;;
         --version=*) VERSION="${1#*=}"; shift ;;
         --plugin-only) COMPONENTS=(plugin); shift ;;
@@ -136,7 +136,7 @@ if [[ -z "${VERSION}" ]]; then
         | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' \
         | head -1)" || true
     [[ -n "${VERSION}" ]] || die "could not resolve the latest release.
-       GitHub's API rate-limits unauthenticated requests; pass --version v0.2.4 instead."
+       GitHub's API rate-limits unauthenticated requests; pass --version v0.2.5 instead."
 fi
 
 # Tags carry a leading v, asset filenames do not.
