@@ -40,7 +40,3 @@ views:
         direction: DESC
     dateField: note.date
     cardSize: 120
-  - type: nui-daily-note-link
-    name: Today
-    linkFolder: Daily
-    cardSize: 180

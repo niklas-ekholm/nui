@@ -12,7 +12,7 @@ Shared folder-navigation base at `┼/Bases/Contents.base`. Filters use `this.fi
 | View | Embed | Layout |
 | ---- | ----- | ------ |
 | Navigation   | `![[Contents.base#Navigation]]`   | [[2-elements/list/index|List]] folders + [[2-elements/list/index|List]] files (replaces Folders + Files pair) |
-| Today Daily Note | `![[Contents.base#Today Daily Note]]` | [[2-elements/list/index|List]] folders chip for today's daily note |
+| Daily links | `![[Daily.base#today]]` (also `#yesterday`, `#tomorrow`) | [[today-daily-note|Daily Note Link]] — separate base, not on Contents/Navigation |
 | Folders      | `![[Contents.base#Folders]]`      | [[2-elements/list/index|List]] folders (flex-wrap chips) |
 | Files        | `![[Contents.base#Files]]`        | [[2-elements/list/index|List]] files   |
 | Files by Date | `![[Contents.base#Files By Date]]` | [[2-elements/list/index|List]] files by date |

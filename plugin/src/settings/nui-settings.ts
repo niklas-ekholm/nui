@@ -44,6 +44,11 @@ export interface HtmlLivePreviewSettings {
 export interface EditorSettings extends HtmlLivePreviewSettings {
 	multiCursorCommands: boolean;
 	textColor: boolean;
+	/**
+	 * Floating formatting toolbar on text selection. Desktop only — mobile
+	 * already has the system toolbar.
+	 */
+	selectionToolbar: boolean;
 	tableColumnLayout: boolean;
 	htmlLivePreview: boolean;
 	collapsibleProperties: boolean;
@@ -114,6 +119,7 @@ export const DEFAULT_SETTINGS: NuiSettings = {
 	editor: {
 		multiCursorCommands: true,
 		textColor: true,
+		selectionToolbar: true,
 		tableColumnLayout: true,
 		htmlLivePreview: true,
 		alwaysRenderHtmlInLivePreview: true,
@@ -207,6 +213,10 @@ export function mergeSettings(loaded: Loaded): NuiSettings {
 				defaults.editor.multiCursorCommands,
 			),
 			textColor: bool(editor.textColor, defaults.editor.textColor),
+			selectionToolbar: bool(
+				editor.selectionToolbar,
+				defaults.editor.selectionToolbar,
+			),
 			tableColumnLayout: bool(
 				editor.tableColumnLayout,
 				defaults.editor.tableColumnLayout,

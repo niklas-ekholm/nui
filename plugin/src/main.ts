@@ -25,6 +25,8 @@ import {
 	registerTextColorMenu,
 } from "./editor/register-text-color-menu";
 import { registerPropertyColorSwatch } from "./editor/register-property-color-swatch";
+import { registerPropertyClear } from "./editor/register-property-clear";
+import { registerSelectionToolbar } from "./editor/register-selection-toolbar";
 import { registerHtmlLpField } from "./editor/register-html-lp-field";
 import { NuiSettingTab } from "./settings/settings-tab";
 import {
@@ -74,6 +76,7 @@ import {
 import { TimelineTimespan } from "./timeline/types";
 import { registerEmbedPipeSync } from "./embed/register-embed-pipe-sync";
 import { registerEmbedChromeStickLine } from "./embed/embed-chrome-stick-line";
+import { registerEmbedSourceClick } from "./embed/register-embed-source-click";
 
 export default class NuiPlugin extends Plugin {
 	settings: NuiSettings = DEFAULT_SETTINGS;
@@ -132,15 +135,20 @@ export default class NuiPlugin extends Plugin {
 			registerEmbedPipeSync(this);
 			registerEmbedChromeStickLine(this);
 		}
+		registerEmbedSourceClick(this);
 		if (editor.textColor) {
 			registerNoteTextColorSync(this);
 			registerTextColorMenu(this);
 			registerPropertyColorSwatch(this);
 			registerNoteTextColorCommand(this);
 		}
+		if (editor.selectionToolbar && Platform.isDesktopApp) {
+			registerSelectionToolbar(this);
+		}
 		if (editor.collapsibleProperties) {
 			this.refreshCollapsibleProperties = registerCollapsibleProperties(this);
 		}
+		registerPropertyClear(this);
 		if (editor.nestedProperties) {
 			this.refreshNestedProperties = registerNestedProperties(this);
 		}
@@ -380,7 +388,7 @@ export default class NuiPlugin extends Plugin {
 		});
 
 		this.registerBasesView(DAILY_NOTE_LINK_BASES_VIEW_TYPE, {
-			name: "List: Today Daily Note",
+			name: "List: Daily Note Link",
 			icon: "calendar",
 			factory: (controller, containerEl) =>
 				new DailyNoteLinkBasesView(controller, containerEl),
@@ -394,10 +402,24 @@ export default class NuiPlugin extends Plugin {
 				},
 				{
 					type: "text",
+					key: "label",
+					displayName: "Label",
+					default: "",
+					placeholder: "Today",
+				},
+				{
+					type: "text",
+					key: "dayOffset",
+					displayName: "Day offset",
+					default: "0",
+					placeholder: "0 = today, -1 = yesterday, 1 = tomorrow",
+				},
+				{
+					type: "text",
 					key: "listPrefix",
 					displayName: "Symbol override",
 					default: "",
-					placeholder: "Folder name",
+					placeholder: "→",
 				},
 				{
 					type: "toggle",

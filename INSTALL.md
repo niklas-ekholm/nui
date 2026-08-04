@@ -33,7 +33,7 @@ the vault, because it contains a plugin.
 This is the recommended way to see what NUI does. Nothing here touches any vault
 you already have.
 
-`--version v0.2.2` installs a specific release instead of the latest;
+`--version v0.2.4` installs a specific release instead of the latest;
 `--no-verify` skips checksum verification. See the `bash`-not-`sh` and
 read-before-running notes below — they apply to this script too.
 
@@ -56,7 +56,7 @@ This fetches the latest release, verifies the zips against that release's
 `SHA256SUMS`, and hands off to the same `install.sh` described below — nothing
 about how or what gets written is different. Options:
 
-- `--version v0.2.2` — install a specific release instead of the latest
+- `--version v0.2.4` — install a specific release instead of the latest
 - `--plugin-only` / `--theme-only` — install just one half
 - `--no-verify` — skip checksum verification
 - `--force`, `--dry-run`, `--all` pass straight through to `install.sh`

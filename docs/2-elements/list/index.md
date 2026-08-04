@@ -28,7 +28,7 @@ Dense link lists for folder indexes — file grids, date-sorted files, and folde
 ## Examples
 
 - [[contents]] — **Files**, **Files by Date**, **Folders**, **Recent Files** views.
-- [[today-daily-note]] — single folder chip for today's daily note.
+- [[today-daily-note]] — daily-note chips (`→ Today` / Yesterday / Tomorrow) via `Daily.base`.
 
 ## Roadmap
 

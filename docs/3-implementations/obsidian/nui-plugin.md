@@ -27,7 +27,7 @@ Maps [[2-elements/index|2 Elements]] and [[1-foundations/index|1 Foundations]] t
 | [[2-elements/list/index|List]]         | List: Files     | `nui-list-files`      | `src/views/card-list-bases-views.ts`     |
 | [[2-elements/list/index|List]]         | List: Folders   | `nui-list-folders`    | `src/views/card-list-bases-views.ts`     |
 | [[2-elements/list/index|List]]         | List: Navigation | `nui-navigation`     | `src/views/navigation-bases-view.ts`     |
-| [[2-elements/list/index|List]]         | List: Today Daily Note | `nui-daily-note-link` | `src/views/daily-note-link-bases-view.ts` |
+| [[2-elements/list/index|List]]         | List: Daily Note Link | `nui-daily-note-link` | `src/views/daily-note-link-bases-view.ts` |
 | [[2-elements/list/index|List]]         | List: Tasks     | `nui-task-list`       | `src/views/task-list-bases-view.ts`      |
 | [[2-elements/list/index|List]]         | List: Files by Date | `nui-list-files-by-date` | `src/views/card-list-bases-views.ts` |
 | [[score-chart|Score Chart]]             | Score Chart     | `nui-score-chart`     | `src/views/score-chart-bases-view.ts`    |
@@ -54,6 +54,7 @@ No `.base` in the vault uses **Score Chart** yet — see [[score-chart]].
 | Score chart render | `src/core/score-chart/render-score-chart.ts`, `src/bases/score-from-entries.ts` |
 | Task extraction | `src/bases/tasks-from-entries.ts` |
 | Markdown table column layout | `src/editor/table-column-layout/` |
+| Selection formatting toolbar (desktop) | `src/editor/register-selection-toolbar.ts` |
 | Live Preview embed sticky (pane chrome, scroller padding) | `src/embed/embed-chrome-stick-line.ts`, `src/editor/note-cover-image.ts` — [[live-preview-sticky-headers]] |
 
 ## Mobile
@@ -65,6 +66,10 @@ Touch-specific layout and embed fixes are documented in [[mobile]].
 Live Preview header layout (title left, properties right, body full width) and the short-note vertical-jump fix are documented in [[note-header-layout]].
 
 Markdown pipe table column layout (separator-row shrink/fill ratios, separator dash preservation) is documented in [[table-column-layout]].
+
+### Selection formatting toolbar
+
+Desktop only (`Platform.isDesktopApp`). When text is selected in Live Preview or Source, a floating toolbar appears above the selection with markdown formatting actions (bold, italic, strikethrough, highlight, cycling heading, wikilink, external link, lists, blockquote, inline code, code block) and — when text colour is enabled — a swatch that opens the existing span colour picker. Setting: `editor.selectionToolbar` (default on). Implementation: `src/editor/register-selection-toolbar.ts`.
 
 ## NUI Finance (speculative)
 

@@ -2312,11 +2312,17 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 .nui-navigation {
 	display: flex;
 	flex-direction: column;
-	gap: var(--size-4-4);
+	gap: 0;
+}
+
+.nui-navigation .nui-cards--list-folders,
+.nui-navigation .nui-cards--list-files {
+	padding-top: 0;
+	padding-bottom: 0;
 }
 
 .nui-navigation .nui-cards--list-folders {
-	row-gap: var(--size-4-4);
+	row-gap: 0;
 	column-gap: var(--size-4-5);
 }
 
@@ -2325,7 +2331,7 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	flex-wrap: wrap;
 	align-items: flex-start;
 	align-content: flex-start;
-	row-gap: var(--size-4-2);
+	row-gap: 0;
 	column-gap: var(--size-4-5);
 }
 
@@ -2339,6 +2345,10 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 .nui-navigation .nui-cards--list-files .nui-cards-title {
 	width: max-content;
 	max-width: 100%;
+}
+
+.nui-navigation .nui-cards--list-folders .nui-cards-title-text {
+	padding-block: 0;
 }
 
 .nui-navigation .nui-cards--list-files .nui-cards-title-text {
@@ -2386,6 +2396,11 @@ body.nui-timeline-title-dragging .nui-timeline-bar-title-draggable {
 	min-height: calc(
 		(var(--line-height-normal) - 1.1) * 0.5em + var(--h1-size) * var(--h1-line-height)
 	);
+}
+
+.nui-navigation-add-slot {
+	padding-top: 0;
+	min-height: calc(var(--h1-size) * var(--h1-line-height));
 }
 
 .nui-navigation-add-slot .nui-navigation-add,
@@ -2846,6 +2861,40 @@ body.nui-hide-embed-edit-buttons .mod-cm6 .internal-embed ~ :is(.edit-block-butt
 body.nui-hide-embed-edit-buttons .mod-cm6 .block-language-base ~ :is(.edit-block-button, .cm-edit-block-button) {
 	display: none !important;
 	pointer-events: none !important;
+}
+
+/* Live Preview: when the cursor is on an embed, Obsidian shows the `![[…]]`
+   source line and keeps the rendered widget below it — a one-row layout shift.
+   Collapse that source line in flow and paint it over the faded embed instead. */
+.markdown-source-view.mod-cm6.is-live-preview
+	.cm-line:is(:has(.cm-formatting-embed), :has(.cm-hmd-embed)):has(
+		+ :is(.cm-embed-block, .internal-embed)
+	) {
+	height: 0;
+	min-height: 0;
+	border: none !important;
+	padding-block: 0 !important;
+	margin-block: 0 !important;
+	overflow: visible;
+	z-index: 3;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.cm-line:is(:has(.cm-formatting-embed), :has(.cm-hmd-embed)):has(
+		+ :is(.cm-embed-block, .internal-embed)
+	)
+	> * {
+	line-height: var(--line-height-normal);
+	position: relative;
+	z-index: 3;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.cm-line:is(:has(.cm-formatting-embed), :has(.cm-hmd-embed)):has(
+		+ :is(.cm-embed-block, .internal-embed)
+	)
+	+ :is(.cm-embed-block, .internal-embed) {
+	opacity: 0.1;
 }
 
 .nui-task-list-bases-root.nui-task-list {
@@ -3512,6 +3561,67 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	color: var(--text-muted);
 }
 
+/* Property row clear (×) — removes the key from frontmatter */
+.metadata-property {
+	position: relative;
+}
+
+.metadata-property > .nui-property-clear {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	position: absolute;
+	inset-inline-end: 0;
+	top: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	width: var(--input-height, 1.8em);
+	height: var(--input-height, 1.8em);
+	border: none;
+	border-radius: 0;
+	outline: none;
+	box-shadow: none;
+	background: transparent;
+	font-family: inherit;
+	font-size: var(--font-ui-small, 0.875em);
+	font-weight: inherit;
+	line-height: 1;
+	color: var(--nui-chrome, var(--text-faint));
+	cursor: pointer;
+	opacity: 0;
+	pointer-events: none;
+	z-index: 2;
+}
+
+.metadata-property:is(:hover, :focus-within) > .nui-property-clear,
+.metadata-property > .nui-property-clear:focus-visible {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+@media (hover: none) {
+	.metadata-property > .nui-property-clear {
+		opacity: 1;
+		pointer-events: auto;
+	}
+}
+
+.metadata-property > .nui-property-clear:is(:hover, :focus, :focus-visible, :active) {
+	border: none;
+	outline: none;
+	box-shadow: none;
+	background: transparent;
+	color: var(--n-light-ui-hover-color, var(--text-normal));
+}
+
+.metadata-property:has(> .nui-property-clear) > .metadata-property-value {
+	padding-inline-end: var(--input-height, 1.8em);
+}
+
 /* Property hex color swatch — opens Color Picker */
 .metadata-property-value.nui-property-color-value {
 	position: relative;
@@ -3764,17 +3874,22 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	min-width: 0;
 	max-width: 100%;
 	width: 100%;
-	margin-block-start: 0;
+	/* Match theme `--n-properties-margin-block-start`: clear title descenders
+	   when the expanded block sits on the row below a line-height-1 title. */
+	margin-block-start: var(--n-properties-margin-block-start, 0.2em);
 }
 
 /* The collapsed container is its own click target: contents hidden, box
-   shrunk to the icon drawn by ::before. */
+   shrunk to the icon drawn by ::before. Glyph color is set on ::before
+   directly (not via currentColor) so editor/content `color` cannot tint
+   the chrome icon before the first interaction. */
 .metadata-container.nui-properties-collapsed,
 .nui-properties-add,
 .nui-properties-toggle {
 	--nui-properties-info-size: 16px;
 	--nui-properties-info-width: 26px;
 	--nui-properties-info-height: 32px;
+	--nui-properties-icon-color: var(--nui-chrome, var(--text-faint));
 	/* `display` needs !important: Obsidian sets the container's display from
 	   `--metadata-display-editing` at a higher specificity than this. */
 	display: flex !important;
@@ -3787,7 +3902,7 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	background-color: transparent !important;
 	box-shadow: none !important;
 	outline: none;
-	color: var(--text-faint);
+	color: var(--nui-properties-icon-color) !important;
 	cursor: pointer;
 	appearance: none;
 	-webkit-appearance: none;
@@ -3819,7 +3934,7 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 .nui-properties-toggle::before {
 	content: "";
 	display: block;
-	background-color: currentColor;
+	background-color: var(--nui-properties-icon-color);
 	-webkit-mask-image: var(--nui-properties-glyph);
 	mask-image: var(--nui-properties-glyph);
 	-webkit-mask-size: contain;
@@ -3855,7 +3970,8 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 .metadata-container.nui-properties-collapsed:hover,
 .nui-properties-add:hover,
 .nui-properties-toggle:hover {
-	color: var(--text-normal);
+	--nui-properties-icon-color: var(--text-normal);
+	color: var(--nui-properties-icon-color) !important;
 	background: transparent !important;
 	background-color: transparent !important;
 	border: none !important;
@@ -3865,6 +3981,10 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 .metadata-container.nui-properties-collapsed:is(:focus, :focus-visible),
 .nui-properties-add:is(:focus, :focus-visible, :active),
 .nui-properties-toggle:is(:focus, :focus-visible, :active) {
+	/* Keep resting chrome color while focused — don't look "stuck" on
+	   content color after the first click until blur. */
+	--nui-properties-icon-color: var(--nui-chrome, var(--text-faint));
+	color: var(--nui-properties-icon-color) !important;
 	border: none !important;
 	outline: none !important;
 	background: transparent !important;
@@ -4016,6 +4136,78 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	min-width: 0;
 	align-self: flex-start;
 	padding-inline: 0;
+}
+
+/* Selection formatting toolbar (desktop Live Preview / Source).
+   CM light theme sets `.cm-tooltip { background: #f5f5f5 }` — beat it. */
+.markdown-source-view.mod-cm6 .cm-tooltip:has(.nui-selection-toolbar),
+.markdown-source-view.mod-cm6 .cm-tooltip.cm-tooltip-above:has(.nui-selection-toolbar),
+.markdown-source-view.mod-cm6 .cm-tooltip.cm-tooltip-below:has(.nui-selection-toolbar) {
+	border: none !important;
+	background: #ffffff !important;
+	background-color: #ffffff !important;
+	padding: 0 !important;
+	box-shadow: none !important;
+}
+
+.nui-selection-toolbar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 6px;
+	padding: 8px;
+	border: 1px solid #ececec;
+	border-radius: var(--radius-s);
+	background: #ffffff !important;
+	background-color: #ffffff !important;
+	box-shadow: none !important;
+}
+
+.nui-selection-toolbar-btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--icon-size);
+	height: var(--icon-size);
+	min-width: var(--icon-size);
+	min-height: var(--icon-size);
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-s);
+	background: transparent;
+	color: var(--icon-color);
+	cursor: pointer;
+}
+
+.nui-selection-toolbar-btn:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--icon-color-hover);
+}
+
+.nui-selection-toolbar-heading-level {
+	position: absolute;
+	right: -1px;
+	bottom: -2px;
+	font-size: 9px;
+	font-weight: var(--font-semibold);
+	line-height: 1;
+	color: var(--text-muted);
+	pointer-events: none;
+}
+
+.nui-selection-toolbar-swatch {
+	padding: 0;
+}
+
+.nui-selection-toolbar-swatch-fill {
+	display: block;
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	border: 1px solid var(--background-modifier-border);
+	box-sizing: border-box;
 }
 
 

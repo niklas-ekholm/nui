@@ -17,11 +17,14 @@
   "editor": {
     "multiCursorCommands": true,
     "textColor": true,
+    "selectionToolbar": true,
     "tableColumnLayout": true,
     "htmlLivePreview": true,
     "alwaysRenderHtmlInLivePreview": true,
     "collapsibleProperties": true,
     "collapseProperties": true,
+    "nestedProperties": true,
+    "nestedPropertiesDefaultCollapsed": false,
     "embedPipes": true
   },
   "appearance": {

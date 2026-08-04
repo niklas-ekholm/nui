@@ -11,6 +11,7 @@ const COLLAPSED_CLASS = "nui-properties-collapsed";
 const ADD_CLASS = "nui-properties-add";
 const TOGGLE_CLASS = "nui-properties-toggle";
 const ROW_HEIGHT_VAR = "--nui-properties-row-height";
+const ADD_PROPERTY_COMMAND = "markdown:add-metadata-property";
 
 interface CollapsiblePropertiesPlugin extends Plugin {
 	settings: { editor: { collapseProperties: boolean } };
@@ -69,6 +70,40 @@ export function registerCollapsibleProperties(
 			!!frontmatter &&
 			Object.keys(frontmatter).some((key) => key !== "position")
 		);
+	};
+
+	const executeAddProperty = (view: MarkdownView): boolean => {
+		const viaCommand = (
+			plugin.app as unknown as AppCommands
+		).commands.executeCommandById(ADD_PROPERTY_COMMAND);
+		if (viaCommand) {
+			return true;
+		}
+		const native = mainMetadataContainer(view)?.querySelector<HTMLElement>(
+			".metadata-add-button",
+		);
+		if (native) {
+			native.click();
+			return true;
+		}
+		return false;
+	};
+
+	/** Focus + expand, then add. First click often no-ops if the markdown
+	 * leaf is not active yet or the widget is still collapsed this frame. */
+	const expandAndAddProperty = (view: MarkdownView): void => {
+		plugin.app.workspace.setActiveLeaf(view.leaf, { focus: true });
+		setCollapsed(false);
+		mainMetadataContainer(view)?.classList.remove(COLLAPSED_CLASS);
+
+		if (executeAddProperty(view)) {
+			scheduleSync();
+			return;
+		}
+		window.setTimeout(() => {
+			executeAddProperty(view);
+			scheduleSync();
+		}, 0);
 	};
 
 	const clearButtons = (view: MarkdownView, className: string): void => {
@@ -242,11 +277,7 @@ export function registerCollapsibleProperties(
 				evt.stopPropagation();
 				const view = findViewForElementLocal(addButton);
 				if (view) {
-					setCollapsed(false);
-					(plugin.app as unknown as AppCommands).commands.executeCommandById(
-						"markdown:add-metadata-property",
-					);
-					scheduleSync();
+					expandAndAddProperty(view);
 				}
 				return;
 			}
@@ -263,7 +294,14 @@ export function registerCollapsibleProperties(
 			if (collapsed) {
 				evt.preventDefault();
 				evt.stopPropagation();
-				setCollapsed(false);
+				const view = findViewForElementLocal(collapsed);
+				// Empty properties UI still renders a metadata-container; treat
+				// the info button like "add" so the user gets a new row.
+				if (view && !hasFileProperties(view)) {
+					expandAndAddProperty(view);
+				} else {
+					setCollapsed(false);
+				}
 			}
 		},
 		true,

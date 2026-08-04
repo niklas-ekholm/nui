@@ -216,6 +216,15 @@ export class NuiSettingTab extends PluginSettingTab {
 			set: (value) => (this.settings.editor.textColor = value),
 		});
 
+		if (Platform.isDesktopApp) {
+			this.toggle(containerEl, {
+				name: "Selection formatting toolbar",
+				desc: `Shows a floating formatting toolbar when text is selected (desktop only; mobile uses the system toolbar). ${RELOAD_NOTE}`,
+				get: () => this.settings.editor.selectionToolbar,
+				set: (value) => (this.settings.editor.selectionToolbar = value),
+			});
+		}
+
 		this.toggle(containerEl, {
 			name: "Table column widths",
 			desc: `Reads column widths from a table's separator row. Dormant unless the syntax is used. ${RELOAD_NOTE}`,

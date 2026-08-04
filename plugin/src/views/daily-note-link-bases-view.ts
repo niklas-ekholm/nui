@@ -1,4 +1,3 @@
-
 import { App, BasesView, BasesViewConfig, Keymap, QueryController } from "obsidian";
 import { renderCards } from "../cards/render-cards";
 import { fileAsEntry } from "../cards/file-as-entry";
@@ -8,10 +7,7 @@ import {
 	readDailyNotesSettings,
 	resolveDailyNotePath,
 } from "../bases/daily-note-path";
-import {
-	folderBasename,
-	resolveFolderIndexPath,
-} from "../bases/folder-index-path";
+import { addDays, startOfDay } from "../core/parse/dates";
 import { clearEmbeddedBasesChrome, syncEmbeddedBasesChrome } from "../bases/embedded-bases-chrome";
 import { syncBasesViewTopbar } from "../bases/bases-view-topbar";
 import { clearMountedBasesTitle, createNuiBasesContainer } from "../bases/bases-view-title";
@@ -21,6 +17,9 @@ import {
 	mergeCardSize,
 	mergeImageFit,
 } from "../layouts/types";
+
+/** Same arrow glyph as List: Navigation / List: Folders chips. */
+const DEFAULT_LIST_PREFIX = "→";
 
 function readLinkFolder(config: BasesViewConfig): string | null {
 	const raw = config.get("linkFolder");
@@ -48,6 +47,35 @@ function readHideLabel(config: BasesViewConfig): boolean {
 	return false;
 }
 
+function readDayOffset(config: BasesViewConfig): number {
+	const raw = config.get("dayOffset");
+	if (typeof raw === "number" && Number.isFinite(raw)) {
+		return Math.trunc(raw);
+	}
+	if (typeof raw === "string" && raw.trim() !== "") {
+		const parsed = Number(raw);
+		if (Number.isFinite(parsed)) {
+			return Math.trunc(parsed);
+		}
+	}
+	return 0;
+}
+
+function readLabel(config: BasesViewConfig): string | null {
+	const raw = config.get("label");
+	if (typeof raw !== "string") return null;
+	const trimmed = raw.trim();
+	return trimmed.length > 0 ? trimmed : null;
+}
+
+function defaultLabelForOffset(offset: number): string {
+	if (offset === 0) return "Today";
+	if (offset === -1) return "Yesterday";
+	if (offset === 1) return "Tomorrow";
+	if (offset > 1) return `In ${offset} days`;
+	return `${Math.abs(offset)} days ago`;
+}
+
 function resolveLinkFolderPath(
 	app: App,
 	config: BasesViewConfig,
@@ -55,11 +83,8 @@ function resolveLinkFolderPath(
 	return readLinkFolder(config) ?? (readDailyNotesSettings(app).folder || null);
 }
 
-function resolveListPrefix(
-	config: BasesViewConfig,
-	linkFolder: string,
-): string {
-	return readListPrefixOverride(config) ?? folderBasename(linkFolder);
+function resolveTargetDate(dayOffset: number): Date {
+	return addDays(startOfDay(new Date()), dayOffset);
 }
 
 export class DailyNoteLinkBasesView extends BasesView {
@@ -85,25 +110,25 @@ export class DailyNoteLinkBasesView extends BasesView {
 		const imageFit = mergeImageFit(this.config.get("imageFit"), "cover");
 		const order = this.config.getOrder();
 		const linkFolder = resolveLinkFolderPath(this.app, this.config);
-		const listPrefix = linkFolder
-			? resolveListPrefix(this.config, linkFolder)
-			: undefined;
+		const dayOffset = readDayOffset(this.config);
+		const label =
+			readLabel(this.config) ?? defaultLabelForOffset(dayOffset);
+		const listPrefix = readListPrefixOverride(this.config) ?? DEFAULT_LIST_PREFIX;
 		const hideLabel = readHideLabel(this.config);
+		const targetDate = resolveTargetDate(dayOffset);
 		const dailyResolved = resolveDailyNotePath(
 			this.app,
-			new Date(),
+			targetDate,
 			linkFolder ?? undefined,
 		);
-		const folderResolved = linkFolder
-			? resolveFolderIndexPath(this.app, linkFolder)
-			: null;
 		const signature = [
 			this.type,
 			dailyResolved.path,
 			dailyResolved.dateKey,
-			folderResolved?.path ?? "",
 			linkFolder ?? "",
-			listPrefix ?? "",
+			listPrefix,
+			label,
+			dayOffset,
 			hideLabel,
 			cardSize,
 			imageProperty ?? "",
@@ -127,9 +152,7 @@ export class DailyNoteLinkBasesView extends BasesView {
 
 		renderCards(linksEl, {
 			app: this.app,
-			entries: [
-				fileAsEntry(this.app, dailyResolved.path, dailyResolved.basename),
-			],
+			entries: [fileAsEntry(this.app, dailyResolved.path, label)],
 			order,
 			config: this.config,
 			titleMode: "list-folders",
@@ -139,21 +162,11 @@ export class DailyNoteLinkBasesView extends BasesView {
 			imageFit,
 			listPrefix,
 			hideTitleText: hideLabel,
-			openPrefixClick: folderResolved
-				? (_entry, evt) => {
-						void this.app.workspace.openLinkText(
-							folderResolved.path,
-							"",
-							Keymap.isModEvent(evt),
-						);
-					}
-				: undefined,
 			openEntry: (_entry, evt) => {
-				const modEvent = Keymap.isModEvent(evt);
 				void openOrCreateDailyNote(
 					this.app,
-					new Date(),
-					modEvent === true,
+					targetDate,
+					Keymap.isModEvent(evt) === true,
 					linkFolder ?? undefined,
 				);
 			},

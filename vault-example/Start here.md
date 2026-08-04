@@ -19,11 +19,13 @@ Open the **note**, not the base. Every base in [[Bases]] filters on `file.inFold
 | [[Running]] | One habit's distances as a line chart and as bars, and the trackers narrowed to it |
 | [[Sam's personal notes]] | Text formatting, tables, cover images, and NoteGallery / ImageGallery |
 | [[okf-wiki]] | An OKF space: hub notes and `index.md` sidecars living side by side |
-| [[Daily]] | Files grouped by date, and the link to today's daily note |
+| [[Daily]] | Files grouped by date, and `Daily.base` links for today / yesterday / tomorrow |
 
 Between them those cover all fourteen views the plugin adds. Each embed has a view picker in its top-right corner — most hold more than one view.
 
 Because folder-index is on, clicking any of those folders in the sidebar opens the note above. The whole vault at once looks like this:
+
+![[Daily.base#today]]
 
 ![[Navigation.base]]
 

@@ -32,7 +32,7 @@ Body blocks (`.cm-content`, `.cm-contentContainer`, preview sections) span **`gr
 
 **CSS:** `.obsidian/themes/NUI/theme.css` — section **§4b Properties**. Nested YAML trees use **§4b nested** styling; see [[nested-properties]].
 
-Gap below the header row uses `--n-inline-title-margin-bottom` (default `0.9em`). Body block spacing follows Obsidian defaults (`--p-spacing`, `--heading-spacing`) with one empty line between block elements in source — see [[spacing]].
+Gap below the header row uses `--n-inline-title-margin-bottom` (default `0.9em`). Gap between title and properties uses `--n-properties-margin-block-start` (default `0.2em`) so title descenders (line-height 1) stay clear of the properties block. Body block spacing: `--p-spacing` for paragraphs; headings and bases embeds use `--heading-spacing` / `--n-bases-embed-padding-block` (both `0`) so blank lines in source own the gap — see [[spacing]].
 
 ## Responsive
 

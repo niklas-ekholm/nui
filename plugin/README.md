@@ -22,7 +22,7 @@ Add any of these from a base's view picker. Each one reads its data from the bas
 | List: Folders | Sibling folders rather than files | — |
 | Picture Gallery | An image grid | An image property, or the file itself |
 | List: Navigation | Links to the folder indexes below the current folder | Folder-index model turned on |
-| List: Today Daily Note | A single link to today's daily note, created on click | A daily-notes folder |
+| List: Daily Note Link | A link to today / yesterday / tomorrow's daily note (`Daily.base`) | A daily-notes folder |
 
 Dates come from whichever property you point the view at — `note.date` by default. The trackers read habit completions from notes filed under a habits folder; each habit is a folder, and each completion a dated note inside it.
 

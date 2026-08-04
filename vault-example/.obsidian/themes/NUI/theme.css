@@ -74,8 +74,9 @@ body,
 :is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered),
 .markdown-source-view.mod-cm6 {
 	--p-spacing: var(--nui-4);
-	--heading-spacing: var(--nui-16);
-	--n-bases-embed-padding-block: var(--nui-8);
+	/* Headings + embeds: no theme-added vertical padding; blank lines in source own the gap */
+	--heading-spacing: var(--nui-0);
+	--n-bases-embed-padding-block: var(--nui-0);
 }
 
 /* ==========================================================================
@@ -177,6 +178,9 @@ body {
 
 	/* presentation (not in Typography.md ladder) */
 	--n-inline-title-margin-bottom: 0.9em;
+	/* Clear title descenders when properties sit on the row below
+	   (inline title uses line-height 1). */
+	--n-properties-margin-block-start: 0.2em;
 	--n-code-style: normal;
 	--n-code-shift-y: -0.06em;
 
@@ -251,11 +255,11 @@ body {
 	--h6-weight: var(--nui-weight-h6);
 }
 
-/* Block stack — apply §1a spacing tokens */
+/* Block stack — headings flush; blank lines in source own vertical gaps */
 :is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered)
 	:is(h1, h2, h3, h4, h5, h6) {
-	margin-block-start: var(--p-spacing);
-	margin-block-end: var(--p-spacing);
+	margin-block-start: var(--heading-spacing);
+	margin-block-end: var(--heading-spacing);
 }
 
 :is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered)
@@ -1926,7 +1930,7 @@ body {
 	min-width: 0;
 	max-width: 100%;
 	width: 100%;
-	margin-block-start: 0;
+	margin-block-start: var(--n-properties-margin-block-start);
 	--metadata-max-width: 100%;
 }
 
@@ -2033,7 +2037,7 @@ body.is-phone
 	min-width: 0;
 	max-width: 100%;
 	width: 100%;
-	margin-block-start: 0;
+	margin-block-start: var(--n-properties-margin-block-start);
 }
 
 body.is-mobile.is-tablet
@@ -2076,7 +2080,7 @@ body.is-mobile.is-tablet
 	min-width: 0;
 	max-width: 100%;
 	width: 100%;
-	margin-block-start: 0;
+	margin-block-start: var(--n-properties-margin-block-start);
 }
 
 body.is-phone .markdown-source-view.mod-cm6
@@ -2169,7 +2173,7 @@ body.is-mobile.is-tablet
 		min-width: 0;
 		max-width: 100%;
 		width: 100%;
-		margin-block-start: 0;
+		margin-block-start: var(--n-properties-margin-block-start);
 	}
 
 	.markdown-source-view.mod-cm6
@@ -2306,6 +2310,22 @@ body.is-mobile.is-tablet
 :is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
 	.metadata-container .metadata-property-icon :is(.svg-icon, svg) {
 	color: var(--nui-chrome);
+}
+
+:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+	.metadata-container
+	.metadata-property
+	> .nui-property-clear {
+	color: var(--nui-chrome);
+}
+
+@media (hover: hover) {
+	:is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
+		.metadata-container
+		.metadata-property
+		> .nui-property-clear:hover {
+		color: var(--n-light-ui-hover-color);
+	}
 }
 
 :is(.markdown-source-view, .markdown-preview-view, .markdown-reading-view)
@@ -3093,7 +3113,7 @@ body {
    8. Bases — table layout
    ========================================================================== */
 
-/* Embedded bases — inset vertical rhythm inside the embed block */
+/* Embedded bases — no theme-added vertical padding (token is 0; blank lines own the gap) */
 :is(.markdown-reading-view, .markdown-preview-view, .markdown-rendered)
 	:is(.internal-embed.bases-embed, .block-language-base.bases-embed),
 .markdown-source-view.mod-cm6

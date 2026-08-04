@@ -1,0 +1,23 @@
+filters:
+  and:
+    - file.inFolder(this.file.folder)
+    - file.path != this.file.path
+views:
+  - type: nui-daily-note-link
+    name: today
+    label: Today
+    dayOffset: 0
+    linkFolder: Daily
+    cardSize: 180
+  - type: nui-daily-note-link
+    name: yesterday
+    label: Yesterday
+    dayOffset: -1
+    linkFolder: Daily
+    cardSize: 180
+  - type: nui-daily-note-link
+    name: tomorrow
+    label: Tomorrow
+    dayOffset: 1
+    linkFolder: Daily
+    cardSize: 180

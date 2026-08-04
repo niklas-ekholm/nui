@@ -9,18 +9,40 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 
 ## [Unreleased]
 
+## [0.2.4] — 2026-08-04
+
+### Added
+
+- **Nested properties**: nested YAML objects and arrays render as a collapsible tree in the in-document Properties block (Settings → Nested properties).
+- **Selection formatting toolbar** (desktop): bold, italic, heading, and code controls when text is selected.
+- Properties rows show an **×** on hover that clears (removes) that property from frontmatter.
+- Empty properties info button adds a property instead of only expanding an empty block.
+- `Daily.base` with `#today`, `#yesterday`, and `#tomorrow` views (`label` + `dayOffset` on List: Daily Note Link).
+- Product docs under `docs/` (NUI docs naming); example vault code sample [[Archive search patterns]].
+
+### Changed
+
+- Headings and Bases embeds use `0` vertical padding so blank lines in source own the gap.
+- Daily note link view renamed to **List: Daily Note Link**; Today moved from `Navigation.base` to `Daily.base`.
+- Blockquotes use h3-scale body type and a thin left rule (`--nui-border-color`) instead of oversized serif pull-quote styling — partial; Live Preview first-line alignment and source-mode interaction remain open (#15).
+
 ### Fixed
 
 - Properties info button beside the note title no longer shows Obsidian's default button border or shadow (#12).
 - Fenced code blocks in Live Preview no longer inherit heading or link typography; only syntax highlighting colours apply (#14).
+- Properties block no longer covers descenders of the note title (`--n-properties-margin-block-start`).
+- Moving the cursor onto an embed no longer shifts the document for the `![[…]]` source row — the source overlays the embed at low opacity.
+- Clicking non-interactive areas of an embed places the cursor at the end of the embed line.
+
+## [0.2.3] — 2026-07-31
 
 ### Changed
 
-- Blockquotes use h3-scale body type and a thin left rule (`--nui-border-color`) instead of oversized serif pull-quote styling — partial; Live Preview first-line alignment and source-mode interaction remain open (#15).
+- Example vault habit day notes use `YYYY-MM-DD Habit.md` filenames, matching what the trackers create.
 
-### Added
+### Removed
 
-- `vault-example`: [[Archive search patterns]] — longer fenced code sample for Live Preview code-block checks.
+- OKF space support (`okf_version` hub frontmatter and automatic `index.md` sidecars), plus the example vault's `okf-wiki` demo.
 
 ## [0.2.2] — 2026-07-31
 
@@ -83,7 +105,9 @@ repository and start on a single version number, clearing the theme's earlier
 - The release-branch mirror workflow, which duplicated plugin and theme sources
   onto branches that were never merged back.
 
-[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.2...HEAD
+[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/niklas-ekholm/nui/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/niklas-ekholm/nui/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/niklas-ekholm/nui/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/niklas-ekholm/nui/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/niklas-ekholm/nui/releases/tag/v0.2.0

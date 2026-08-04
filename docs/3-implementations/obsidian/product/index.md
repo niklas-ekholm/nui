@@ -9,7 +9,7 @@ Vault-specific `.base` embed recipes — paths, filters, and view names. Generic
 - [[month-calendar|Month Calendar]] — Cross-habit month calendar from the shared Month.base, scoped by view name.
 - [[project-tasks|Project Tasks]] — Open tasks collected from GFM checkboxes in the embedding folder.
 - [[project-timeline|Project Timeline]] — Timeline of dated project notes in the embedding folder.
-- [[today-daily-note|Today Daily Note]] — A single folder-style chip linking to today's daily note.
+- [[today-daily-note|Daily Note Link]] — Folder-style chips for today / yesterday / tomorrow via `Daily.base`.
 - [[weekly-habits|Weekly Habits]] — Three-week habit board from the shared Tracker.base, one row per habit folder.
 
 ## Purpose
