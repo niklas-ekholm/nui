@@ -18,7 +18,7 @@ Figma-style selection on the chart body.
 | Click bar | Select that project |
 | Shift + click bar | Toggle in selection |
 | Click title | Open note |
-| Drag bar | Select if needed; move in time (multi: same day offset, spans preserved). Dragging a superproject bar moves the entire folder subtree, including collapsed nested items. |
+| Drag bar | Select if needed; move in time (multi: same day offset, spans preserved). Dragging a folder hub bar moves the entire folder subtree, including collapsed nested items. |
 | Escape | Clear selection |
 
 Selected bars use **accent** fill.

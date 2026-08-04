@@ -18,6 +18,7 @@ import {
 	shouldHideNavFilePath,
 } from "./folder-index-path";
 import { isFolderIndexCreateSuppressed } from "./folder-index-suppress";
+import { buildFolderIndexContent } from "./folder-index-seed";
 import { DEFAULT_CALENDAR_FOLDER, isInsideHabitsRoot } from "../habits/habit-bundle";
 import type { FolderIndexSettings } from "../settings/nui-settings";
 import {
@@ -29,6 +30,7 @@ export {
 	getFolderIndexPath,
 	isFolderIndexPath,
 } from "./folder-index-path";
+export { buildFolderIndexContent } from "./folder-index-seed";
 
 const FOLDER_TITLE_SELECTOR = ".nav-folder-title";
 const BREADCRUMB_SELECTOR = ".view-header-breadcrumb";
@@ -765,14 +767,6 @@ function isParentFolderRename(oldPath: string, newPath: string): boolean {
 		}
 	}
 	return diffs === 1;
-}
-
-/**
- * Seed content for a freshly created hub note. Empty: inline title shows the
- * note's name, so no H1 is needed.
- */
-export function buildFolderIndexContent(): string {
-	return "";
 }
 
 export function isFolderIndexFile(file: TFile): boolean {

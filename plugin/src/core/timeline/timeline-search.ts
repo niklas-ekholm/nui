@@ -9,11 +9,11 @@ export function filterTimelineItems(
 	if (!needle) return items;
 
 	return items.filter((item) => {
-		const projectLabel = item.projectLabel;
+		const responsibility = item.responsibility;
 		return (
 			item.title.toLowerCase().includes(needle) ||
 			item.id.toLowerCase().includes(needle) ||
-			(projectLabel?.toLowerCase().includes(needle) ?? false)
+			(responsibility?.toLowerCase().includes(needle) ?? false)
 		);
 	});
 }

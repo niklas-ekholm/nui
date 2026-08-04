@@ -8,7 +8,6 @@ export interface TimelineItem {
 	endField?: string;
 	type?: string;
 	project?: string;
-	projectLabel?: string;
 	/** Note frontmatter `color` (#rrggbb), applied to timeline title text. */
 	color?: string;
 	/** Note frontmatter `responsibility`, used by embed pipe filters. */

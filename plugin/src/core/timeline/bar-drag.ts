@@ -9,7 +9,7 @@ import {
 	TimelineRowElements,
 } from "./timeline-row-dom";
 import { trackPointerDrag } from "./pointer-drag";
-import { isSuperprojectItem } from "./superproject";
+import { isHubNoteItem } from "./timeline-folder-grouping";
 
 export type DragEdge = "start" | "end";
 
@@ -44,7 +44,7 @@ function collectDragTargets(
 	primaryId: string,
 ): DragTarget[] {
 	const ids =
-		isSuperprojectItem(primaryId) ||
+		isHubNoteItem(primaryId) ||
 		!(selectedIds.has(primaryId) && selectedIds.size > 1)
 			? [primaryId]
 			: Array.from(selectedIds);

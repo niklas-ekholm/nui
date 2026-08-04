@@ -906,7 +906,7 @@ body.nui-timeline-dragging * {
 }
 
 .nui-timeline-bar-title-has-toggle .nui-timeline-bar-project {
-	margin-left: 0;
+	margin-left: 0.35em;
 }
 
 /* Match file explorer / heading fold chevrons (Obsidian collapse-icon) */

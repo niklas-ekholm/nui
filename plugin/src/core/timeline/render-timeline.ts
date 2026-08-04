@@ -41,7 +41,11 @@ import { findBasesRoot } from "../../bases/bases-view-title";
 import {
 	hasMultipleProjectFolders,
 } from "./project-label";
-import { isSuperprojectItem, superprojectIdForGroupedItem, superprojectHasSubprojects } from "./superproject";
+import {
+	folderHubHasChildren,
+	folderHubIdForGroupedItem,
+	isHubNoteItem,
+} from "./timeline-folder-grouping";
 import { computeTodayLineOffsetPercent } from "./timeline-today-offset";
 
 export interface TimelineLayout {
@@ -160,7 +164,7 @@ export interface RenderTimelineOptions {
 	onTurnIntoProjectFolder?: (ids: string[]) => void;
 	onMoveItemsToProjectFolder?: (
 		itemIds: string[],
-		targetSuperprojectId: string,
+		targetFolderHubId: string,
 	) => void;
 	onMoveOutOfProjectFolder?: (ids: string[]) => void;
 	canMoveOutOfProjectFolder?: (ids: string[]) => boolean;
@@ -168,8 +172,8 @@ export interface RenderTimelineOptions {
 	onSetItemColor?: (ids: string[]) => void;
 	onItemRenamed?: () => void;
 	groupedItems?: TimelineItem[];
-	collapsedSuperprojectIds?: Set<string>;
-	onToggleSuperprojectCollapse?: (superprojectId: string) => void;
+	collapsedFolderHubIds?: Set<string>;
+	onToggleFolderCollapse?: (folderHubId: string) => void;
 	app?: App;
 	tasksByFilePath?: Map<string, TaskItem[]>;
 	onTaskToggle?: () => void;
@@ -499,18 +503,18 @@ function renderTimelineContent(
 	const selectedIds = options.selectedIds ?? new Set<string>();
 	const groupedItems = options.groupedItems ?? items;
 	const itemsById = new Map(groupedItems.map((item) => [item.id, item]));
-	const collapsedSuperprojectIds = options.collapsedSuperprojectIds ?? new Set();
-	const showProjectLabels = hasMultipleProjectFolders(items);
+	const collapsedFolderHubIds = options.collapsedFolderHubIds ?? new Set();
+	const showResponsibilityLabels = hasMultipleProjectFolders(items);
 
 	for (const row of layout.rows) {
 		const rowEl = el("div", "nui-timeline-row");
 		rowEl.dataset.itemId = row.item.id;
 		rowEl.dataset.start = formatIsoDate(row.item.start);
 		rowEl.dataset.end = formatIsoDate(row.item.end);
-		const superprojectId = superprojectIdForGroupedItem(row.item.id, groupedItems);
-		if (superprojectId) {
+		const folderHubId = folderHubIdForGroupedItem(row.item.id, groupedItems);
+		if (folderHubId) {
 			rowEl.classList.add("nui-timeline-row-subproject");
-			rowEl.dataset.superprojectId = superprojectId;
+			rowEl.dataset.folderHubId = folderHubId;
 		}
 		if (selectedIds.has(row.item.id)) {
 			rowEl.classList.add("is-selected");
@@ -535,39 +539,39 @@ function renderTimelineContent(
 		bar.title = `${formatDisplayDate(row.item.start)} → ${formatDisplayDate(row.item.end)}`;
 
 		const titleEl = el("span", "nui-timeline-bar-title");
-		let superprojectToggle: HTMLDivElement | null = null;
-		if (isSuperprojectItem(row.item.id)) {
+		let folderHubToggle: HTMLDivElement | null = null;
+		if (isHubNoteItem(row.item.id)) {
 			titleEl.classList.add("nui-timeline-bar-title-superproject");
 			if (
-				superprojectHasSubprojects(row.item.id, groupedItems) &&
-				options.onToggleSuperprojectCollapse
+				folderHubHasChildren(row.item.id, groupedItems) &&
+				options.onToggleFolderCollapse
 			) {
-				const collapsed = collapsedSuperprojectIds.has(row.item.id);
-				superprojectToggle = document.createElement("div");
-				superprojectToggle.className =
+				const collapsed = collapsedFolderHubIds.has(row.item.id);
+				folderHubToggle = document.createElement("div");
+				folderHubToggle.className =
 					"tree-item-icon collapse-icon nui-timeline-superproject-toggle";
-				superprojectToggle.classList.toggle("is-collapsed", collapsed);
-				setIcon(superprojectToggle, "right-triangle");
-				superprojectToggle.setAttribute("role", "button");
-				superprojectToggle.tabIndex = 0;
-				superprojectToggle.setAttribute(
+				folderHubToggle.classList.toggle("is-collapsed", collapsed);
+				setIcon(folderHubToggle, "right-triangle");
+				folderHubToggle.setAttribute("role", "button");
+				folderHubToggle.tabIndex = 0;
+				folderHubToggle.setAttribute(
 					"aria-label",
-					collapsed ? "Expand subprojects" : "Collapse subprojects",
+					collapsed ? "Expand folder contents" : "Collapse folder contents",
 				);
-				superprojectToggle.title = collapsed
-					? "Expand subprojects"
-					: "Collapse subprojects";
+				folderHubToggle.title = collapsed
+					? "Expand folder contents"
+					: "Collapse folder contents";
 				const toggleCollapse = (event: Event) => {
 					event.preventDefault();
 					event.stopPropagation();
-					options.onToggleSuperprojectCollapse?.(row.item.id);
+					options.onToggleFolderCollapse?.(row.item.id);
 				};
-				superprojectToggle.addEventListener("pointerdown", (event) => {
+				folderHubToggle.addEventListener("pointerdown", (event) => {
 					event.preventDefault();
 					event.stopPropagation();
 				});
-				superprojectToggle.addEventListener("click", toggleCollapse);
-				superprojectToggle.addEventListener("keydown", (event) => {
+				folderHubToggle.addEventListener("click", toggleCollapse);
+				folderHubToggle.addEventListener("keydown", (event) => {
 					if (event.key !== "Enter" && event.key !== " ") return;
 					toggleCollapse(event);
 				});
@@ -584,8 +588,8 @@ function renderTimelineContent(
 			titleTextEl.style.setProperty("--nui-event-color", row.item.color);
 			bar.style.setProperty("--nui-event-color", row.item.color);
 		}
-		if (superprojectToggle) {
-			titleEl.appendChild(superprojectToggle);
+		if (folderHubToggle) {
+			titleEl.appendChild(folderHubToggle);
 		}
 		titleEl.appendChild(titleTextEl);
 		if (options.app) {
@@ -599,13 +603,13 @@ function renderTimelineContent(
 				);
 			}
 		}
-		if (showProjectLabels && row.item.projectLabel) {
-			const projectEl = el(
+		if (showResponsibilityLabels && row.item.responsibility) {
+			const responsibilityEl = el(
 				"span",
 				"nui-timeline-bar-project",
-				row.item.projectLabel,
+				row.item.responsibility,
 			);
-			titleEl.appendChild(projectEl);
+			titleEl.appendChild(responsibilityEl);
 		}
 		titleEl.title = row.item.id;
 		const lineEl = el("span", "nui-timeline-bar-line");
@@ -648,7 +652,7 @@ function renderTimelineContent(
 		if (options.onItemClick) {
 			titleEl.classList.add("nui-timeline-bar-title-clickable");
 		}
-		if (options.onMoveItemsToProjectFolder && !isSuperprojectItem(row.item.id)) {
+		if (options.onMoveItemsToProjectFolder) {
 			titleEl.classList.add("nui-timeline-bar-title-draggable");
 		}
 

@@ -13,6 +13,27 @@ function folderIndexPath(folderPath: string): string {
 	return folderPath ? getFolderIndexPathFromFolderPath(folderPath) : "";
 }
 
+function readResponsibilityFromIndexPath(
+	app: App,
+	indexPath: string,
+): string | undefined {
+	if (!indexPath) return undefined;
+
+	const file = app.vault.getAbstractFileByPath(indexPath);
+	if (!(file instanceof TFile)) return undefined;
+
+	const raw = app.metadataCache.getFileCache(file)?.frontmatter?.responsibility;
+	if (typeof raw === "string") {
+		const trimmed = raw.trim();
+		return trimmed || undefined;
+	}
+	if (typeof raw === "number") {
+		return String(raw);
+	}
+
+	return undefined;
+}
+
 function readProjectLabelFromIndexPath(
 	app: App,
 	indexPath: string,
@@ -55,6 +76,34 @@ export function resolveProjectRootFolderFromPath(
 	return undefined;
 }
 
+export function resolveResponsibilityFromIndexNotes(
+	app: App,
+	itemPath: string,
+): string | undefined {
+	let folderPath = parentFolderPathFromItemPath(itemPath);
+
+	while (folderPath) {
+		const responsibility = readResponsibilityFromIndexPath(
+			app,
+			folderIndexPath(folderPath),
+		);
+		if (responsibility) return responsibility;
+
+		const slash = folderPath.lastIndexOf("/");
+		if (slash < 0) break;
+		folderPath = folderPath.slice(0, slash);
+	}
+
+	return undefined;
+}
+
+export function resolveResponsibilityForItem(
+	app: App,
+	item: TimelineItem,
+): string | undefined {
+	return item.responsibility ?? resolveResponsibilityFromIndexNotes(app, item.id);
+}
+
 export function resolveProjectLabelFromIndexNotes(
 	app: App,
 	itemPath: string,
@@ -72,6 +121,7 @@ export function resolveProjectLabelForItem(
 		resolveProjectLabelFromIndexNotes(app, item.id) ?? item.project ?? undefined
 	);
 }
+
 
 export function hasMultipleProjectFolders(items: TimelineItem[]): boolean {
 	const folders = new Set<string>();

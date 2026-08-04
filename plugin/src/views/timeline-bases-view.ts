@@ -37,15 +37,15 @@ import {
 import { scrollTimelineRowToCenter } from "../core/timeline/timeline-scroll-to-row";
 import { filterTimelineItems } from "../core/timeline/timeline-search";
 import { filterTimelineItemsByResponsibility } from "../core/timeline/timeline-responsibility-filter";
-import { resolveProjectLabelFromIndexNotes } from "../core/timeline/project-label";
 import { resolveInheritedEventColor } from "../core/timeline/event-color";
+import { resolveResponsibilityForItem } from "../core/timeline/project-label";
 import {
-	datesExceedSuperproject,
-	filterCollapsedSubprojects,
-	groupTimelineItemsBySuperproject,
-	isSuperprojectItem,
-	superprojectPathForItem,
-} from "../core/timeline/superproject";
+	ancestorFolderHubsOnTimeline,
+	datesExceedHubNote,
+	filterCollapsedFolderGroups,
+	groupTimelineItemsByFolder,
+	isHubNoteItem,
+} from "../core/timeline/timeline-folder-grouping";
 import {
 	createNuiBasesContainer,
 	applyTimelineBasesChrome,
@@ -80,7 +80,7 @@ export class TimelineBasesView extends BasesView {
 	private containerEl: HTMLElement;
 	private rangePreview?: TimelineRange;
 	private selectedItemIds = new Set<string>();
-	private collapsedSuperprojectIds = new Set<string>();
+	private collapsedFolderHubIds = new Set<string>();
 	private searchQuery = "";
 	private trackedPaths = new Set<string>();
 	private updateGeneration = 0;
@@ -173,8 +173,8 @@ export class TimelineBasesView extends BasesView {
 			viewName: this.config.name,
 		});
 
-		const allItems = this.withProjectLabels(
-			groupTimelineItemsBySuperproject(
+		const allItems = this.withTimelineItemDisplay(
+			groupTimelineItemsByFolder(
 				entriesToTimelineItems(this.data.data, this.config, this.app),
 			),
 		);
@@ -190,9 +190,9 @@ export class TimelineBasesView extends BasesView {
 			responsibilityItems,
 			this.searchQuery,
 		);
-		const items = filterCollapsedSubprojects(
+		const items = filterCollapsedFolderGroups(
 			searchedItems,
-			this.collapsedSuperprojectIds,
+			this.collapsedFolderHubIds,
 		);
 		const editable = this.isEditable();
 		const rangeOverride = this.resolveRangeOverride();
@@ -273,8 +273,8 @@ export class TimelineBasesView extends BasesView {
 			onTurnIntoProjectFolder: (ids) => {
 				void this.turnIntoProjectFolderItems(ids);
 			},
-			onMoveItemsToProjectFolder: (itemIds, targetSuperprojectId) => {
-				void this.moveItemsToProjectFolder(itemIds, targetSuperprojectId);
+			onMoveItemsToProjectFolder: (itemIds, targetFolderHubId) => {
+				void this.moveItemsToProjectFolder(itemIds, targetFolderHubId);
 			},
 			onMoveOutOfProjectFolder: (ids) => {
 				void this.moveItemsOutOfProjectFolder(ids);
@@ -292,12 +292,12 @@ export class TimelineBasesView extends BasesView {
 			onItemRenamed: () => {
 				this.onDataUpdated();
 			},			groupedItems: searchedItems,
-			collapsedSuperprojectIds: this.collapsedSuperprojectIds,
-			onToggleSuperprojectCollapse: (superprojectId) => {
-				if (this.collapsedSuperprojectIds.has(superprojectId)) {
-					this.collapsedSuperprojectIds.delete(superprojectId);
+			collapsedFolderHubIds: this.collapsedFolderHubIds,
+			onToggleFolderCollapse: (folderHubId) => {
+				if (this.collapsedFolderHubIds.has(folderHubId)) {
+					this.collapsedFolderHubIds.delete(folderHubId);
 				} else {
-					this.collapsedSuperprojectIds.add(superprojectId);
+					this.collapsedFolderHubIds.add(folderHubId);
 				}
 				this.onDataUpdated();
 			},
@@ -368,12 +368,10 @@ export class TimelineBasesView extends BasesView {
 		return parseTimelineLayoutMode(this.config.get("layout"));
 	}
 
-	private withProjectLabels(items: TimelineItem[]): TimelineItem[] {
+	private withTimelineItemDisplay(items: TimelineItem[]): TimelineItem[] {
 		return items.map((item) => ({
 			...item,
-			projectLabel:
-				resolveProjectLabelFromIndexNotes(this.app, item.id) ??
-				item.project,
+			responsibility: resolveResponsibilityForItem(this.app, item),
 			color: resolveInheritedEventColor(this.app, item.id, item.color),
 		}));
 	}
@@ -400,6 +398,14 @@ export class TimelineBasesView extends BasesView {
 		return startType === "note" && endType === "note";
 	}
 
+	private timelineItemsById(): Map<string, TimelineItem> {
+		return new Map(
+			entriesToTimelineItems(this.data.data, this.config, this.app).map(
+				(entry) => [entry.id, entry],
+			),
+		);
+	}
+
 	private async updateDates(
 		item: TimelineItem,
 		start: Date,
@@ -407,46 +413,56 @@ export class TimelineBasesView extends BasesView {
 	): Promise<void> {
 		await this.persistItemDates(item, start, end);
 
-		if (isSuperprojectItem(item.id)) return;
+		if (isHubNoteItem(item.id)) return;
 
-		const superprojectPath = superprojectPathForItem(item.id);
-		if (!superprojectPath) return;
-
-		const superFile = this.app.vault.getAbstractFileByPath(superprojectPath);
-		if (!(superFile instanceof TFile)) return;
+		const ancestorHubIds = ancestorFolderHubsOnTimeline(
+			item.id,
+			this.timelineItemsById(),
+		);
+		if (ancestorHubIds.length === 0) return;
 
 		const startKey = item.startField;
 		const endKey = item.endField;
 		if (!startKey || !endKey) return;
 
-		const frontmatter =
-			this.app.metadataCache.getFileCache(superFile)?.frontmatter ?? {};
-		const superStart = parseIsoDate(frontmatter[startKey]);
-		if (!superStart) return;
+		let childStart = start;
+		let childEnd = end;
 
-		const superEnd =
-			parseIsoDate(frontmatter[endKey] ?? frontmatter[startKey]) ??
-			superStart;
-		const safeSuperEnd =
-			superEnd.getTime() < superStart.getTime() ? superStart : superEnd;
+		for (const hubPath of ancestorHubIds) {
+			const hubFile = this.app.vault.getAbstractFileByPath(hubPath);
+			if (!(hubFile instanceof TFile)) continue;
 
-		const expanded = datesExceedSuperproject(
-			start,
-			end,
-			superStart,
-			safeSuperEnd,
-		);
-		if (!expanded) return;
+			const frontmatter =
+				this.app.metadataCache.getFileCache(hubFile)?.frontmatter ?? {};
+			const hubStart = parseIsoDate(frontmatter[startKey]);
+			if (!hubStart) continue;
 
-		const superItem: TimelineItem = {
-			id: superprojectPath,
-			title: superFile.basename,
-			start: superStart,
-			end: safeSuperEnd,
-			startField: startKey,
-			endField: endKey,
-		};
-		await this.persistItemDates(superItem, expanded.start, expanded.end);
+			const hubEnd =
+				parseIsoDate(frontmatter[endKey] ?? frontmatter[startKey]) ??
+				hubStart;
+			const safeHubEnd =
+				hubEnd.getTime() < hubStart.getTime() ? hubStart : hubEnd;
+
+			const expanded = datesExceedHubNote(
+				childStart,
+				childEnd,
+				hubStart,
+				safeHubEnd,
+			);
+			if (!expanded) continue;
+
+			const hubItem: TimelineItem = {
+				id: hubPath,
+				title: hubFile.basename,
+				start: hubStart,
+				end: safeHubEnd,
+				startField: startKey,
+				endField: endKey,
+			};
+			await this.persistItemDates(hubItem, expanded.start, expanded.end);
+			childStart = expanded.start;
+			childEnd = expanded.end;
+		}
 	}
 
 	private async updateDatesBatch(
@@ -725,9 +741,9 @@ export class TimelineBasesView extends BasesView {
 
 	private async moveItemsToProjectFolder(
 		itemIds: string[],
-		targetSuperprojectId: string,
+		targetFolderHubId: string,
 	): Promise<void> {
-		const targetFile = this.app.vault.getAbstractFileByPath(targetSuperprojectId);
+		const targetFile = this.app.vault.getAbstractFileByPath(targetFolderHubId);
 		if (!(targetFile instanceof TFile)) return;
 
 		const files = this.resolveFiles(itemIds);

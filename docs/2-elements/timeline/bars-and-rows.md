@@ -16,19 +16,19 @@ Parent: [[2-elements/timeline/index|Timeline]]
 
 ## Row size
 
-**XS** through **XL** adjust row gap and bar title size/weight via layout tokens. The superproject [[collapse-chevron]] does not scale with row size.
+**XS** through **XL** adjust row gap and bar title size/weight via layout tokens. The folder hub [[collapse-chevron]] does not scale with row size.
 
-## Superprojects
+## Project folders
 
-A superproject row with subprojects shows a [[collapse-chevron]] left of the title. Chevron toggles subproject visibility; title click opens the note.
+A folder whose hub note has dates appears as a project folder row. When that folder contains other dated notes (or nested project folders), the row shows a [[collapse-chevron]] left of the title. Chevron toggles child row visibility; title click opens the hub note.
 
 ## Editing
 
 When start and end are writable note properties:
 
 - Drag bar — move in time (preserves span).
-- Drag superproject bar — moves the entire folder subtree in time, including collapsed and nested items.
-- Drag handles — change start or end; multi-selection moves the same edge on all selected bars. Superproject edge drag affects only the folder bar, not its children.
+- Drag a folder hub bar — moves the entire folder subtree in time, including collapsed and nested items.
+- Drag handles — change start or end; multi-selection moves the same edge on all selected bars. Folder hub edge drag affects only the hub note bar, not its children.
 
 ## Omission
 

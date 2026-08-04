@@ -1,10 +1,10 @@
 
 import { canMoveIntoProjectFolder } from "../mutate/move-notes-project-folder";
-import { isSuperprojectItem } from "./superproject";
+import { isHubNoteItem } from "./timeline-folder-grouping";
 
 const DROP_TARGET_CLASS = "nui-timeline-drop-target";
 
-export function superprojectDropTargetFromPoint(
+export function folderHubDropTargetFromPoint(
 	x: number,
 	y: number,
 ): string | null {
@@ -15,7 +15,7 @@ export function superprojectDropTargetFromPoint(
 	if (!row) return null;
 
 	const id = row.dataset.itemId;
-	if (!id || !isSuperprojectItem(id)) return null;
+	if (!id || !isHubNoteItem(id)) return null;
 
 	return id;
 }
@@ -37,10 +37,10 @@ export function resolveValidDropTarget(
 
 export function filterMovableIntoProjectFolder(
 	itemIds: string[],
-	targetSuperprojectId: string,
+	targetFolderHubId: string,
 ): string[] {
 	return itemIds.filter((id) =>
-		canMoveIntoProjectFolder(id, targetSuperprojectId),
+		canMoveIntoProjectFolder(id, targetFolderHubId),
 	);
 }
 

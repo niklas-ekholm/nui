@@ -20,18 +20,18 @@ import { trackPointerDrag } from "./pointer-drag";
 import { trackTimelineDrops } from "./post-drop-visibility";
 import { showTimelineItemMenu } from "./timeline-item-menu";
 import {
-	collapseSelectionWithoutSubprojects,
+	collapseSelectionWithoutFolderChildren,
 	expandMoveIdsWithSubtree,
-	expandSelectionWithSubprojects,
-	isSuperprojectItem,
-} from "./superproject";
+	expandSelectionWithFolderChildren,
+	isHubNoteItem,
+} from "./timeline-folder-grouping";
 import {
 	clearDropTargets,
 	filterMovableIntoProjectFolder,
+	folderHubDropTargetFromPoint,
 	resolveTitleDropIds,
 	resolveValidDropTarget,
 	setDropTarget,
-	superprojectDropTargetFromPoint,
 } from "./timeline-title-drop";
 
 const DRAG_THRESHOLD_PX = 4;
@@ -54,7 +54,7 @@ export interface TimelineSelectionOptions {
 	onTurnIntoProjectFolder?: (ids: string[]) => void;
 	onMoveItemsToProjectFolder?: (
 		itemIds: string[],
-		targetSuperprojectId: string,
+		targetFolderHubId: string,
 	) => void;
 	onMoveOutOfProjectFolder?: (ids: string[]) => void;
 	canMoveOutOfProjectFolder?: (ids: string[]) => boolean;
@@ -295,7 +295,7 @@ export function attachTimelineSelection(options: TimelineSelectionOptions): void
 		let mode: "marquee" | "move" | "bar" | "title" | "title-drop" = "marquee";
 		let titleDropIds: Set<string> | null = null;
 		if (titleClick && titleId) {
-			if (onMoveItemsToProjectFolder && !isSuperprojectItem(titleId)) {
+			if (onMoveItemsToProjectFolder) {
 				mode = "title-drop";
 				titleDropIds = resolveTitleDropIds(titleId, selectedIds);
 			} else {
@@ -433,7 +433,7 @@ export function attachTimelineSelection(options: TimelineSelectionOptions): void
 				}
 
 				if (mode === "title-drop" && titleDropIds) {
-					const candidate = superprojectDropTargetFromPoint(
+					const candidate = folderHubDropTargetFromPoint(
 						moveEvent.clientX,
 						moveEvent.clientY,
 					);
@@ -586,8 +586,8 @@ export function attachTimelineSelection(options: TimelineSelectionOptions): void
 					if (shift) {
 						if (next.has(barId)) {
 							next.delete(barId);
-							if (isSuperprojectItem(barId)) {
-								collapseSelectionWithoutSubprojects(
+							if (isHubNoteItem(barId)) {
+								collapseSelectionWithoutFolderChildren(
 									next,
 									itemsById,
 									barId,
@@ -603,7 +603,7 @@ export function attachTimelineSelection(options: TimelineSelectionOptions): void
 					commitSelection(
 						root,
 						selectedIds,
-						expandSelectionWithSubprojects(next, itemsById),
+						expandSelectionWithFolderChildren(next, itemsById),
 						onSelectionChange,
 					);
 					return;
@@ -671,7 +671,7 @@ export function attachTimelineSelection(options: TimelineSelectionOptions): void
 
 			const ids = Array.from(targetIds);
 			const canTurnIntoProjectFolder =
-				ids.length === 1 && !isSuperprojectItem(ids[0]);
+				ids.length === 1 && !isHubNoteItem(ids[0]);
 			const showMoveOutOfProjectFolder =
 				onMoveOutOfProjectFolder &&
 				canMoveOutOfProjectFolder?.(ids) === true;
