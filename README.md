@@ -1,76 +1,41 @@
 # NUI
 
-Niklas User Interface — an Obsidian plugin, a theme, and an example vault that
-demonstrates both. The plugin adds fourteen views to
-[Bases](https://help.obsidian.md/bases): timelines, habit trackers, card grids,
-file lists, and a score chart. The theme is the flat, muted appearance layer
-those views are drawn against. Each works without the other.
+Niklas User Interface — an Obsidian plugin, a theme, and a vault example that
+demonstrates both.
 
-> **Work in progress.** NUI is published so it can be used, not because it is
-> finished. The version is below 1.0.0 and minor releases will break things.
-> The example vault encodes highly opinionated Obsidian settings — a
-> folder-index navigation model, a habits-as-folders convention, and specific
-> frontmatter date properties. Read [INSTALL.md](INSTALL.md) before pointing
-> any of this at a vault you care about.
+The plugin adds fourteen views to [Bases](https://help.obsidian.md/bases): timelines, habit trackers, card grids,
+file lists, and a score chart.
+
+The theme is the flat, muted appearance layer those views are drawn against. Each works without the other.
+
+> **Work in progress.** NUI is published so it can be tested. Minor releases will break things.
+> The example vault encodes highly opinionated Obsidian settings — a folder-index navigation model, a habits-as-folders convention, and specific frontmatter date properties. Read [INSTALL.md](INSTALL.md) before pointing any of this at a vault you care about.
 
 Requires Obsidian 1.10 or later, which is where the Bases view API became
 public.
 
-## Install
+## Update
 
-If you already have a vault, this installs the latest release into it. Run it
-from inside the vault — with no path, it installs into the current directory:
+To update an existing vault, run this script in terminal inside the vault folder. It installs into the current directory:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh \
   | bash -s --
 ```
 
-Pass a path to target a different vault instead: `bash -s -- /path/to/vault`.
-Add `--version v0.2.4` to pin a specific release instead of the latest.
+## Install example
 
-Want to see NUI working first? This downloads the demo vault — plugin, theme,
-and ~40 notes of content — into the current directory (or a directory you
-pass) as `nui-vault-<version>/`:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote-vault.sh \
-  | bash -s --
-```
-
-Otherwise, download the latest [release](https://github.com/niklas-ekholm/nui/releases)
-by hand. Three zips, depending on what you already have:
+You can also just download the latest [release](https://github.com/niklas-ekholm/nui/releases)
+by hand. There are three different zips for three different purposes:
 
 | Zip | Use it when |
 | --- | --- |
-| `nui-v0.2.4.zip` | You want to see NUI working. A vault with the plugin and theme already installed and ~40 notes of demo content — unzip it and open the folder as a vault. |
-| `nui-plugin-0.2.4.zip` | You have a vault and want the Bases views. |
-| `nui-theme-0.2.4.zip` | You have a vault and want the appearance only. |
+| `nui-v0.2.4.zip` | A vault with the plugin and theme already installed and ~40 notes of demo content — unzip it and open the folder as a vault. |
+| `nui-plugin-0.2.4.zip` | Only the plugin for managing the custom views |
+| `nui-theme-0.2.4.zip` | Only the theme with custom typography and very minimalistic UI |
 
-Every zip contains the same `install.sh` and an `INSTALL.md` describing that
-zip's payload. To install into an existing vault:
-
-```bash
-./install.sh /path/to/vault
-```
-
-The installer writes only the files it ships and never touches your vault's
-content, your plugin settings (`data.json`), your appearance settings, or your
-workspace layout. `INSTALL.md` also gives the manual copy-the-files route.
-
-## Bases views
-
-Add any of these from a base's view picker. Each reads its data from the base's
-own query, so existing filters and sorts keep working. Dates come from whichever
-property the view is pointed at — `note.date` by default.
-
-Timeline · List: Tasks · Year Tracker · Month Tracker · Week Tracker: 3 ·
-Score Chart · Card: S · Card: L · List: Files · List: Files by Date ·
-List: Folders · Picture Gallery · List: Navigation · List: Daily Note Link
-
-[plugin/README.md](plugin/README.md) documents what each view shows, which
-properties it needs, and the folder-index and editor features. Everything that
-overrides built-in Obsidian behaviour defaults to off, behind one settings tab.
+Every zip contains the same script `install.sh` and an `INSTALL.md` describing that
+zip's payload.
 
 ## Commands and hotkeys
 
