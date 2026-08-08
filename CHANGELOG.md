@@ -9,6 +9,24 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 
 ## [Unreleased]
 
+## [0.2.6] — 2026-08-08
+
+### Added
+
+- **Plain Live Preview callouts**: callouts and blockquotes edit as source with aside icons; callout icons open a type picker.
+- **Color picker history** for recently used text colors.
+- **Cursor extension** scaffold (`cursor-extension/`) with NUI preview docs.
+
+### Changed
+
+- LP aside icons render in an overlay layer so text indent stays independent of icon size and placement.
+- Theme and plugin CSS variables for aside icon size, quote mark size, text indent, and vertical offsets.
+
+### Fixed
+
+- Live Preview blockquote top spacing (#15).
+- Selection toolbar theming in dark mode.
+
 ## [0.2.5] — 2026-08-04
 
 ### Added
@@ -125,7 +143,8 @@ repository and start on a single version number, clearing the theme's earlier
 - The release-branch mirror workflow, which duplicated plugin and theme sources
   onto branches that were never merged back.
 
-[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.5...HEAD
+[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.6...HEAD
+[0.2.6]: https://github.com/niklas-ekholm/nui/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/niklas-ekholm/nui/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/niklas-ekholm/nui/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/niklas-ekholm/nui/compare/v0.2.2...v0.2.3

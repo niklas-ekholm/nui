@@ -29,9 +29,9 @@ by hand. There are three different zips for three different purposes:
 
 | Zip | Use it when |
 | --- | --- |
-| `nui-v0.2.5.zip` | A vault with the plugin and theme already installed and ~40 notes of demo content — unzip it and open the folder as a vault. |
-| `nui-plugin-0.2.5.zip` | Only the plugin for managing the custom views |
-| `nui-theme-0.2.5.zip` | Only the theme with custom typography and very minimalistic UI |
+| `nui-v0.2.6.zip` | A vault with the plugin and theme already installed and ~40 notes of demo content — unzip it and open the folder as a vault. |
+| `nui-plugin-0.2.6.zip` | Only the plugin for managing the custom views |
+| `nui-theme-0.2.6.zip` | Only the theme with custom typography and very minimalistic UI |
 
 Every zip contains the same script `install.sh` and an `INSTALL.md` describing that
 zip's payload.
