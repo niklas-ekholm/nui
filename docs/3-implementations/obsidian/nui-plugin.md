@@ -32,7 +32,9 @@ Maps [[2-elements/index|2 Elements]] and [[1-foundations/index|1 Foundations]] t
 | [[2-elements/list/index|List]]         | List: Files by Date | `nui-list-files-by-date` | `src/views/card-list-bases-views.ts` |
 | [[score-chart|Score Chart]]             | Score Chart     | `nui-score-chart`     | `src/views/score-chart-bases-view.ts`    |
 
-All 14 registered views are listed. Bases view type ids use the `nui-` namespace prefix; the constants live in `src/layouts/types.ts` and the menu names in the `registerBasesView` calls in `src/main.ts`.
+All 14 registered views are listed. Bases view type ids use the `nui-` namespace prefix; the constants live in `src/layouts/types.ts` and the menu names in the `registerBasesView` calls in `src/views/register-bases-views.ts`.
+
+That module is also the seam MiniNUI is cut along: the mini build swaps it for a no-op stub, so MiniNUI has the theme, commands, hotkeys, editor tools, and folder-index navigation, and none of these views.
 
 No `.base` in the vault uses **Score Chart** yet — see [[score-chart]].
 

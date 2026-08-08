@@ -1,5 +1,6 @@
 import { App, Notice, Platform, PluginSettingTab, Setting } from "obsidian";
 import type NuiPlugin from "../main";
+import { IS_MINI } from "../build-flags";
 import { NuiSettings } from "./nui-settings";
 
 /** Changing a gated registration only takes effect on the next plugin load. */
@@ -26,7 +27,8 @@ export class NuiSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		this.displayFolderIndex(containerEl);
-		this.displayHabits(containerEl);
+		// The habits root only configures the tracker views, which MiniNUI omits.
+		if (!IS_MINI) this.displayHabits(containerEl);
 		this.displayEditor(containerEl);
 		this.displayAppearance(containerEl);
 		this.displayWorkspace(containerEl);

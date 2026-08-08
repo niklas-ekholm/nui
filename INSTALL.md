@@ -1,6 +1,6 @@
 # Installing NUI
 
-NUI ships as three zips. This file describes all of them; the copy inside each
+NUI ships as three zips, plus two for MiniNUI. This file describes all of them; the copy inside each
 release zip describes only that zip's payload.
 
 | Zip | Contains |
@@ -8,6 +8,8 @@ release zip describes only that zip's payload.
 | `nui-v<version>.zip` | A complete vault, plugin and theme already installed, with demo content |
 | `nui-plugin-<version>.zip` | `nui/main.js`, `nui/manifest.json`, `nui/styles.css` |
 | `nui-theme-<version>.zip` | `NUI/theme.css`, `NUI/manifest.json` |
+| `mininui-plugin-<version>.zip` | `mininui/main.js`, `mininui/manifest.json`, `mininui/styles.css` |
+| `mininui-theme-<version>.zip` | `MiniNUI/theme.css`, `MiniNUI/manifest.json` |
 
 Verify a download against `SHA256SUMS` from the same release:
 
@@ -38,6 +40,22 @@ read-before-running notes below — they apply to this script too.
 
 Or unzip `nui-v<version>.zip` by hand from the [release page](https://github.com/niklas-ekholm/nui/releases)
 and open the unzipped folder the same way.
+
+## Installing MiniNUI
+
+MiniNUI is the same build with the Bases views compiled out: the theme, the
+commands and their hotkeys, the editor tools, folder-index navigation, and the
+appearance settings all behave exactly as they do in NUI. It is generated from
+this repository on every release — there is no separate source to maintain.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote-mini.sh | bash -s --
+```
+
+The same options as `install-remote.sh` apply. MiniNUI installs to
+`.obsidian/plugins/mininui/` and `.obsidian/themes/MiniNUI/`, keeping its own
+`data.json`, so it never overwrites a NUI install. Enable one plugin or the
+other, not both: they register the same commands.
 
 ## Installing into a vault you already have
 

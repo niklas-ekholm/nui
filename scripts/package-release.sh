@@ -236,6 +236,122 @@ write_vault_install_md "${VAULT_STAGE}/INSTALL.md"
 cp "${ROOT}/LICENSE" "${VAULT_STAGE}/LICENSE"
 (cd "${STAGE}/vault" && zip -qr "${VAULT_ZIP}" .)
 
+# ------------------------------------------------------------------ mini zips
+
+# MiniNUI is NUI without the Bases views: same appearance layer, same commands
+# and hotkeys, same editor and navigation behaviour. It is generated here from
+# plugin/main.mini.js — build it with:
+#
+#   (cd plugin && node esbuild.config.mjs production mini)
+#
+# and never edited by hand. Its plugin id is `mininui` and its theme folder is
+# `MiniNUI`, so a vault can hold both editions without a collision. The mini
+# plugin and theme go into separate zips for the same reason the NUI ones do.
+MINI_PLUGIN_ZIP="${DIST}/mininui-plugin-${VERSION}.zip"
+MINI_THEME_ZIP="${DIST}/mininui-theme-${VERSION}.zip"
+
+# Rewrites a manifest's identity without needing node. Everything else in it —
+# version, minAppVersion, author — is carried across untouched.
+rename_manifest() {
+	sed -e 's/"id"[[:space:]]*:[[:space:]]*"nui"/"id": "mininui"/' \
+		-e 's/"name"[[:space:]]*:[[:space:]]*"NUI"/"name": "MiniNUI"/' \
+		-e 's/"description"[[:space:]]*:[[:space:]]*"[^"]*"/"description": "NUI without the Bases views: the appearance layer, commands, hotkeys, editor tools, and folder-index navigation."/' \
+		"$1" >"$2"
+}
+
+write_mini_plugin_install_md() {
+	cat >"$1" <<EOF
+# MiniNUI plugin ${VERSION}
+
+MiniNUI is NUI with the fourteen Bases views left out. Everything else is the
+same build from the same source: the commands and their hotkeys, the editor
+tools, folder-index navigation, and the appearance settings.
+
+\`\`\`
+mininui/main.js
+mininui/manifest.json
+mininui/styles.css
+\`\`\`
+
+It installs as its own plugin (\`mininui\`), so it neither replaces nor conflicts
+with a NUI install — but enable only one of the two, or every command appears
+twice.
+
+## Install
+
+\`\`\`bash
+./install.sh /path/to/vault
+\`\`\`
+
+Then enable **MiniNUI** under Settings → Community plugins.
+
+## Install by hand
+
+Copy the \`mininui\` folder into \`<vault>/.obsidian/plugins/\`, so that
+\`<vault>/.obsidian/plugins/mininui/main.js\` exists. \`.obsidian\` is hidden in
+Finder; press \`Cmd-Shift-.\` to show it.
+EOF
+	install_md_tail >>"$1"
+}
+
+write_mini_theme_install_md() {
+	cat >"$1" <<EOF
+# MiniNUI theme ${VERSION}
+
+The NUI theme under the name \`MiniNUI\`, so it can sit beside a NUI install:
+
+\`\`\`
+MiniNUI/theme.css
+MiniNUI/manifest.json
+\`\`\`
+
+The theme bundles no typefaces. Blockquotes fall back to a Georgia system
+stack; Settings → Appearance → Font overrides it.
+
+## Install
+
+\`\`\`bash
+./install.sh /path/to/vault
+\`\`\`
+
+Then select **MiniNUI** under Settings → Appearance → Themes.
+
+## Install by hand
+
+Copy the \`MiniNUI\` folder into \`<vault>/.obsidian/themes/\`. The folder name
+must stay \`MiniNUI\` — it has to match the \`name\` in \`manifest.json\`.
+EOF
+	install_md_tail >>"$1"
+}
+
+if [[ -f "${PLUGIN}/main.mini.js" ]]; then
+	echo "Packaging MiniNUI plugin ${VERSION}..."
+	MINI_PLUGIN_STAGE="${STAGE}/mini-plugin"
+	mkdir -p "${MINI_PLUGIN_STAGE}/mininui"
+	cp "${PLUGIN}/main.mini.js" "${MINI_PLUGIN_STAGE}/mininui/main.js"
+	cp "${PLUGIN}/styles.css" "${MINI_PLUGIN_STAGE}/mininui/styles.css"
+	rename_manifest "${PLUGIN}/manifest.json" "${MINI_PLUGIN_STAGE}/mininui/manifest.json"
+	grep -q '"id": "mininui"' "${MINI_PLUGIN_STAGE}/mininui/manifest.json" \
+		|| { echo "error: mini manifest kept the nui id" >&2; exit 1; }
+	cp "${ROOT}/scripts/install.sh" "${MINI_PLUGIN_STAGE}/install.sh"
+	chmod +x "${MINI_PLUGIN_STAGE}/install.sh"
+	write_mini_plugin_install_md "${MINI_PLUGIN_STAGE}/INSTALL.md"
+	(cd "${MINI_PLUGIN_STAGE}" && zip -qr "${MINI_PLUGIN_ZIP}" .)
+
+	echo "Packaging MiniNUI theme ${VERSION}..."
+	MINI_THEME_STAGE="${STAGE}/mini-theme"
+	mkdir -p "${MINI_THEME_STAGE}/MiniNUI"
+	cp "${THEME}/theme.css" "${MINI_THEME_STAGE}/MiniNUI/theme.css"
+	rename_manifest "${THEME}/manifest.json" "${MINI_THEME_STAGE}/MiniNUI/manifest.json"
+	cp "${ROOT}/scripts/install.sh" "${MINI_THEME_STAGE}/install.sh"
+	chmod +x "${MINI_THEME_STAGE}/install.sh"
+	write_mini_theme_install_md "${MINI_THEME_STAGE}/INSTALL.md"
+	(cd "${MINI_THEME_STAGE}" && zip -qr "${MINI_THEME_ZIP}" .)
+else
+	echo "warning: ${PLUGIN}/main.mini.js is missing — skipping the MiniNUI zips." >&2
+	echo "         (cd plugin && node esbuild.config.mjs production mini)" >&2
+fi
+
 # ----------------------------------------------------------------- checksums
 
 rm -rf "${STAGE}"

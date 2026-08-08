@@ -59,27 +59,62 @@ done
 # The three shapes a payload can arrive in. The full-vault zip carries its
 # files under .obsidian/, which is what lets that zip both open as a new vault
 # and serve as an updater for an existing one.
+#
+# A MiniNUI payload is the same shapes under different names — plugin id
+# `mininui`, theme folder `MiniNUI` — so that both can sit in one vault. The
+# folder names found here are the ones written into the vault; nothing else in
+# this script knows which edition it is installing.
 PLUGIN_SRC=""
 THEME_SRC=""
+PLUGIN_DIR_NAME="nui"
+THEME_DIR_NAME="NUI"
+EDITION="NUI"
 
-if [[ -f "${SCRIPT_DIR}/nui/main.js" ]]; then
-	PLUGIN_SRC="${SCRIPT_DIR}/nui"
-elif [[ -f "${SCRIPT_DIR}/.obsidian/plugins/nui/main.js" ]]; then
-	PLUGIN_SRC="${SCRIPT_DIR}/.obsidian/plugins/nui"
-elif [[ -f "${SCRIPT_DIR}/main.js" && -f "${SCRIPT_DIR}/manifest.json" ]]; then
+for name in nui mininui; do
+	if [[ -f "${SCRIPT_DIR}/${name}/main.js" ]]; then
+		PLUGIN_SRC="${SCRIPT_DIR}/${name}"
+	elif [[ -f "${SCRIPT_DIR}/.obsidian/plugins/${name}/main.js" ]]; then
+		PLUGIN_SRC="${SCRIPT_DIR}/.obsidian/plugins/${name}"
+	else
+		continue
+	fi
+	PLUGIN_DIR_NAME="${name}"
+	break
+done
+
+if [[ -z "${PLUGIN_SRC}" && -f "${SCRIPT_DIR}/main.js" && -f "${SCRIPT_DIR}/manifest.json" ]]; then
 	PLUGIN_SRC="${SCRIPT_DIR}"
+	# A bare payload names itself in its manifest.
+	if grep -q '"id"[[:space:]]*:[[:space:]]*"mininui"' "${SCRIPT_DIR}/manifest.json"; then
+		PLUGIN_DIR_NAME="mininui"
+	fi
 fi
 
-if [[ -f "${SCRIPT_DIR}/NUI/theme.css" ]]; then
-	THEME_SRC="${SCRIPT_DIR}/NUI"
-elif [[ -f "${SCRIPT_DIR}/.obsidian/themes/NUI/theme.css" ]]; then
-	THEME_SRC="${SCRIPT_DIR}/.obsidian/themes/NUI"
-elif [[ -f "${SCRIPT_DIR}/theme.css" ]]; then
+for name in NUI MiniNUI; do
+	if [[ -f "${SCRIPT_DIR}/${name}/theme.css" ]]; then
+		THEME_SRC="${SCRIPT_DIR}/${name}"
+	elif [[ -f "${SCRIPT_DIR}/.obsidian/themes/${name}/theme.css" ]]; then
+		THEME_SRC="${SCRIPT_DIR}/.obsidian/themes/${name}"
+	else
+		continue
+	fi
+	THEME_DIR_NAME="${name}"
+	break
+done
+
+if [[ -z "${THEME_SRC}" && -f "${SCRIPT_DIR}/theme.css" ]]; then
 	THEME_SRC="${SCRIPT_DIR}"
+	if grep -q '"name"[[:space:]]*:[[:space:]]*"MiniNUI"' "${SCRIPT_DIR}/manifest.json" 2>/dev/null; then
+		THEME_DIR_NAME="MiniNUI"
+	fi
+fi
+
+if [[ "${PLUGIN_DIR_NAME}" == "mininui" || "${THEME_DIR_NAME}" == "MiniNUI" ]]; then
+	EDITION="MiniNUI"
 fi
 
 if [[ -z "${PLUGIN_SRC}" && -z "${THEME_SRC}" ]]; then
-	die "found no NUI payload beside this script. Run it from an unzipped release."
+	die "found no NUI or MiniNUI payload beside this script. Run it from an unzipped release."
 fi
 
 read_version() {
@@ -159,8 +194,8 @@ install_one() {
 		warn "Obsidian is running. If this vault is open in it, quit first."
 	fi
 
-	local plugin_dir="${vault}/.obsidian/plugins/nui"
-	local theme_dir="${vault}/.obsidian/themes/NUI"
+	local plugin_dir="${vault}/.obsidian/plugins/${PLUGIN_DIR_NAME}"
+	local theme_dir="${vault}/.obsidian/themes/${THEME_DIR_NAME}"
 	local data_json="${plugin_dir}/data.json"
 	local backup=""
 
@@ -216,15 +251,15 @@ install_one() {
 
 	if [[ -n "${THEME_SRC}" ]]; then
 		local appearance="${vault}/.obsidian/appearance.json"
-		if ! grep -q '"cssTheme"[[:space:]]*:[[:space:]]*"NUI"' "${appearance}" 2>/dev/null; then
-			info "  next: Settings -> Appearance -> Themes -> NUI"
+		if ! grep -q "\"cssTheme\"[[:space:]]*:[[:space:]]*\"${THEME_DIR_NAME}\"" "${appearance}" 2>/dev/null; then
+			info "  next: Settings -> Appearance -> Themes -> ${THEME_DIR_NAME}"
 		fi
 	fi
 
 	if [[ -n "${PLUGIN_SRC}" ]]; then
 		local community="${vault}/.obsidian/community-plugins.json"
-		if ! grep -q '"nui"' "${community}" 2>/dev/null; then
-			info "  next: Settings -> Community plugins -> enable NUI"
+		if ! grep -q "\"${PLUGIN_DIR_NAME}\"" "${community}" 2>/dev/null; then
+			info "  next: Settings -> Community plugins -> enable ${EDITION}"
 		fi
 	fi
 }
@@ -249,7 +284,7 @@ elif [[ ${#TARGETS[@]} -eq 0 ]]; then
 	exit 1
 fi
 
-info "NUI installer"
+info "${EDITION} installer"
 [[ -n "${PLUGIN_SRC}" ]] && info "  payload: plugin ${PLUGIN_VERSION}"
 [[ -n "${THEME_SRC}" ]] && info "  payload: theme ${THEME_VERSION}"
 (( DRY_RUN )) && info "  dry run — nothing will be written"

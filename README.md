@@ -22,16 +22,33 @@ To update an existing vault, run this script in terminal inside the vault folder
 curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote.sh | bash -s --
 ```
 
+## MiniNUI
+
+MiniNUI is NUI without the Bases views — the same theme, commands, hotkeys,
+editor tools, and folder-index navigation, and none of the fourteen views. It
+is generated from this same source at release time, so it never lags behind.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/niklas-ekholm/nui/main/scripts/install-remote-mini.sh | bash -s --
+```
+
+It installs as plugin `mininui` and theme `MiniNUI`, so it leaves an existing
+NUI install alone — but enable only one of the two plugins, or every command
+appears twice. Its zips are `mininui-plugin-<version>.zip` and
+`mininui-theme-<version>.zip` on the same release.
+
 ## Install example
 
 You can also just download the latest [release](https://github.com/niklas-ekholm/nui/releases)
-by hand. There are three different zips for three different purposes:
+by hand. There are five zips:
 
 | Zip | Use it when |
 | --- | --- |
 | `nui-v0.2.5.zip` | A vault with the plugin and theme already installed and ~40 notes of demo content — unzip it and open the folder as a vault. |
 | `nui-plugin-0.2.5.zip` | Only the plugin for managing the custom views |
 | `nui-theme-0.2.5.zip` | Only the theme with custom typography and very minimalistic UI |
+| `mininui-plugin-0.2.5.zip` | MiniNUI: the plugin without the Bases views |
+| `mininui-theme-0.2.5.zip` | The same theme, installed as `MiniNUI` |
 
 Every zip contains the same script `install.sh` and an `INSTALL.md` describing that
 zip's payload.

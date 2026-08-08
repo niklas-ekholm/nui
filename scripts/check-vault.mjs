@@ -23,7 +23,7 @@ import { fileURLToPath } from "url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const VAULT = join(ROOT, "vault-example");
 const PLUGIN_SRC = join(ROOT, "plugin", "src");
-const MAIN_TS = join(PLUGIN_SRC, "main.ts");
+const REGISTER_VIEWS_TS = join(PLUGIN_SRC, "views", "register-bases-views.ts");
 
 const SKIP_DIRS = new Set(["node_modules", ".git", ".obsidian"]);
 
@@ -44,17 +44,18 @@ const fail = (message) => problems.push(message);
 /* ---------------------------------------------------------------- view types */
 
 /**
- * The registered set is whatever `main.ts` passes to `registerBasesView`,
+ * The registered set is whatever register-bases-views.ts passes to
+ * `registerBasesView`,
  * resolved through the constants those names are declared with. Reading the
  * call sites rather than a hardcoded list means this check follows the plugin.
  */
 function registeredViewTypes() {
-	const main = readFileSync(MAIN_TS, "utf8");
+	const main = readFileSync(REGISTER_VIEWS_TS, "utf8");
 	const names = [...main.matchAll(/registerBasesView\(\s*([A-Z0-9_]+)\s*,/g)].map(
 		(m) => m[1],
 	);
 	if (names.length === 0) {
-		fail("check-vault: found no registerBasesView calls in plugin/src/main.ts");
+		fail("check-vault: found no registerBasesView calls in plugin/src/views/register-bases-views.ts");
 		return new Map();
 	}
 

@@ -131,6 +131,25 @@ jobs:
         working-directory: plugin
         run: node esbuild.config.mjs production
 
+      - name: Build MiniNUI
+        working-directory: plugin
+        run: node esbuild.config.mjs production mini
+
+      - name: MiniNUI registers no Bases views
+        working-directory: plugin
+        run: |
+          # The mini bundle is only "mini" as long as the view modules stay out
+          # of it. registerBasesView is the Obsidian API every view goes
+          # through, so its absence is the whole guarantee.
+          if grep -qF "registerBasesView(" main.mini.js; then
+            echo "main.mini.js still registers Bases views." >&2
+            exit 1
+          fi
+          grep -qF "registerBasesView(" main.js || {
+            echo "main.js registers no Bases views — the check is meaningless." >&2
+            exit 1
+          }
+
       - name: Package
         run: scripts/package-release.sh
 
