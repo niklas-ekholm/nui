@@ -1,8 +1,29 @@
 import type { Editor } from "obsidian";
-import { DEFAULT_TEXT_COLOR, normalizeHexColor } from "./text-color-utils";
+import { DEFAULT_TEXT_COLOR, normalizeHexColor } from "./text-color-utils.ts";
 
 const SPAN_COLOR_OPEN_RE =
 	/^<span style="color:\s*(#[0-9a-fA-F]{6})">([\s\S]*)<\/span>$/;
+
+const COLOR_SPAN_PAIR_RE =
+	/<span\s+style="color:\s*[^"]*"\s*>([\s\S]*?)<\/span>/gi;
+
+const COLOR_SPAN_OPEN_RE = /<span\s+style="color:\s*[^"]*"\s*>/gi;
+
+const SPAN_CLOSE_RE = /<\/span>/gi;
+
+/** Strip color span tags from text, including nested spans and broken LP markup. */
+export function stripColorMarkup(text: string): string {
+	let result = text;
+	let prev = "";
+	while (result !== prev) {
+		prev = result;
+		result = result.replace(COLOR_SPAN_PAIR_RE, "$1");
+	}
+
+	return result
+		.replace(COLOR_SPAN_OPEN_RE, "")
+		.replace(SPAN_CLOSE_RE, "");
+}
 
 type WrappingColorSpan = {
 	full: string;
@@ -108,13 +129,21 @@ export function applySpanColor(editor: Editor, color: string): void {
 export function clearSpanColor(editor: Editor): void {
 	const wrapping = findWrappingColorSpan(editor);
 	if (wrapping) {
-		editor.replaceRange(wrapping.inner, wrapping.start, wrapping.end);
+		editor.replaceRange(
+			stripColorMarkup(wrapping.inner),
+			wrapping.start,
+			wrapping.end,
+		);
 		return;
 	}
 
 	const selected = editor.getSelection();
-	const match = selected.match(SPAN_COLOR_OPEN_RE);
-	if (match) {
-		editor.replaceSelection(match[2]);
+	if (!selected) {
+		return;
+	}
+
+	const cleaned = stripColorMarkup(selected);
+	if (cleaned !== selected) {
+		editor.replaceSelection(cleaned);
 	}
 }

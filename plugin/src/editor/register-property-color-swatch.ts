@@ -1,5 +1,7 @@
-import { MarkdownView, type Plugin, type TFile } from "obsidian";
+import { MarkdownView, type TFile } from "obsidian";
+import type { ColorPickerHistoryHost } from "../shared/host";
 import { setPropertyColor } from "./note-text-color";
+import { getColorPickerHistory } from "./color-picker-history";
 import { openTextColorPicker } from "./text-color-picker-modal";
 import { normalizeHexColor } from "./text-color-utils";
 
@@ -28,7 +30,7 @@ function readPropertyValue(propertyEl: HTMLElement): string {
 }
 
 function getFileForPropertyEl(
-	plugin: Plugin,
+	plugin: ColorPickerHistoryHost,
 	propertyEl: HTMLElement,
 ): TFile | null {
 	for (const leaf of plugin.app.workspace.getLeavesOfType("markdown")) {
@@ -42,7 +44,7 @@ function getFileForPropertyEl(
 }
 
 function openPickerForProperty(
-	plugin: Plugin,
+	plugin: ColorPickerHistoryHost,
 	propertyEl: HTMLElement,
 	hex: string,
 ): void {
@@ -59,6 +61,7 @@ function openPickerForProperty(
 	openTextColorPicker(plugin.app, {
 		mode: "property",
 		initialColor: hex,
+		history: getColorPickerHistory(plugin),
 		onApply: async (color) => {
 			await setPropertyColor(plugin.app, file, key, color);
 		},
@@ -69,7 +72,7 @@ function openPickerForProperty(
 }
 
 function ensureSwatch(
-	plugin: Plugin,
+	plugin: ColorPickerHistoryHost,
 	propertyEl: HTMLElement,
 	valueEl: HTMLElement,
 	hex: string,
@@ -124,7 +127,7 @@ function removeSwatch(propertyEl: HTMLElement): void {
 	valueEl?.classList.remove(VALUE_CLASS);
 }
 
-function syncPropertySwatch(plugin: Plugin, propertyEl: HTMLElement): void {
+function syncPropertySwatch(plugin: ColorPickerHistoryHost, propertyEl: HTMLElement): void {
 	const key = propertyEl.dataset.propertyKey?.trim();
 	const valueEl = propertyEl.querySelector<HTMLElement>(
 		".metadata-property-value",
@@ -143,7 +146,7 @@ function syncPropertySwatch(plugin: Plugin, propertyEl: HTMLElement): void {
 	ensureSwatch(plugin, propertyEl, valueEl, hex);
 }
 
-function syncAllPropertyColorSwatches(plugin: Plugin): void {
+function syncAllPropertyColorSwatches(plugin: ColorPickerHistoryHost): void {
 	for (const propertyEl of Array.from(
 		document.querySelectorAll<HTMLElement>(".metadata-property"),
 	)) {
@@ -151,7 +154,7 @@ function syncAllPropertyColorSwatches(plugin: Plugin): void {
 	}
 }
 
-export function registerPropertyColorSwatch(plugin: Plugin): void {
+export function registerPropertyColorSwatch(plugin: ColorPickerHistoryHost): void {
 	let syncTimer: number | null = null;
 	let syncing = false;
 

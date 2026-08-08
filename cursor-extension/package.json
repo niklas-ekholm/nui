@@ -1,0 +1,45 @@
+{
+  "name": "nui-cursor",
+  "displayName": "NUI",
+  "description": "Preview-first markdown editing with NUI typography for Cursor",
+  "version": "0.1.0",
+  "publisher": "niklas-ekholm",
+  "private": true,
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "nui.toggleMarkdownPreview",
+        "title": "NUI: Toggle Markdown Preview"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "nui.toggleMarkdownPreview",
+        "key": "ctrl+`",
+        "mac": "cmd+`",
+        "when": "resourceExtname == .md && (editorLangId == markdown || activeCustomEditorId == 'vscode.markdown.preview.editor')"
+      }
+    ],
+    "markdown.markdownItPlugins": true,
+    "markdown.previewStyles": ["./media/nui-preview.css"]
+  },
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "npm run typecheck && node esbuild.config.mjs production",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm test",
+    "test": "node --experimental-strip-types --test src/wikilink/resolve-wikilink.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "0.25.0",
+    "typescript": "5.7.3"
+  }
+}

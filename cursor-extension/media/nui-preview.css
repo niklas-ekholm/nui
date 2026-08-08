@@ -1,0 +1,234 @@
+/*
+ * NUI preview typography for Cursor/VS Code markdown preview.
+ * Values from NUI/theme.css §0, §1b, §1c (reading view only).
+ */
+
+html {
+	font-size: 18px;
+}
+
+body {
+	background: var(--vscode-editor-background);
+	color: var(--vscode-editor-foreground);
+}
+
+.markdown-body {
+	/* Palette — light (default when VS Code theme is light) */
+	--n-surface: #fdfdfd;
+	--nui-content: #000;
+	--nui-chrome: #aaa;
+	--n-border: #aaa;
+	--nui-border-color: var(--n-border);
+
+	/* Typography scale §1b */
+	--nui-body: 1rem;
+	--nui-leading-body: 1.4;
+	--nui-weight-body: 400;
+
+	--nui-code: 0.875rem;
+	--nui-leading-code: 1.2;
+	--nui-weight-code: 500;
+	--nui-tracking-code: -0.01em;
+
+	--nui-h1: 2rem;
+	--nui-leading-h1: 1.1;
+	--nui-weight-h1: 200;
+	--nui-tracking-h1: 0;
+
+	--nui-h2: 1.66rem;
+	--nui-leading-h2: 1.1;
+	--nui-weight-h2: 250;
+	--nui-tracking-h2: 0.01em;
+
+	--nui-h3: 1.33rem;
+	--nui-leading-h3: 1.15;
+	--nui-weight-h3: 300;
+	--nui-tracking-h3: 0.005em;
+
+	--nui-h4: 1rem;
+	--nui-leading-h4: var(--nui-leading-body);
+	--nui-weight-h4: 400;
+	--nui-tracking-h4: 0.05em;
+
+	--nui-h5: 0.66rem;
+	--nui-leading-h5: 1.2;
+	--nui-weight-h5: 550;
+	--nui-tracking-h5: 0.15em;
+
+	--nui-h6: 0.66rem;
+	--nui-leading-h6: 1.2;
+	--nui-weight-h6: 350;
+	--nui-tracking-h6: 0.15em;
+
+	--nui-weight-bold: 600;
+	--n-italic-style: italic;
+
+	--nui-blockquote: var(--nui-h3);
+	--nui-leading-blockquote: var(--nui-leading-h3);
+	--nui-weight-blockquote: var(--nui-weight-h3);
+	--nui-tracking-blockquote: var(--nui-tracking-h3);
+	--nui-blockquote-link-underline-thickness: 0.5px;
+	--nui-blockquote-indent: 0.75rem;
+
+	--n-body-link-color: var(--nui-content);
+	--n-body-link-underline-thickness: 0.06em;
+	--n-body-link-underline-offset: 0.12em;
+
+	--blockquote-border-thickness: 1px;
+	--blockquote-border-color: var(--nui-border-color);
+	--blockquote-background-color: transparent;
+	--blockquote-color: var(--nui-content);
+
+	--p-spacing: 1rem;
+	--heading-spacing: 0;
+
+	color: var(--nui-content);
+	font-size: var(--nui-body);
+	line-height: var(--nui-leading-body);
+	font-weight: var(--nui-weight-body);
+	max-width: 700px;
+	margin-inline: auto;
+	padding-block: 1.5rem;
+}
+
+/* Dark palette when VS Code uses a dark theme */
+.vscode-dark .markdown-body,
+.vscode-high-contrast .markdown-body {
+	--n-surface: #000;
+	--nui-content: #aaa;
+	--nui-chrome: #445;
+	--n-border: #445;
+}
+
+/* Body */
+.markdown-body {
+	font-size: var(--nui-body);
+	line-height: var(--nui-leading-body);
+}
+
+/* Headings — flush vertical rhythm */
+.markdown-body :is(h1, h2, h3, h4, h5, h6) {
+	margin-block-start: var(--heading-spacing);
+	margin-block-end: var(--heading-spacing);
+	font-style: normal;
+}
+
+.markdown-body h1 {
+	font-size: var(--nui-h1);
+	line-height: var(--nui-leading-h1);
+	font-weight: var(--nui-weight-h1);
+	letter-spacing: var(--nui-tracking-h1);
+}
+
+.markdown-body h2 {
+	font-size: var(--nui-h2);
+	line-height: var(--nui-leading-h2);
+	font-weight: var(--nui-weight-h2);
+	letter-spacing: var(--nui-tracking-h2);
+}
+
+.markdown-body h3 {
+	font-size: var(--nui-h3);
+	line-height: var(--nui-leading-h3);
+	font-weight: var(--nui-weight-h3);
+	letter-spacing: var(--nui-tracking-h3);
+}
+
+.markdown-body h4 {
+	font-size: var(--nui-h4);
+	line-height: var(--nui-leading-h4);
+	font-weight: var(--nui-weight-h4);
+	text-transform: uppercase;
+	letter-spacing: var(--nui-tracking-h4);
+}
+
+.markdown-body h5 {
+	font-size: var(--nui-h5);
+	line-height: var(--nui-leading-h5);
+	font-weight: var(--nui-weight-h5);
+	text-transform: uppercase;
+	letter-spacing: var(--nui-tracking-h5);
+}
+
+.markdown-body h6 {
+	font-size: var(--nui-h6);
+	line-height: var(--nui-leading-h6);
+	font-weight: var(--nui-weight-h6);
+	text-transform: uppercase;
+	letter-spacing: var(--nui-tracking-h6);
+}
+
+/* Bold / italic */
+.markdown-body :is(strong, b) {
+	font-weight: var(--nui-weight-bold);
+}
+
+.markdown-body :is(em, i) {
+	font-style: var(--n-italic-style);
+}
+
+/* Links */
+.markdown-body a {
+	color: var(--n-body-link-color);
+	text-decoration: underline;
+	text-decoration-thickness: var(--n-body-link-underline-thickness);
+	text-underline-offset: var(--n-body-link-underline-offset);
+}
+
+.markdown-body a:hover {
+	text-decoration: none;
+}
+
+.markdown-body a.nui-unresolved-wikilink {
+	text-decoration-style: dashed;
+	text-decoration-thickness: 1px;
+}
+
+/* Code */
+.markdown-body :is(code, tt) {
+	font-size: var(--nui-code);
+	line-height: var(--nui-leading-code);
+	font-weight: var(--nui-weight-code);
+	letter-spacing: var(--nui-tracking-code);
+}
+
+.markdown-body pre code {
+	font-size: var(--nui-code);
+	line-height: var(--nui-leading-code);
+	font-weight: var(--nui-weight-code);
+}
+
+/* Blockquote — h3 scale with left rule */
+.markdown-body blockquote {
+	color: var(--blockquote-color);
+	border: none;
+	border-inline-start: var(--blockquote-border-thickness) solid
+		var(--blockquote-border-color);
+	margin-block: var(--p-spacing);
+	margin-inline: 0;
+	padding-block: 0;
+	padding-inline-start: var(--nui-blockquote-indent);
+	padding-inline-end: 0;
+	background: var(--blockquote-background-color);
+}
+
+.markdown-body blockquote :is(p, ul, ol, li) {
+	font-size: var(--nui-blockquote);
+	line-height: var(--nui-leading-blockquote);
+	font-weight: var(--nui-weight-blockquote);
+	letter-spacing: var(--nui-tracking-blockquote);
+	font-style: normal;
+	color: var(--nui-content);
+	margin-block: 0;
+	margin-inline: 0;
+	padding: 0;
+}
+
+.markdown-body blockquote a {
+	text-decoration-thickness: var(--nui-blockquote-link-underline-thickness);
+	text-underline-offset: 0.12rem;
+}
+
+.markdown-body blockquote :is(em, i) {
+	font-style: var(--n-italic-style);
+}

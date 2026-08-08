@@ -1,9 +1,11 @@
 import { App, Modal } from "obsidian";
+import type { ColorPickerHistory } from "./color-picker-history";
 import { DEFAULT_TEXT_COLOR, normalizeHexColor } from "./text-color-utils";
 
 export type TextColorPickerOptions = {
 	mode: "span" | "note" | "property";
 	initialColor?: string;
+	history?: ColorPickerHistory;
 	onApply: (color: string) => void | Promise<void>;
 	onClear: () => void | Promise<void>;
 };
@@ -118,6 +120,7 @@ class TextColorPickerModal extends Modal {
 	private hueEl!: HTMLDivElement;
 	private hueThumb!: HTMLDivElement;
 	private previewEl!: HTMLDivElement;
+	private recentEl: HTMLDivElement | null = null;
 
 	constructor(
 		app: App,
@@ -155,6 +158,8 @@ class TextColorPickerModal extends Modal {
 			this.hsv.h = Math.min(359.999, Math.max(0, (x / rect.width) * 360));
 			this.syncUi({ fromHex: false });
 		});
+
+		this.renderRecentColors(root);
 
 		const row = root.createDiv({ cls: "nui-color-picker-row" });
 		this.previewEl = row.createDiv({ cls: "nui-color-picker-preview" });
@@ -198,8 +203,31 @@ class TextColorPickerModal extends Modal {
 
 	private async apply(): Promise<void> {
 		const color = normalizeHexColor(hsvToHex(this.hsv)) ?? DEFAULT_TEXT_COLOR;
+		await this.options.history?.rememberColor(color);
 		await this.options.onApply(color);
 		this.close();
+	}
+
+	private renderRecentColors(root: HTMLElement): void {
+		const recent = this.options.history?.recentColors ?? [];
+		if (recent.length === 0) {
+			this.recentEl = null;
+			return;
+		}
+
+		this.recentEl = root.createDiv({ cls: "nui-color-picker-recent" });
+		for (const color of recent) {
+			const swatch = this.recentEl.createEl("button", {
+				type: "button",
+				cls: "nui-color-picker-recent-swatch",
+				attr: { "aria-label": color },
+			});
+			swatch.style.backgroundColor = color;
+			swatch.addEventListener("click", () => {
+				this.hsv = hexToHsv(color);
+				this.syncUi({ fromHex: false });
+			});
+		}
 	}
 
 	private async clear(): Promise<void> {

@@ -9,20 +9,26 @@
     "root": "Habits"
   },
   "timeline": {
-    "rowSize": 10,
+    "rowSize": 6,
     "timespan": "3w",
-    "rangeStart": "2026-08-04",
-    "rangeEnd": "2026-08-25"
+    "rangeStart": "2026-08-16",
+    "rangeEnd": "2026-09-05"
   },
   "editor": {
     "multiCursorCommands": true,
     "textColor": true,
+    "recentColors": [
+      "#cd2525",
+      "#000000",
+      "#e8c1c1",
+      "#d98181"
+    ],
     "selectionToolbar": true,
     "tableColumnLayout": true,
     "htmlLivePreview": true,
     "alwaysRenderHtmlInLivePreview": true,
     "collapsibleProperties": true,
-    "collapseProperties": false,
+    "collapseProperties": true,
     "nestedProperties": true,
     "nestedPropertiesDefaultCollapsed": true,
     "embedPipes": true

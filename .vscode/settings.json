@@ -1,0 +1,6 @@
+{
+  "npm.exclude": "**/cursor-extension",
+  "workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+  }
+}

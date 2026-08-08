@@ -1,6 +1,6 @@
 ---
 start: 2026-07-16
-end: 2026-07-27
+end: 2026-07-28
 ---
 
 Pre-1958 section: catalog every book that mentions a hellgate, a prophet, or a Winchester spelled wrong.

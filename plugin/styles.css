@@ -3998,6 +3998,33 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	margin: 0;
 }
 
+.nui-color-picker-recent {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+
+.nui-color-picker-recent-swatch {
+	flex: 0 0 auto;
+	width: 1.25rem;
+	height: 1.25rem;
+	margin: 0;
+	padding: 0;
+	border-radius: 3px;
+	border: 1px solid var(--background-modifier-border);
+	box-shadow: inset 0 0 0 1px rgba(var(--mono-rgb-100), 0.08);
+	cursor: pointer;
+}
+
+.nui-color-picker-recent-swatch:hover {
+	border-color: var(--background-modifier-border-hover);
+}
+
+.nui-color-picker-recent-swatch:focus-visible {
+	outline: 2px solid var(--background-modifier-border-focus);
+	outline-offset: 1px;
+}
+
 /* Collapsed in-document properties.
 
    `.inline-title` and `.metadata-container` are siblings in the content
@@ -4378,14 +4405,15 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	padding-inline: 0;
 }
 
-/* Selection formatting toolbar (desktop Live Preview / Source).
-   CM light theme sets `.cm-tooltip { background: #f5f5f5 }` — beat it. */
-.markdown-source-view.mod-cm6 .cm-tooltip:has(.nui-selection-toolbar),
-.markdown-source-view.mod-cm6 .cm-tooltip.cm-tooltip-above:has(.nui-selection-toolbar),
-.markdown-source-view.mod-cm6 .cm-tooltip.cm-tooltip-below:has(.nui-selection-toolbar) {
+/* Selection formatting toolbar (desktop Live Preview only).
+   CM tooltips are often portaled to `body`, outside `.markdown-source-view`.
+   Strip the wrapper chrome in CSS and in mount() — register-selection-toolbar.ts. */
+body .cm-tooltip:has(.nui-selection-toolbar),
+body .cm-tooltip.cm-tooltip-above:has(.nui-selection-toolbar),
+body .cm-tooltip.cm-tooltip-below:has(.nui-selection-toolbar) {
 	border: none !important;
-	background: #ffffff !important;
-	background-color: #ffffff !important;
+	background: transparent !important;
+	background-color: transparent !important;
 	padding: 0 !important;
 	box-shadow: none !important;
 }
@@ -4396,11 +4424,20 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	align-items: center;
 	gap: 6px;
 	padding: 8px;
-	border: 1px solid #ececec;
+	border: 1px solid transparent;
 	border-radius: var(--radius-s);
-	background: #ffffff !important;
-	background-color: #ffffff !important;
+	background: var(--background-primary) !important;
+	background-color: var(--background-primary) !important;
 	box-shadow: none !important;
+}
+
+/* Light: #ececec tuned for white toolbar surface. Dark: NUI panel divider (#445). */
+body.theme-light .nui-selection-toolbar {
+	border-color: #ececec !important;
+}
+
+body.theme-dark .nui-selection-toolbar {
+	border-color: var(--nui-border-color, #445) !important;
 }
 
 .nui-selection-toolbar-btn {
@@ -4450,4 +4487,320 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	box-sizing: border-box;
 }
 
+/* LP aside — theme variables:
+   --nui-lp-aside-icon-size, --nui-lp-quote-mark-size, --nui-lp-aside-text-indent,
+   --nui-lp-callout-icon-offset-top, --nui-lp-quote-mark-offset-top */
+.markdown-source-view.mod-cm6.is-live-preview {
+	--nui-lp-aside-icon-size: 1.125rem;
+	--nui-lp-quote-mark-size: 8px;
+	--nui-lp-aside-text-indent: 1.475rem;
+	--nui-lp-callout-icon-offset-top: 2px;
+	--nui-lp-quote-mark-offset-top: 5px;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .cm-contentContainer,
+.markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .cm-contentContainer) {
+	position: relative;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .nui-lp-aside-icon-layer {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	overflow: visible;
+	z-index: 10;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
+	.nui-lp-aside-icon-widget {
+	position: absolute;
+	display: inline-flex;
+	align-items: flex-start;
+	margin: 0;
+	padding: 0;
+	line-height: 0;
+	flex-shrink: 0;
+	--callout-color: var(--callout-default);
+	pointer-events: none;
+	user-select: none;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
+	.nui-lp-aside-icon-widget.nui-lp-callout-icon-widget {
+	pointer-events: auto;
+	cursor: pointer;
+	translate: 0 var(--nui-lp-callout-icon-offset-top);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
+	.nui-lp-aside-icon-widget
+	.callout-icon {
+	display: inline-flex;
+	align-items: flex-start;
+	flex: 0 0 auto;
+	line-height: 0;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
+	.nui-lp-aside-icon-widget
+	.callout-icon
+	.svg-icon:not(.nui-lp-quote-mark-icon) {
+	width: var(--nui-lp-aside-icon-size);
+	height: var(--nui-lp-aside-icon-size);
+	color: rgb(var(--callout-color));
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
+	.nui-lp-aside-icon-widget.nui-lp-quote-icon-widget {
+	color: var(--nui-content, var(--text-normal));
+	width: var(--nui-lp-quote-mark-size);
+	translate: 0 var(--nui-lp-quote-mark-offset-top);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
+	.nui-lp-quote-icon-widget
+	.callout-icon
+	.nui-lp-quote-mark-icon {
+	width: var(--nui-lp-quote-mark-size) !important;
+	height: var(--nui-lp-quote-mark-size) !important;
+	max-width: var(--nui-lp-quote-mark-size);
+	max-height: var(--nui-lp-quote-mark-size);
+	display: block;
+	color: var(--nui-content, var(--text-normal)) !important;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--abstract,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--summary,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--tldr {
+	--callout-color: var(--callout-summary);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--info {
+	--callout-color: var(--callout-info);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--todo {
+	--callout-color: var(--callout-todo);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .nui-lp-aside-icon-widget.nui-lp-callout--tip,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--hint {
+	--callout-color: var(--callout-tip);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--important {
+	--callout-color: var(--callout-important);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--success,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--check,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--done {
+	--callout-color: var(--callout-success);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--question,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--help,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--faq {
+	--callout-color: var(--callout-question);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--warning,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--caution,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--attention {
+	--callout-color: var(--callout-warning);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--failure,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--fail,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--missing {
+	--callout-color: var(--callout-fail);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--danger,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--error {
+	--callout-color: var(--callout-error);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--bug {
+	--callout-color: var(--callout-bug);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--example {
+	--callout-color: var(--callout-example);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--quote,
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-widget.nui-lp-callout--cite {
+	--callout-color: var(--callout-quote);
+}
+
+/* LP callout text — type colors on editable source spans. */
+.markdown-source-view.mod-cm6.is-live-preview
+	.cm-line[class*="nui-lp-callout--"]
+	span.cm-quote {
+	color: rgb(var(--nui-lp-callout-text-rgb, var(--callout-default))) !important;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.cm-line:has(.nui-lp-callout-icon-widget[class*="nui-lp-callout--"])
+	span.cm-quote {
+	color: rgb(var(--nui-lp-callout-text-rgb, var(--callout-default))) !important;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--abstract,
+		.cm-line.nui-lp-callout--summary,
+		.cm-line.nui-lp-callout--tldr,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--abstract),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--summary),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--tldr)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-summary);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--note,
+		.cm-line.nui-lp-callout--default,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--note),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--default)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-default);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--info,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--info)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-info);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--todo,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--todo)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-todo);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--important,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--important)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-important);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--tip,
+		.cm-line.nui-lp-callout--hint,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--tip),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--hint)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-tip);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--success,
+		.cm-line.nui-lp-callout--check,
+		.cm-line.nui-lp-callout--done,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--success),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--check),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--done)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-success);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--question,
+		.cm-line.nui-lp-callout--help,
+		.cm-line.nui-lp-callout--faq,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--question),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--help),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--faq)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-question);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--warning,
+		.cm-line.nui-lp-callout--caution,
+		.cm-line.nui-lp-callout--attention,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--warning),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--caution),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--attention)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-warning);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--failure,
+		.cm-line.nui-lp-callout--fail,
+		.cm-line.nui-lp-callout--missing,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--failure),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--fail),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--missing)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-fail);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--danger,
+		.cm-line.nui-lp-callout--error,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--danger),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--error)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-error);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--bug,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--bug)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-bug);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--example,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--example)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-example);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview :is(
+		.cm-line.nui-lp-callout--quote,
+		.cm-line.nui-lp-callout--cite,
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--quote),
+		.cm-line:has(.nui-lp-callout-icon-widget.nui-lp-callout--cite)
+	) {
+	--nui-lp-callout-text-rgb: var(--callout-quote);
+}
 

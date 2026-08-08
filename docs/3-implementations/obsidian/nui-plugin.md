@@ -71,7 +71,7 @@ Markdown pipe table column layout (separator-row shrink/fill ratios, separator d
 
 ### Selection formatting toolbar
 
-Desktop only (`Platform.isDesktopApp`). When text is selected in Live Preview or Source, a floating toolbar appears above the selection with markdown formatting actions (bold, italic, strikethrough, highlight, cycling heading, wikilink, external link, lists, blockquote, inline code, code block) and — when text colour is enabled — a swatch that opens the existing span colour picker. Setting: `editor.selectionToolbar` (default on). Implementation: `src/editor/register-selection-toolbar.ts`.
+Desktop only (`Platform.isDesktopApp`). When text is selected in Live Preview, a floating toolbar appears above the selection with markdown formatting actions (bold, italic, strikethrough, highlight, cycling heading, wikilink, external link, lists, blockquote, inline code, code block) and — when text colour is enabled — a swatch that opens the existing span colour picker. The toolbar is hidden in Source mode. Setting: `editor.selectionToolbar` (default on). Implementation: `src/editor/register-selection-toolbar.ts`.
 
 ## NUI Finance (speculative)
 
