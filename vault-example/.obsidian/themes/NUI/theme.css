@@ -712,17 +712,13 @@ body {
 	display: none !important;
 }
 
-/* LP aside blocks — callouts + blockquotes share layout (icon flush left, body text aligned). */
+/* LP aside blocks — callouts + blockquotes (icon flush left, shared text column). */
 .markdown-source-view.mod-cm6.is-live-preview {
 	--nui-lp-aside-icon-size: 1.125rem;
-	--nui-lp-aside-icon-gap: 0.35em;
-	--nui-lp-aside-icon-offset: calc(
-		var(--nui-lp-aside-icon-size) + var(--nui-lp-aside-icon-gap)
-	);
-	/* Legacy aliases used by plugin styles */
-	--nui-lp-callout-icon-size: var(--nui-lp-aside-icon-size);
-	--nui-lp-callout-icon-gap: var(--nui-lp-aside-icon-gap);
-	--nui-lp-callout-icon-offset: var(--nui-lp-aside-icon-offset);
+	--nui-lp-quote-mark-size: 8px;
+	--nui-lp-aside-text-indent: 1.475rem;
+	--nui-lp-callout-icon-offset-top: 2px;
+	--nui-lp-quote-mark-offset-top: 5px;
 }
 
 .markdown-source-view.mod-cm6.is-live-preview .cm-line.HyperMD-callout,
@@ -882,15 +878,15 @@ body {
 }
 
 .markdown-source-view.mod-cm6.is-live-preview .cm-line.HyperMD-callout,
+.markdown-source-view.mod-cm6.is-live-preview .cm-line.nui-lp-callout-icon,
 .markdown-source-view.mod-cm6.is-live-preview .cm-line.nui-lp-quote-header {
-	/* Padding indents soft wraps; icon pulled back via plugin margin. */
-	padding-inline-start: var(--nui-lp-aside-icon-offset) !important;
+	padding-inline-start: var(--nui-lp-aside-text-indent) !important;
 	text-indent: 0 !important;
 }
 
 .markdown-source-view.mod-cm6.is-live-preview .cm-line.nui-lp-callout-continuation,
 .markdown-source-view.mod-cm6.is-live-preview .cm-line.nui-lp-quote-continuation {
-	padding-inline-start: var(--nui-lp-aside-icon-offset) !important;
+	padding-inline-start: var(--nui-lp-aside-text-indent) !important;
 	text-indent: 0 !important;
 }
 
@@ -908,7 +904,7 @@ body {
 	.cm-line.nui-lp-callout-continuation:has(.cm-formatting-quote),
 .markdown-source-view.mod-cm6.is-live-preview
 	.cm-line.nui-lp-quote-continuation:has(.cm-formatting-quote) {
-	padding-inline-start: var(--nui-lp-aside-icon-offset) !important;
+	padding-inline-start: var(--nui-lp-aside-text-indent) !important;
 	text-indent: 0 !important;
 }
 

@@ -4,12 +4,14 @@ import {
 	EditorView,
 	ViewPlugin,
 	type ViewUpdate,
-	WidgetType,
 } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/state";
-import { applyCalloutTypeChange } from "./callout-lp-apply-type";
-import { createCalloutIconElement, createQuoteIconElement } from "./callout-lp-icons";
-import { showCalloutTypeMenu } from "./callout-lp-type-menu";
+import {
+	ASIDE_ICON_LAYER_CLASS,
+	collectAsideIconSpecs,
+	layoutAsideIconLayer,
+	syncAsideLineIndent,
+} from "./callout-lp-aside-icons";
 import {
 	QUOTE_BODY_LINE_CLASS,
 	QUOTE_HEADER_LINE_CLASS,
@@ -19,70 +21,6 @@ import {
 	isQuoteLine,
 	parseCalloutType,
 } from "./callout-lp-parse";
-
-const ASIDE_ICON_WIDGET_CLASS = "nui-lp-aside-icon-widget";
-
-class CalloutIconWidget extends WidgetType {
-	constructor(
-		readonly type: string,
-		readonly lineFrom: number,
-		readonly view: EditorView,
-	) {
-		super();
-	}
-
-	eq(other: CalloutIconWidget): boolean {
-		return (
-			other.type === this.type &&
-			other.lineFrom === this.lineFrom &&
-			other.view === this.view
-		);
-	}
-
-	toDOM(): HTMLElement {
-		const el = document.createElement("span");
-		el.className = `${ASIDE_ICON_WIDGET_CLASS} nui-lp-callout-icon-widget ${calloutIconLineClass(this.type)}`;
-		el.setAttribute("role", "button");
-		el.setAttribute("aria-label", "Change callout type");
-		el.tabIndex = -1;
-		el.addEventListener("mousedown", (event) => {
-			event.preventDefault();
-			event.stopPropagation();
-		});
-		el.addEventListener("click", (event) => {
-			showCalloutTypeMenu(event, {
-				currentType: this.type,
-				onPick: (newType) => {
-					applyCalloutTypeChange(this.view, this.lineFrom, newType);
-				},
-			});
-		});
-		el.appendChild(createCalloutIconElement(this.type));
-		return el;
-	}
-
-	ignoreEvent(): boolean {
-		return true;
-	}
-}
-
-class QuoteIconWidget extends WidgetType {
-	eq(other: QuoteIconWidget): boolean {
-		return other instanceof QuoteIconWidget;
-	}
-
-	toDOM(): HTMLElement {
-		const el = document.createElement("span");
-		el.className = `${ASIDE_ICON_WIDGET_CLASS} nui-lp-quote-icon-widget`;
-		el.setAttribute("aria-hidden", "true");
-		el.appendChild(createQuoteIconElement());
-		return el;
-	}
-
-	ignoreEvent(): boolean {
-		return true;
-	}
-}
 
 function isLivePreview(view: EditorView): boolean {
 	return (
@@ -106,24 +44,8 @@ function addLineClass(
 	);
 }
 
-function addIconWidget(
-	builder: RangeSetBuilder<Decoration>,
-	lineFrom: number,
-	widget: WidgetType,
-): void {
-	builder.add(
-		lineFrom,
-		lineFrom,
-		Decoration.widget({
-			widget,
-			side: -1,
-			block: false,
-		}),
-	);
-}
-
-/** Icon on header rows; line classes for callout + blockquote aside blocks. */
-export function buildCalloutIconDecorations(view: EditorView): DecorationSet {
+/** Line classes for callout + blockquote aside blocks (icons live in overlay layer). */
+export function buildAsideLineDecorations(view: EditorView): DecorationSet {
 	if (!isLivePreview(view)) {
 		return Decoration.none;
 	}
@@ -144,11 +66,6 @@ export function buildCalloutIconDecorations(view: EditorView): DecorationSet {
 			activeCalloutType = headerType;
 
 			addLineClass(builder, line.from, calloutIconLineClass(headerType));
-			addIconWidget(
-				builder,
-				line.from,
-				new CalloutIconWidget(headerType, line.from, view),
-			);
 			continue;
 		}
 
@@ -174,7 +91,6 @@ export function buildCalloutIconDecorations(view: EditorView): DecorationSet {
 		if (!inBlockquoteBody) {
 			inBlockquoteBody = true;
 			addLineClass(builder, line.from, QUOTE_HEADER_LINE_CLASS);
-			addIconWidget(builder, line.from, new QuoteIconWidget());
 			continue;
 		}
 
@@ -184,17 +100,28 @@ export function buildCalloutIconDecorations(view: EditorView): DecorationSet {
 	return builder.finish();
 }
 
+function findAsideIconLayerHost(view: EditorView): HTMLElement | null {
+	return (
+		view.dom.querySelector(".cm-contentContainer") ??
+		view.dom.querySelector(".cm-sizer")
+	);
+}
+
 export const calloutLpIconExtension = ViewPlugin.fromClass(
 	class {
 		decorations: DecorationSet = Decoration.none;
 		private livePreview = false;
 		private readonly sourceViewEl: Element | null;
 		private readonly modeObserver: MutationObserver | null;
+		private layer: HTMLElement | null = null;
+		private layerHost: HTMLElement | null = null;
+		private layoutScheduled = false;
 
 		constructor(view: EditorView) {
 			this.sourceViewEl = view.dom.closest(".markdown-source-view");
 			this.livePreview = isLivePreview(view);
-			this.decorations = buildCalloutIconDecorations(view);
+			this.ensureLayer(view);
+			this.sync(view);
 
 			if (this.sourceViewEl !== null) {
 				this.modeObserver = new MutationObserver(() => {
@@ -203,7 +130,7 @@ export const calloutLpIconExtension = ViewPlugin.fromClass(
 						return;
 					}
 					this.livePreview = livePreview;
-					this.decorations = buildCalloutIconDecorations(view);
+					this.sync(view);
 					view.requestMeasure();
 				});
 
@@ -220,21 +147,113 @@ export const calloutLpIconExtension = ViewPlugin.fromClass(
 			this.livePreview = livePreview;
 
 			if (!livePreview) {
+				this.destroyLayer();
 				this.decorations = Decoration.none;
 				return;
+			}
+
+			if (livePreviewChanged) {
+				this.ensureLayer(update.view);
+			} else if (this.layer === null) {
+				this.ensureLayer(update.view);
 			}
 
 			if (
 				livePreviewChanged ||
 				update.docChanged ||
-				update.viewportChanged
+				update.viewportChanged ||
+				update.geometryChanged
 			) {
-				this.decorations = buildCalloutIconDecorations(update.view);
+				this.syncDecorations(update.view);
+				this.scheduleIconLayout(update.view);
 			}
 		}
 
 		destroy() {
 			this.modeObserver?.disconnect();
+			this.destroyLayer();
+		}
+
+		private ensureLayer(view: EditorView) {
+			if (!isLivePreview(view)) {
+				this.destroyLayer();
+				return;
+			}
+
+			const host = findAsideIconLayerHost(view);
+			if (host === null) {
+				return;
+			}
+
+			if (
+				this.layer !== null &&
+				this.layer.isConnected &&
+				this.layerHost === host
+			) {
+				return;
+			}
+
+			this.destroyLayer();
+			const layer = document.createElement("div");
+			layer.className = ASIDE_ICON_LAYER_CLASS;
+			layer.setAttribute("contenteditable", "false");
+			host.appendChild(layer);
+			this.layer = layer;
+			this.layerHost = host;
+		}
+
+		private destroyLayer() {
+			this.layer?.remove();
+			this.layer = null;
+			this.layerHost = null;
+		}
+
+		private syncDecorations(view: EditorView) {
+			if (!isLivePreview(view)) {
+				this.decorations = Decoration.none;
+				this.layer?.replaceChildren();
+				return;
+			}
+
+			this.decorations = buildAsideLineDecorations(view);
+			syncAsideLineIndent(view);
+		}
+
+		private scheduleIconLayout(view: EditorView) {
+			if (!isLivePreview(view)) {
+				return;
+			}
+
+			if (this.layer === null || !this.layer.isConnected) {
+				this.ensureLayer(view);
+			}
+
+			if (this.layer === null) {
+				return;
+			}
+
+			if (this.layoutScheduled) {
+				return;
+			}
+
+			this.layoutScheduled = true;
+			view.requestMeasure({
+				key: this,
+				read: (measureView) => collectAsideIconSpecs(measureView),
+				write: (specs, measureView) => {
+					this.layoutScheduled = false;
+					if (this.layer === null || !isLivePreview(measureView)) {
+						return;
+					}
+					layoutAsideIconLayer(measureView, this.layer, specs);
+				},
+			});
+		}
+
+		private sync(view: EditorView) {
+			this.ensureLayer(view);
+			this.syncDecorations(view);
+			this.scheduleIconLayout(view);
 		}
 	},
 	{

@@ -4487,20 +4487,39 @@ body.theme-dark .nui-selection-toolbar {
 	box-sizing: border-box;
 }
 
-/* LP aside icon — callouts + blockquotes (theme handles line layout). */
-.markdown-source-view.mod-cm6.is-live-preview
-	.cm-line:is(.HyperMD-callout, .nui-lp-quote-header)
-	.cm-widget:has(.nui-lp-aside-icon-widget) {
-	display: inline;
-	vertical-align: baseline;
+/* LP aside — theme variables:
+   --nui-lp-aside-icon-size, --nui-lp-quote-mark-size, --nui-lp-aside-text-indent,
+   --nui-lp-callout-icon-offset-top, --nui-lp-quote-mark-offset-top */
+.markdown-source-view.mod-cm6.is-live-preview {
+	--nui-lp-aside-icon-size: 1.125rem;
+	--nui-lp-quote-mark-size: 8px;
+	--nui-lp-aside-text-indent: 1.475rem;
+	--nui-lp-callout-icon-offset-top: 2px;
+	--nui-lp-quote-mark-offset-top: 5px;
 }
 
-.markdown-source-view.mod-cm6.is-live-preview .nui-lp-aside-icon-widget {
+.markdown-source-view.mod-cm6.is-live-preview .cm-contentContainer,
+.markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .cm-contentContainer) {
+	position: relative;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview .nui-lp-aside-icon-layer {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	overflow: visible;
+	z-index: 10;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
+	.nui-lp-aside-icon-widget {
+	position: absolute;
 	display: inline-flex;
-	align-items: center;
-	margin-inline-start: calc(-1 * var(--nui-lp-aside-icon-offset, 1.475rem));
-	margin-inline-end: var(--nui-lp-aside-icon-gap, 0.35em);
-	vertical-align: -0.12em;
+	align-items: flex-start;
+	margin: 0;
+	padding: 0;
+	line-height: 0;
 	flex-shrink: 0;
 	--callout-color: var(--callout-default);
 	pointer-events: none;
@@ -4508,28 +4527,52 @@ body.theme-dark .nui-selection-toolbar {
 }
 
 .markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
 	.nui-lp-aside-icon-widget.nui-lp-callout-icon-widget {
 	pointer-events: auto;
 	cursor: pointer;
-}
-
-.markdown-source-view.mod-cm6.is-live-preview .nui-lp-aside-icon-widget .callout-icon {
-	display: inline-flex;
-	align-items: center;
-	flex: 0 0 auto;
+	translate: 0 var(--nui-lp-callout-icon-offset-top);
 }
 
 .markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
+	.nui-lp-aside-icon-widget
+	.callout-icon {
+	display: inline-flex;
+	align-items: flex-start;
+	flex: 0 0 auto;
+	line-height: 0;
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
 	.nui-lp-aside-icon-widget
 	.callout-icon
-	.svg-icon {
-	width: var(--nui-lp-aside-icon-size, 1.125rem);
-	height: var(--nui-lp-aside-icon-size, 1.125rem);
+	.svg-icon:not(.nui-lp-quote-mark-icon) {
+	width: var(--nui-lp-aside-icon-size);
+	height: var(--nui-lp-aside-icon-size);
 	color: rgb(var(--callout-color));
 }
 
-.markdown-source-view.mod-cm6.is-live-preview .nui-lp-quote-icon-widget {
-	--callout-color: var(--callout-quote);
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
+	.nui-lp-aside-icon-widget.nui-lp-quote-icon-widget {
+	color: var(--nui-content, var(--text-normal));
+	width: var(--nui-lp-quote-mark-size);
+	translate: 0 var(--nui-lp-quote-mark-offset-top);
+}
+
+.markdown-source-view.mod-cm6.is-live-preview
+	.nui-lp-aside-icon-layer
+	.nui-lp-quote-icon-widget
+	.callout-icon
+	.nui-lp-quote-mark-icon {
+	width: var(--nui-lp-quote-mark-size) !important;
+	height: var(--nui-lp-quote-mark-size) !important;
+	max-width: var(--nui-lp-quote-mark-size);
+	max-height: var(--nui-lp-quote-mark-size);
+	display: block;
+	color: var(--nui-content, var(--text-normal)) !important;
 }
 
 .markdown-source-view.mod-cm6.is-live-preview

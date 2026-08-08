@@ -1,13 +1,8 @@
 
 This vault exists to show what the NUI plugin and theme do. Every note in it is invented. Poke at anything.
 
-> [!info] This vault is opinionated. The settings here are not NUI's defaults. Folder-index navigation is **on**, which changes what clicking a folder in the sidebar does: it opens that folder's own note instead of expanding it. Habits, dates, and cover images follow specific conventions, described below. If you install NUI into a vault of your own, everything starts off until you turn it on.
+> [!info] The settings used here are not on by default. If you install NUI into a vault of your own, you need to turn on the features in NUI plugin settings.
 
-The settings here are not NUI's defaults. Folder-index navigation is **on**, which changes what clicking a folder in the sidebar does: it opens that folder's own note instead of expanding it. Habits, dates, and cover images follow specific conventions, described below. If you install NUI into a vault of your own, everything starts off until you turn it on.
-
-> The settings here are not NUI's defaults. Folder-index navigation is **on**, which changes what clicking a folder in the sidebar does: it opens that folder's own note instead of expanding it. Habits, dates, and cover images follow specific conventions, described below. If you install NUI into a vault of your own, everything starts off until you turn it on.
-
-The settings here are not NUI's defaults. Folder-index navigation is **on**, which changes what clicking a folder in the sidebar does: it opens that folder's own note instead of expanding it. Habits, dates, and cover images follow specific conventions, described below. If you install NUI into a vault of your own, everything starts off until you turn it on.
 
 ## Where to look first
 
