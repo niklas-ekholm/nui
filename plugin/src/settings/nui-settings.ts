@@ -1,3 +1,4 @@
+import { mergeRecentColors } from "../editor/color-picker-history";
 import {
 	DEFAULT_TIMELINE_ROW_SIZE,
 	DEFAULT_TIMELINE_TIMESPAN,
@@ -44,9 +45,11 @@ export interface HtmlLivePreviewSettings {
 export interface EditorSettings extends HtmlLivePreviewSettings {
 	multiCursorCommands: boolean;
 	textColor: boolean;
+	/** Last colors chosen in the text color picker (most recent first). */
+	recentColors: string[];
 	/**
-	 * Floating formatting toolbar on text selection. Desktop only — mobile
-	 * already has the system toolbar.
+	 * Floating formatting toolbar on text selection in Live Preview. Desktop
+	 * only — mobile already has the system toolbar. Hidden in Source mode.
 	 */
 	selectionToolbar: boolean;
 	tableColumnLayout: boolean;
@@ -119,6 +122,7 @@ export const DEFAULT_SETTINGS: NuiSettings = {
 	editor: {
 		multiCursorCommands: true,
 		textColor: true,
+		recentColors: [],
 		selectionToolbar: true,
 		tableColumnLayout: true,
 		htmlLivePreview: true,
@@ -213,6 +217,7 @@ export function mergeSettings(loaded: Loaded): NuiSettings {
 				defaults.editor.multiCursorCommands,
 			),
 			textColor: bool(editor.textColor, defaults.editor.textColor),
+			recentColors: mergeRecentColors(editor.recentColors),
 			selectionToolbar: bool(
 				editor.selectionToolbar,
 				defaults.editor.selectionToolbar,

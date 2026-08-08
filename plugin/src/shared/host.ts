@@ -26,8 +26,14 @@ export interface FolderIndexOpener {
 	openFolderIndex(folderPath: string): Promise<boolean>;
 }
 
+/** Plugin fields shared by features that persist editor UI state. */
+export type ColorPickerHistoryHost = Plugin & {
+	settings: { editor: { recentColors: string[] } };
+	saveSettings(): Promise<void>;
+};
+
 /** Plugin fields the timeline view reads and writes. */
-export interface TimelineHostPlugin extends Plugin {
+export interface TimelineHostPlugin extends ColorPickerHistoryHost {
 	timelineRowSize: number;
 	timelineTimespan: TimelineTimespan;
 	timelineRangeStart?: string;

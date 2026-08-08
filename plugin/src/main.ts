@@ -27,6 +27,8 @@ import {
 import { registerPropertyColorSwatch } from "./editor/register-property-color-swatch";
 import { registerPropertyClear } from "./editor/register-property-clear";
 import { registerSelectionToolbar } from "./editor/register-selection-toolbar";
+import { registerCalloutPlainLp } from "./editor/register-callout-plain-lp";
+import { registerCalloutLpIconDeco } from "./editor/register-callout-lp-icon-deco";
 import { registerHtmlLpField } from "./editor/register-html-lp-field";
 import { NuiSettingTab } from "./settings/settings-tab";
 import {
@@ -136,6 +138,8 @@ export default class NuiPlugin extends Plugin {
 			registerEmbedChromeStickLine(this);
 		}
 		registerEmbedSourceClick(this);
+		registerCalloutPlainLp(this);
+		registerCalloutLpIconDeco(this);
 		if (editor.textColor) {
 			registerNoteTextColorSync(this);
 			registerTextColorMenu(this);

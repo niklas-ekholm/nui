@@ -3,7 +3,6 @@ import {
 	BasesView,
 	Notice,
 	parsePropertyId,
-	Plugin,
 	QueryController,
 	TFile,
 } from "obsidian";
@@ -61,13 +60,14 @@ import {
 	setNoteColor,
 } from "../editor/note-text-color";
 import { openTextColorPicker } from "../editor/text-color-picker-modal";
+import { getColorPickerHistory } from "../editor/color-picker-history";
 import { DEFAULT_TEXT_COLOR } from "../editor/text-color-utils";
+import type { TimelineHostPlugin } from "../shared/host";
 import {
 	parseTimelineLayoutMode,
 	parseTimelineRange,
 	TimelineLayoutMode,
 	TimelineRange,
-	TimelineTimespan,
 	applyTimespanToRange,
 	defaultTimelineRange,
 	DEFAULT_TIMELINE_TIMESPAN,
@@ -93,13 +93,7 @@ export class TimelineBasesView extends BasesView {
 	constructor(
 		controller: QueryController,
 		parentEl: HTMLElement,
-		private plugin: Plugin & {
-			timelineRowSize: number;
-			timelineTimespan: TimelineTimespan;
-			timelineRangeStart?: string;
-			timelineRangeEnd?: string;
-			saveTimelineSettings: () => Promise<void>;
-		},
+		private plugin: TimelineHostPlugin,
 	) {
 		super(controller);
 		this.containerEl = createNuiBasesContainer(
@@ -656,6 +650,7 @@ export class TimelineBasesView extends BasesView {
 		openTextColorPicker(this.app, {
 			mode: "property",
 			initialColor: initial,
+			history: getColorPickerHistory(this.plugin),
 			onApply: async (color) => {
 				for (const file of files) {
 					await setNoteColor(this.app, file, color);

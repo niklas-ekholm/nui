@@ -1,14 +1,16 @@
-import { MarkdownView, type Plugin } from "obsidian";
+import { MarkdownView } from "obsidian";
+import type { ColorPickerHistoryHost } from "../shared/host";
 import {
 	applySpanColor,
 	clearSpanColor,
 	getSpanColorFromSelection,
 } from "./apply-span-color";
+import { getColorPickerHistory } from "./color-picker-history";
 import { openNoteTextColorPicker } from "./note-text-color";
 import { openTextColorPicker } from "./text-color-picker-modal";
 import { textColorMarkupExtension } from "./text-color-markup-deco";
 
-export function registerTextColorMenu(plugin: Plugin): void {
+export function registerTextColorMenu(plugin: ColorPickerHistoryHost): void {
 	plugin.registerEditorExtension(textColorMarkupExtension);
 
 	plugin.registerEvent(
@@ -26,6 +28,7 @@ export function registerTextColorMenu(plugin: Plugin): void {
 							openTextColorPicker(plugin.app, {
 								mode: "span",
 								initialColor: getSpanColorFromSelection(editor),
+								history: getColorPickerHistory(plugin),
 								onApply: (color) => {
 									applySpanColor(editor, color);
 								},
@@ -41,14 +44,14 @@ export function registerTextColorMenu(plugin: Plugin): void {
 							return;
 						}
 
-						openNoteTextColorPicker(plugin.app, file);
+						openNoteTextColorPicker(plugin, file);
 					});
 			});
 		}),
 	);
 }
 
-export function registerNoteTextColorCommand(plugin: Plugin): void {
+export function registerNoteTextColorCommand(plugin: ColorPickerHistoryHost): void {
 	plugin.addCommand({
 		id: "set-note-text-color",
 		name: "Set note text color",
@@ -61,7 +64,7 @@ export function registerNoteTextColorCommand(plugin: Plugin): void {
 				return true;
 			}
 
-			openNoteTextColorPicker(plugin.app, view.file);
+			openNoteTextColorPicker(plugin, view.file);
 			return true;
 		},
 	});

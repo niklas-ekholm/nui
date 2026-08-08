@@ -1,4 +1,8 @@
 import { MarkdownView, type App, type Plugin, type TFile } from "obsidian";
+import type { ColorPickerHistoryHost } from "../shared/host";
+import {
+	getColorPickerHistory,
+} from "./color-picker-history";
 import {
 	removeFrontmatterField,
 	setFrontmatterField,
@@ -129,17 +133,18 @@ export function registerNoteTextColorSync(plugin: Plugin): void {
 }
 
 export function openNoteTextColorPicker(
-	app: App,
+	plugin: ColorPickerHistoryHost,
 	file: TFile,
 ): void {
-	openTextColorPicker(app, {
+	openTextColorPicker(plugin.app, {
 		mode: "note",
-		initialColor: readNoteColor(app, file) ?? DEFAULT_TEXT_COLOR,
+		initialColor: readNoteColor(plugin.app, file) ?? DEFAULT_TEXT_COLOR,
+		history: getColorPickerHistory(plugin),
 		onApply: async (color) => {
-			await setNoteColor(app, file, color);
+			await setNoteColor(plugin.app, file, color);
 		},
 		onClear: async () => {
-			await setNoteColor(app, file, null);
+			await setNoteColor(plugin.app, file, null);
 		},
 	});
 }

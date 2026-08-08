@@ -219,7 +219,7 @@ export class NuiSettingTab extends PluginSettingTab {
 		if (Platform.isDesktopApp) {
 			this.toggle(containerEl, {
 				name: "Selection formatting toolbar",
-				desc: `Shows a floating formatting toolbar when text is selected (desktop only; mobile uses the system toolbar). ${RELOAD_NOTE}`,
+				desc: `Shows a floating formatting toolbar when text is selected in Live Preview (desktop only; hidden in Source mode). ${RELOAD_NOTE}`,
 				get: () => this.settings.editor.selectionToolbar,
 				set: (value) => (this.settings.editor.selectionToolbar = value),
 			});
