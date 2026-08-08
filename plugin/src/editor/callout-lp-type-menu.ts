@@ -2,7 +2,7 @@ import { Menu } from "obsidian";
 import {
 	CALLOUT_TYPE_PICKER_OPTIONS,
 	getObsidianCalloutIconId,
-} from "./callout-lp-icons";
+} from "./callout-lp-icon-ids";
 import { canonicalCalloutType } from "./callout-lp-parse";
 
 export type CalloutTypeMenuOptions = {
