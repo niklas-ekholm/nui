@@ -701,10 +701,15 @@ body {
 .markdown-source-view.mod-cm6.is-live-preview
 	.cm-line.HyperMD-quote:has(.cm-formatting-quote)
 	.cm-formatting-quote {
-	display: inline-block !important;
-	width: 0 !important;
-	overflow: hidden !important;
-	vertical-align: bottom;
+	/* Marker gutter is padding (--nui-blockquote-marker), not this span. Hide
+	   from layout so the left rule does not extend above the quote text. */
+	display: none !important;
+}
+
+/* LP sometimes places the `> ` marker alone on its own line — hide the row. */
+.markdown-source-view.mod-cm6.is-live-preview
+	.cm-line.HyperMD-quote:has(> .cm-formatting-quote:only-child) {
+	display: none !important;
 }
 
 .markdown-source-view.mod-cm6.is-live-preview
