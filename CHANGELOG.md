@@ -9,6 +9,24 @@ version stays below 1.0.0, expect breaking changes in minor releases.
 
 ## [Unreleased]
 
+## [0.2.7] — 2026-08-08
+
+### Added
+
+- **MiniNUI**: NUI without the Bases views — the same theme, commands, hotkeys,
+  editor tools, folder-index navigation, and appearance layer, and none of the
+  fourteen views. It is generated from the same source on every release, ships
+  as `mininui-plugin-<version>.zip` and `mininui-theme-<version>.zip`, and
+  installs as plugin `mininui` and theme `MiniNUI`, so it leaves an existing NUI
+  install untouched. Enable one plugin or the other, not both.
+- `scripts/install-remote-mini.sh`, the one-command curl installer for MiniNUI.
+
+### Changed
+
+- Bases view registration moved from `main.ts` to
+  `views/register-bases-views.ts`. The mini build swaps that module for a no-op,
+  so no view code is bundled there. Register new views in that one place.
+
 ## [0.2.6] — 2026-08-08
 
 ### Added
@@ -143,7 +161,8 @@ repository and start on a single version number, clearing the theme's earlier
 - The release-branch mirror workflow, which duplicated plugin and theme sources
   onto branches that were never merged back.
 
-[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.6...HEAD
+[unreleased]: https://github.com/niklas-ekholm/nui/compare/v0.2.7...HEAD
+[0.2.7]: https://github.com/niklas-ekholm/nui/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/niklas-ekholm/nui/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/niklas-ekholm/nui/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/niklas-ekholm/nui/compare/v0.2.3...v0.2.4

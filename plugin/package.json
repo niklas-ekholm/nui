@@ -1,6 +1,6 @@
 {
 	"name": "nui",
-	"version": "0.2.6",
+	"version": "0.2.7",
 	"description": "NUI layouts, Bases views, and vault navigation for Obsidian",
 	"main": "main.js",
 	"type": "module",
