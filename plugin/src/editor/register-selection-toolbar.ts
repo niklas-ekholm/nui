@@ -277,15 +277,18 @@ function selectionTooltips(
 			arrow: false,
 			create: (view): TooltipView => {
 				const dom = buildToolbar(view, app, includeColor);
-				dom.style.backgroundColor = "#ffffff";
-				dom.style.border = "1px solid #ececec";
 				return {
 					dom,
 					mount: () => {
+						/* CM tooltips are often portaled to `body`; strip light-theme wrapper chrome. */
 						const tip = dom.parentElement;
 						if (!tip) return;
-						tip.style.setProperty("background", "#ffffff", "important");
-						tip.style.setProperty("background-color", "#ffffff", "important");
+						tip.style.setProperty("background", "transparent", "important");
+						tip.style.setProperty(
+							"background-color",
+							"transparent",
+							"important",
+						);
 						tip.style.setProperty("border", "none", "important");
 						tip.style.setProperty("box-shadow", "none", "important");
 						tip.style.setProperty("padding", "0", "important");

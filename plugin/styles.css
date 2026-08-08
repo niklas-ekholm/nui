@@ -4379,13 +4379,14 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 }
 
 /* Selection formatting toolbar (desktop Live Preview / Source).
-   CM light theme sets `.cm-tooltip { background: #f5f5f5 }` — beat it. */
-.markdown-source-view.mod-cm6 .cm-tooltip:has(.nui-selection-toolbar),
-.markdown-source-view.mod-cm6 .cm-tooltip.cm-tooltip-above:has(.nui-selection-toolbar),
-.markdown-source-view.mod-cm6 .cm-tooltip.cm-tooltip-below:has(.nui-selection-toolbar) {
+   CM tooltips are often portaled to `body`, outside `.markdown-source-view`.
+   Strip the wrapper chrome in CSS and in mount() — register-selection-toolbar.ts. */
+body .cm-tooltip:has(.nui-selection-toolbar),
+body .cm-tooltip.cm-tooltip-above:has(.nui-selection-toolbar),
+body .cm-tooltip.cm-tooltip-below:has(.nui-selection-toolbar) {
 	border: none !important;
-	background: #ffffff !important;
-	background-color: #ffffff !important;
+	background: transparent !important;
+	background-color: transparent !important;
 	padding: 0 !important;
 	box-shadow: none !important;
 }
@@ -4396,11 +4397,20 @@ table.nui-table-layout tr.nui-table-phantom-separator {
 	align-items: center;
 	gap: 6px;
 	padding: 8px;
-	border: 1px solid #ececec;
+	border: 1px solid transparent;
 	border-radius: var(--radius-s);
-	background: #ffffff !important;
-	background-color: #ffffff !important;
+	background: var(--background-primary) !important;
+	background-color: var(--background-primary) !important;
 	box-shadow: none !important;
+}
+
+/* Light: #ececec tuned for white toolbar surface. Dark: NUI panel divider (#445). */
+body.theme-light .nui-selection-toolbar {
+	border-color: #ececec !important;
+}
+
+body.theme-dark .nui-selection-toolbar {
+	border-color: var(--nui-border-color, #445) !important;
 }
 
 .nui-selection-toolbar-btn {
