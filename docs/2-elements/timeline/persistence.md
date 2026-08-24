@@ -14,6 +14,7 @@ Per vault, survives reload:
 - Visible date range
 - Timespan preset
 - Row size (**XS**–**XL**)
+- Folder contents visibility (show/hide nested notes under top-level project folders)
 
 Reset with **⤶** or manual range scrub that diverges from preset behaviour.
 

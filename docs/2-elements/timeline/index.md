@@ -28,7 +28,7 @@ Reference element folder for NUI docs — visual index, technical child notes, P
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│ [Title] [filter] [start]–[end] [⤶] [span▾] [Today] [XS–XL] [+] │  ← topbar
+│ [Title] [filter] [start]–[end] [⤶] [span▾] [Today] [Folders] [XS–XL] [+] │  ← topbar
 ├────────────────────────────────────────────────────────────────┤
 │      W12  W13  W14 │ Apr      W16  W17 …                       │  ← time axis
 │      M  T  W  T  F …                                           │  ← weekdays
@@ -62,6 +62,7 @@ Left to right on the control row:
 | **⤶** | Reset default range and timespan |
 | Timespan menu | Preset window length |
 | **Today** | Center on today |
+| Folders | Show or hide top-level folder contents |
 | Row size | **XS** **S** **M** **L** **XL** |
 | **+** | [[add-button]] — create note in `.base` folder |
 

@@ -175,6 +175,8 @@ export interface RenderTimelineOptions {
 	groupedItems?: TimelineItem[];
 	collapsedFolderHubIds?: Set<string>;
 	onToggleFolderCollapse?: (folderHubId: string) => void;
+	showFolderContents?: boolean;
+	onToggleShowFolderContents?: () => void;
 	app?: App;
 	tasksByFilePath?: Map<string, TaskItem[]>;
 	onTaskToggle?: () => void;
@@ -428,6 +430,30 @@ function renderTimelineContent(
 			});
 			header.appendChild(todayBtn);
 		}
+	}
+
+	if (options.onToggleShowFolderContents) {
+		const showContents = options.showFolderContents === true;
+		const foldersBtn = document.createElement("button");
+		foldersBtn.type = "button";
+		foldersBtn.className = "nui-timeline-folders-toggle";
+		foldersBtn.classList.toggle("is-active", showContents);
+		foldersBtn.setAttribute("aria-pressed", showContents ? "true" : "false");
+		foldersBtn.title = showContents
+			? "Hide folder contents"
+			: "Show folder contents";
+		foldersBtn.setAttribute(
+			"aria-label",
+			showContents ? "Hide folder contents" : "Show folder contents",
+		);
+		const foldersIcon = el("span", "nui-timeline-folders-toggle-icon");
+		foldersIcon.setAttribute("aria-hidden", "true");
+		setIcon(foldersIcon, "list-tree");
+		foldersBtn.appendChild(foldersIcon);
+		foldersBtn.addEventListener("click", () => {
+			options.onToggleShowFolderContents?.();
+		});
+		header.appendChild(foldersBtn);
 	}
 
 	if (options.onRowSizeChange) {

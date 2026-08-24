@@ -377,3 +377,41 @@ export function folderHubHasChildren(
 ): boolean {
 	return getChildTimelineItemIds(hubNoteId, itemsMap(items)).length > 0;
 }
+
+/** Top-level project folder hubs on this timeline (no parent hub also present). */
+export function rootFolderHubIds(items: TimelineItem[]): string[] {
+	const byId = itemsMap(items);
+	const roots: string[] = [];
+
+	for (const item of items) {
+		if (!isHubNoteItem(item.id)) continue;
+		if (parentFolderHubOnTimeline(item.id, byId)) continue;
+		roots.push(item.id);
+	}
+
+	return roots;
+}
+
+export function rootFolderHubIdsWithChildren(items: TimelineItem[]): string[] {
+	return rootFolderHubIds(items).filter((id) =>
+		folderHubHasChildren(id, items),
+	);
+}
+
+/**
+ * When folder contents are hidden, every top-level project folder is treated
+ * as collapsed so nested notes and subfolders stay off the chart.
+ */
+export function effectiveCollapsedFolderHubIds(
+	items: TimelineItem[],
+	showFolderContents: boolean,
+	collapsedFolderHubIds: Set<string>,
+): Set<string> {
+	if (showFolderContents) return collapsedFolderHubIds;
+
+	const next = new Set(collapsedFolderHubIds);
+	for (const id of rootFolderHubIdsWithChildren(items)) {
+		next.add(id);
+	}
+	return next;
+}

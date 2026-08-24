@@ -35,6 +35,11 @@ export interface TimelineSettings {
 	timespan: TimelineTimespan;
 	rangeStart?: string;
 	rangeEnd?: string;
+	/**
+	 * When true, nested notes and subfolders under top-level project folders
+	 * are visible. When false, only top-level folders and loose files show.
+	 */
+	showFolderContents: boolean;
 }
 
 /** The slice the Live Preview CodeMirror extension reads. */
@@ -118,6 +123,7 @@ export const DEFAULT_SETTINGS: NuiSettings = {
 		timespan: DEFAULT_TIMELINE_TIMESPAN,
 		rangeStart: undefined,
 		rangeEnd: undefined,
+		showFolderContents: false,
 	},
 	editor: {
 		multiCursorCommands: true,
@@ -210,6 +216,10 @@ export function mergeSettings(loaded: Loaded): NuiSettings {
 			timespan: mergeTimelineTimespan(timeline.timespan),
 			rangeStart: optionalStr(timeline.rangeStart),
 			rangeEnd: optionalStr(timeline.rangeEnd),
+			showFolderContents: bool(
+				timeline.showFolderContents,
+				defaults.timeline.showFolderContents,
+			),
 		},
 		editor: {
 			multiCursorCommands: bool(

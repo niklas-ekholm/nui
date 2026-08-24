@@ -22,6 +22,8 @@ Parent: [[2-elements/timeline/index|Timeline]]
 
 A folder whose hub note has dates appears as a project folder row. When that folder contains other dated notes (or nested project folders), the row shows a [[collapse-chevron]] left of the title. Chevron toggles child row visibility; title click opens the hub note.
 
+The toolbar **Folders** control shows or hides contents of all top-level project folders at once. Off by default: only top-level project folders and loose files in the timeline folder remain. On: nested notes and subfolders are visible (per-row chevrons still apply).
+
 ## Editing
 
 When start and end are writable note properties:

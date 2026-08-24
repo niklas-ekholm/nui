@@ -7,6 +7,8 @@ import {
 	getChildTimelineItemIds,
 	groupTimelineItemsByFolder,
 	parentFolderHubOnTimeline,
+	effectiveCollapsedFolderHubIds,
+	rootFolderHubIdsWithChildren,
 } from "./timeline-folder-grouping.ts";
 
 function item(
@@ -138,5 +140,39 @@ test("folderHubIdForGroupedItem marks nested folder hubs as subprojects", () => 
 	assert.equal(
 		folderHubIdForGroupedItem("Projects/Test1/subtest/test.md", items),
 		"Projects/Test1/subtest/subtest.md",
+	);
+});
+
+test("rootFolderHubIdsWithChildren lists only top-level hubs that have children", () => {
+	const items = [
+		item("Projects/Outer/Outer.md", "2026-01-01", "2026-03-01"),
+		item("Projects/Outer/Phase 1.md", "2026-01-10"),
+		item("Projects/Outer/Inner/Inner.md", "2026-02-01", "2026-02-28"),
+		item("Projects/Outer/Inner/Phase 2.md", "2026-02-05"),
+		item("Projects/Lonely/Lonely.md", "2026-01-01", "2026-01-15"),
+		item("Projects/Loose note.md", "2026-01-05"),
+	];
+
+	assert.deepEqual(rootFolderHubIdsWithChildren(items).sort(), [
+		"Projects/Outer/Outer.md",
+	]);
+});
+
+test("effectiveCollapsedFolderHubIds hides root children when contents off", () => {
+	const items = [
+		item("Projects/Outer/Outer.md", "2026-01-01", "2026-03-01"),
+		item("Projects/Outer/Phase 1.md", "2026-01-10"),
+		item("Projects/Outer/Inner/Inner.md", "2026-02-01", "2026-02-28"),
+		item("Projects/Loose note.md", "2026-01-05"),
+	];
+	const effective = effectiveCollapsedFolderHubIds(
+		items,
+		false,
+		new Set(),
+	);
+
+	assert.deepEqual(
+		filterCollapsedFolderGroups(items, effective).map((entry) => entry.id),
+		["Projects/Outer/Outer.md", "Projects/Loose note.md"],
 	);
 });

@@ -38,6 +38,7 @@ export interface TimelineHostPlugin extends ColorPickerHistoryHost {
 	timelineTimespan: TimelineTimespan;
 	timelineRangeStart?: string;
 	timelineRangeEnd?: string;
+	timelineShowFolderContents: boolean;
 	saveTimelineSettings: () => Promise<void>;
 }
 

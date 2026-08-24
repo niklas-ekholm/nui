@@ -325,6 +325,7 @@
 
 .nui-timeline-timespan-select,
 .nui-timeline-today-btn,
+.nui-timeline-folders-toggle,
 .nui-week-tracker-3-today-btn,
 .nui-timeline-range-restore {
 	appearance: none;
@@ -353,6 +354,7 @@
 .nui-timeline-timespan-select:is(:hover, :focus, :focus-visible, :active),
 .nui-timeline-today-btn:is(:hover, :focus, :focus-visible, :active),
 .nui-timeline-today-btn.is-visible:is(:hover, :focus, :focus-visible, :active),
+.nui-timeline-folders-toggle:is(:hover, :focus, :focus-visible, :active),
 .nui-week-tracker-3-today-btn:is(:hover, :focus, :focus-visible, :active),
 .nui-week-tracker-3-today-btn.is-visible:is(:hover, :focus, :focus-visible, :active),
 .nui-timeline-range-restore:is(:hover, :focus, :focus-visible, :active) {
@@ -368,9 +370,36 @@
 
 .nui-timeline-timespan-select:hover,
 .nui-timeline-today-btn:hover,
+.nui-timeline-folders-toggle:hover,
 .nui-week-tracker-3-today-btn:hover,
 .nui-timeline-range-restore:hover {
 	color: var(--text-accent);
+}
+
+.nui-timeline-folders-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.nui-timeline-folders-toggle.is-active,
+.nui-timeline-folders-toggle.is-active .nui-timeline-folders-toggle-icon,
+.nui-timeline-folders-toggle.is-active svg {
+	color: var(--text-normal) !important;
+}
+
+.nui-timeline-folders-toggle-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--size-4-4);
+	height: var(--size-4-4);
+}
+
+.nui-timeline-folders-toggle-icon svg.svg-icon {
+	width: var(--size-4-4);
+	height: var(--size-4-4);
+	stroke: currentColor;
 }
 
 .nui-timeline-search {
@@ -3077,6 +3106,7 @@ body.nui-mobile-source-toggle.is-mobile
 
 .nui-timeline--mobile .nui-timeline-timespan-select,
 .nui-timeline--mobile .nui-timeline-today-btn,
+.nui-timeline--mobile .nui-timeline-folders-toggle,
 .nui-timeline--mobile .nui-timeline-range-restore {
 	padding-inline: 0;
 }

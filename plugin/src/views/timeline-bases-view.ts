@@ -41,9 +41,11 @@ import { resolveResponsibilityForItem } from "../core/timeline/project-label";
 import {
 	ancestorFolderHubsOnTimeline,
 	datesExceedHubNote,
+	effectiveCollapsedFolderHubIds,
 	filterCollapsedFolderGroups,
 	groupTimelineItemsByFolder,
 	isHubNoteItem,
+	rootFolderHubIdsWithChildren,
 } from "../core/timeline/timeline-folder-grouping";
 import {
 	createNuiBasesContainer,
@@ -184,9 +186,19 @@ export class TimelineBasesView extends BasesView {
 			responsibilityItems,
 			this.searchQuery,
 		);
+		if (!this.plugin.timelineShowFolderContents) {
+			for (const id of rootFolderHubIdsWithChildren(searchedItems)) {
+				this.collapsedFolderHubIds.add(id);
+			}
+		}
+		const effectiveCollapsed = effectiveCollapsedFolderHubIds(
+			searchedItems,
+			this.plugin.timelineShowFolderContents,
+			this.collapsedFolderHubIds,
+		);
 		const items = filterCollapsedFolderGroups(
 			searchedItems,
-			this.collapsedFolderHubIds,
+			effectiveCollapsed,
 		);
 		const editable = this.isEditable();
 		const rangeOverride = this.resolveRangeOverride();
@@ -285,11 +297,37 @@ export class TimelineBasesView extends BasesView {
 			},
 			onItemRenamed: () => {
 				this.onDataUpdated();
-			},			groupedItems: searchedItems,
-			collapsedFolderHubIds: this.collapsedFolderHubIds,
+			},
+			groupedItems: searchedItems,
+			collapsedFolderHubIds: effectiveCollapsed,
+			showFolderContents: this.plugin.timelineShowFolderContents,
+			onToggleShowFolderContents:
+				rootFolderHubIdsWithChildren(searchedItems).length > 0
+					? () => {
+							const next = !this.plugin.timelineShowFolderContents;
+							this.plugin.timelineShowFolderContents = next;
+							const roots =
+								rootFolderHubIdsWithChildren(searchedItems);
+							if (next) {
+								for (const id of roots) {
+									this.collapsedFolderHubIds.delete(id);
+								}
+							} else {
+								for (const id of roots) {
+									this.collapsedFolderHubIds.add(id);
+								}
+							}
+							void this.plugin.saveTimelineSettings();
+							this.onDataUpdated();
+						}
+					: undefined,
 			onToggleFolderCollapse: (folderHubId) => {
 				if (this.collapsedFolderHubIds.has(folderHubId)) {
 					this.collapsedFolderHubIds.delete(folderHubId);
+					if (!this.plugin.timelineShowFolderContents) {
+						this.plugin.timelineShowFolderContents = true;
+						void this.plugin.saveTimelineSettings();
+					}
 				} else {
 					this.collapsedFolderHubIds.add(folderHubId);
 				}

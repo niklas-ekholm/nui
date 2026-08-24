@@ -3522,6 +3522,16 @@ body {
 	color: var(--nui-content) !important;
 }
 
+.nui-text-scope .nui-timeline-folders-toggle.is-active,
+.nui-text-scope .nui-timeline-folders-toggle.is-active .nui-timeline-folders-toggle-icon,
+.nui-text-scope .nui-timeline-folders-toggle.is-active svg,
+.nui-text-scope .nui-timeline-folders-toggle:hover,
+.nui-text-scope .nui-timeline-folders-toggle:hover .nui-timeline-folders-toggle-icon,
+.nui-text-scope .nui-timeline-folders-toggle:hover svg {
+	color: var(--nui-content) !important;
+	--icon-color: var(--nui-content);
+}
+
 .nui-text-scope .nui-cards-title-arrow {
 	color: var(--nui-chrome) !important;
 }
@@ -3568,6 +3578,7 @@ body {
 .nui-text-scope :is(
 	.nui-timeline-timespan-select,
 	.nui-timeline-today-btn,
+	.nui-timeline-folders-toggle,
 	.nui-week-tracker-3-today-btn,
 	.nui-timeline-range-restore
 ) {
@@ -3584,6 +3595,7 @@ body {
 .nui-text-scope :is(
 	.nui-timeline-timespan-select,
 	.nui-timeline-today-btn,
+	.nui-timeline-folders-toggle,
 	.nui-week-tracker-3-today-btn,
 	.nui-timeline-range-restore
 ):is(:hover, :focus, :focus-visible, :active) {

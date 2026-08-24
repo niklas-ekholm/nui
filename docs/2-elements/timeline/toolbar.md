@@ -18,6 +18,7 @@ Single control row on the right; title on the left in embeds. Placement rules: [
 | **⤶** | [[ghost-button]] | Default 3-week range from current week Monday |
 | Timespan | [[ghost-button]] + menu | **1 week**, **3 weeks**, **1 month**, **3 months**, **6 months**, **1 year** |
 | **Today** | [[ghost-button]] | Center range on today (when in range) |
+| Folders | [[ghost-button]] | Show or hide contents of top-level project folders |
 | Row size | [[scrub-label]] | Horizontal drag through **XS**–**XL** |
 | **+** | [[add-button]] | Create `Untitled.md` in `.base` folder |
 

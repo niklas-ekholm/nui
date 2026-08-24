@@ -175,6 +175,12 @@ export default class NuiPlugin extends Plugin {
 	set timelineRangeEnd(value: string | undefined) {
 		this.settings.timeline.rangeEnd = value;
 	}
+	get timelineShowFolderContents(): boolean {
+		return this.settings.timeline.showFolderContents;
+	}
+	set timelineShowFolderContents(value: boolean) {
+		this.settings.timeline.showFolderContents = value;
+	}
 
 	/** The one habits root, shared by all four trackers. */
 	get habitsRoot(): string {
